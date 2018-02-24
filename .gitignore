@@ -1,0 +1,6 @@
+.bundle/
+.gems/
+.sass-cache/
+output/
+tmp/
+crash.log

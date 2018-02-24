@@ -1,0 +1,15 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    auto_paragraph (1.0.0)
+    new_base_60 (1.1.2)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  auto_paragraph
+  new_base_60
+
+BUNDLED WITH
+   1.13.6

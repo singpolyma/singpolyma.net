@@ -1,0 +1,61 @@
+compile '/{notes,articles}/**/*.html' do
+	filter :autop
+	layout '/post.*'
+end
+
+compile '/{notes,articles}/**/*.md' do
+	filter :kramdown, auto_ids: false
+	layout '/post.*'
+end
+
+compile '/**/*.slim' do
+	filter :slim, pretty: true, indent: "\t"
+	layout '/default.*'
+end
+
+compile '/**/*.md' do
+	filter :kramdown, auto_ids: false
+	layout '/default.*'
+end
+
+compile '/**/*.html' do
+	layout '/default.*'
+end
+
+compile '/**/*.scss' do
+	filter :sass, syntax: :scss, style: :expanded
+end
+
+compile '/**/*' do
+end
+
+route '/{notes,articles}/**/*' do
+	article = @items["/{notes,articles}/#{item.identifier.components[1]}/index.*"]
+	path = item.identifier.components[1..-1]
+	path[0] = path[0].to_slug.normalize.sub(/^\d+-/, '')
+	path = path.join("/").sub(/index\..*$/, "index.html")
+
+	if article[:ipfs]
+		"/ipfs/#{article[:ipfs]}/#{path}"
+	else
+		"/_ipfs/#{path}"
+	end
+end
+
+route '/**/*.{slim,html,md}' do
+	if item.identifier =~ '/index.*'
+		'/index.html'
+	else
+		item.identifier.without_ext + '/index.html'
+	end
+end
+
+route '/**/*.scss' do
+	item.identifier.without_ext + '.css'
+end
+
+route '/**/*' do
+	item.identifier.to_s
+end
+
+layout '/**/*.slim', :slim, pretty: true, indent: "\t"

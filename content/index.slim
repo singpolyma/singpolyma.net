@@ -1,0 +1,3 @@
+ol
+	- all_posts.each do |article|
+		li: a href="#{relative_path_to article}" = article[:title] || strip_html(article.compiled_content)

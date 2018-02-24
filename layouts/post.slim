@@ -1,0 +1,45 @@
+doctype html
+html
+	head
+		meta charset="utf-8"
+		title = @item[:title] || excerptize(strip_html(@item.compiled_content))
+		link rel="shortlink" href="#{@config[:shortlink_base_url]}/#{shortid(@item)}"
+		meta name="viewport" content="width=device-width, initial-scale=1"
+		link rel="stylesheet" type="text/css" href="#{@config[:base_url]}/#{post_kind(@item)}.css"
+		script type="text/javascript" src="#{@config[:base_url]}/#{post_kind(@item)}.js"
+
+	body
+		article.hentry
+			.author.vcard
+				img.photo src="avatar.jpg" alt="Avatar of"
+				.n
+					span.given-name> Stephen
+					span.additional-name> Paul
+					span.family-name Weber
+				a.fn.nickname.url href="#{@config[:base_url]}/" singpolyma
+
+			- if @item[:title]
+				h1.entry-title = @item[:title]
+
+			section.entry-content == item.compiled_content
+
+			footer
+				a rel="bookmark" href="./"
+					time.published datetime=@item[:date].iso8601
+						= @item[:date].jtime
+
+				- if post_kind(@item) == :article
+					nav
+						h1 Browse:
+						ul
+							li: a href="#{@config[:base_url]}/blog/" All blog posts
+							- (@item[:tags] || []).each do |tag|
+								li: a rel="tag" href="#{@config[:base_url]}/category/#{u tag}" = tag
+
+				p.copyright
+					small
+						| This content is under a
+						a rel="license" href="http://creativecommons.org/licenses/by/4.0/" Creative Commons Attribution 4.0 License
+
+				a rel="conversation" href="https://conversation.singpolyma.net/#{shortid(@item)}"
+					| View Conversation

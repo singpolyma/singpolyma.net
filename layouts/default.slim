@@ -1,0 +1,10 @@
+doctype html
+html
+	head
+		meta charset="utf-8"
+		title = "Website - #{@item[:title]}"
+		link rel="stylesheet" href="/stylesheet.css"
+
+	body
+		#main
+			== yield
