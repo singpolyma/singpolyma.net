@@ -4,6 +4,13 @@ article {
 	max-width: 640px;
 
 	.entry-content {
+		display: flex;
+		flex-direction: column;
 		font-size: 1.7em;
+
+		.u-photo {
+			order: 1;
+			margin-bottom: 1em;
+		}
 	}
 }

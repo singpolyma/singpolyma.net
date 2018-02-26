@@ -3,6 +3,7 @@ require "babosa"
 require "new_base_60"
 require "uri"
 require "active_support/inflector/methods"
+require "base64"
 
 include Nanoc::Helpers::LinkTo
 include Nanoc::Helpers::Text
@@ -51,10 +52,13 @@ end
 
 $day_index = {}
 def day_index(post)
-	$day_index[post.identifier] ||= send(post_kind(post, plural: true))
-		.select { |x| x[:date].to_date == post[:date].to_date }
-		.sort_by { |x| x[:date] }
-		.index(post)
+	kind = post_kind(post, plural: true)
+
+	$day_index[kind] ||= send(kind)
+		.reverse
+		.group_by { |x| x[:date].to_date }
+
+	$day_index[kind][post[:date].to_date].index(post)
 end
 
 def post_kind(post, plural: false)

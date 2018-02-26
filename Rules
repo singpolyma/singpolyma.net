@@ -1,10 +1,12 @@
 compile '/{notes,articles}/**/*.html' do
 	filter :autop
+	filter :autolink
 	layout '/post.*'
 end
 
 compile '/{notes,articles}/**/*.md' do
 	filter :kramdown, auto_ids: false
+	filter :autolink
 	layout '/post.*'
 end
 
@@ -30,15 +32,15 @@ compile '/**/*' do
 end
 
 route '/{notes,articles}/**/*' do
-	article = @items["/{notes,articles}/#{item.identifier.components[1]}/index.*"]
 	path = item.identifier.components[1..-1]
-	path[0] = path[0].to_slug.normalize.sub(/^\d+-/, '')
+	article = path.last.start_with?("index.") ? item : @items["/{notes,articles}/#{path[0]}/index.*"]
+	path[0] = path[0].to_slug.normalize.sub(/^\d+-/, '').split(/-/)[0..4].join("-")
 	path = path.join("/").sub(/index\..*$/, "index.html")
 
 	if article[:ipfs]
 		"/ipfs/#{article[:ipfs]}/#{path}"
 	else
-		"/_ipfs/#{path}"
+		"/_ipfs/#{Base64.urlsafe_encode64(article.identifier)}/#{path}"
 	end
 end
 

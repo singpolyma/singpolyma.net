@@ -1,1 +1,12 @@
 @import "base.css";
+
+article .entry-content {
+	overflow: hidden;
+
+	.u-photo {
+		float: right;
+		max-width: 25%;
+		padding-left: 5%;
+		padding-bottom: 5%;
+	}
+}
