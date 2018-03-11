@@ -1,0 +1,162 @@
+@import "base.css";
+
+body {
+	padding: 5%;
+	background-color: rgba(0, 0, 0, 0.8);
+	color: #ccc;
+	position: relative;
+}
+
+body > * {
+	float: left;
+	clear: left;
+	width: calc(100% - 17em);
+}
+
+body > nav {
+	float: none;
+	clear: none;
+	width: 15em;
+	margin-left: calc(100% - 15em);
+
+	> section:first-of-type {
+		background-color: #d61;
+		color: #000;
+		padding: 1em;
+		white-space: nowrap;
+
+		p {
+			margin-bottom: 0;
+		}
+
+		ul {
+			margin: 0;
+			padding: 0;
+			list-style-type: none;
+		}
+
+		a {
+			color: #028;
+			font-weight: bold;
+
+			&:visited {
+				color: #229;
+			}
+		}
+
+		ul > li {
+			display: inline-block;
+			padding-right: 1em;
+		}
+
+		ul > li:last-of-type {
+			padding-right: 0;
+		}
+	}
+
+	ol {
+		padding: 0;
+		list-style: disc inside;
+	}
+
+	.copyright a {
+		margin: auto;
+	}
+}
+
+@media(max-width: 51em) {
+	body > * {
+		float: none;
+		width: auto;
+	}
+
+	body > nav {
+		width: auto;
+		margin-left: 0;
+		border-top: 1px dotted #ccc;
+		padding-top: 1em;
+	}
+}
+
+#profile {
+	overflow: hidden;
+
+	img {
+		max-height: 4em;
+		float: left;
+		margin-right: 2em;
+	}
+
+	.nickname {
+		font-size: 2em;
+		font-weight: bold;
+		margin: 0;
+	}
+
+	dl dt {
+		clear: left;
+		float: left;
+		max-width: 15%;
+		overflow: hidden;
+		word-break: break-all;
+	}
+
+	dl dd {
+		margin-left: calc(15% + 1em);
+		width: calc(85% - 1em);
+		overflow: hidden;
+		margin-bottom: 0.5em;
+	}
+
+	dl ul,
+	dl ul li {
+		list-style-type: none;
+		padding: 0;
+	}
+}
+
+body > footer {
+	float: none;
+	clear: both;
+	margin-top: 2em;
+	font-size: 0.7em;
+	text-align: right;
+	width: 100%;
+}
+
+body > div:last-of-type {
+	display: none;
+}
+
+ol.entries .hentry {
+	margin-bottom: 1em;
+
+	> .author {
+		display: none;
+	}
+
+	> .entry-content {
+		display: inline;
+	}
+
+	> .entry-content p {
+		display: inline;
+	}
+
+	> .entry-title {
+		display: inline;
+		font-weight: normal;
+		font-size: 1em;
+	}
+
+	> footer {
+		display: inline-block;
+		font-size: 0.7em;
+		margin-left: 2em;
+	}
+}
+
+ol.entries {
+	padding: 0;
+	list-style-type: none;
+}

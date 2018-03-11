@@ -93,6 +93,6 @@ shortlink_base_url: https://sngpl.ma
 
 environments:
   default:
-    base_url: https://singpolyma.net
+    base_url: /ipns/singpolyma.net
   dev:
     base_url: ''

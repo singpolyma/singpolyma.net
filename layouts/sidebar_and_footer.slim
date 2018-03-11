@@ -1,0 +1,26 @@
+nav
+	section
+		ul
+			li: a href="/" Home
+			li: a href="/blog/" Blog
+			li: a href="/cv" Resume
+
+		p
+			' Follow:
+			a> data-subtome-resource="https://singpolyma.net/blog/index.atom" href="/blog/index.atom" Blog
+			= " | "
+			a data-subtome-resource="https://singpolyma.net/index.atom" href="/index.atom" Everything
+
+	section
+		h1 Archives by Date
+
+		ol
+			- by_year(:all_posts).keys.each do |year|
+				li: a href="/#{year}/" #{year}
+
+	p.copyright: small
+		' This content is under a
+		a rel="license" href="http://creativecommons.org/licenses/by/4.0/" Creative Commons Attribution 4.0 License
+
+footer
+	a rel="will" href="/will/" In case of death, my will

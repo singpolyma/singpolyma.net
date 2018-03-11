@@ -44,7 +44,7 @@ html
 						ul
 							li: a href="#{@config[:base_url]}/blog/" All blog posts
 							- (@item[:tags] || []).each do |tag|
-								li: a rel="tag" href="#{@config[:base_url]}/category/#{u tag}" = tag
+								li: a rel="tag" href="#{@config[:base_url]}/tags/#{u Unicode::downcase(tag)}" = tag
 
 				- if Array(@item[:repost_of]).empty?
 					p.copyright

@@ -1,0 +1,5 @@
+RewriteRule ^/ipns/singpolyma.net/(.*) /$1 [R=303,L]
+<% all_posts.each do |post| -%>
+<% next unless post[:wordpress_path] -%>
+RewriteRule ^<%== post[:wordpress_path] %> <%== post.path %> [R=302,L]
+<% end %>

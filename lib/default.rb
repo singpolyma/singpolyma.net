@@ -1,9 +1,14 @@
+# frozen_string_literal: true
+
 require "auto_paragraph"
 require "babosa"
 require "new_base_60"
 require "uri"
 require "active_support/inflector/methods"
 require "base64"
+require "tilt"
+require "slim"
+require "unicode"
 
 include Nanoc::Helpers::LinkTo
 include Nanoc::Helpers::Text
@@ -12,18 +17,22 @@ include ActiveSupport::Inflector
 
 ENV['TZ'] = 'UTC'
 
+Tilt.prefer Tilt::KramdownTemplate
+Slim::Embedded.options[:markdown] = { auto_ids: false }
+
 Nanoc::Filter.define(:autop) do |content, _params|
 	AutoParagraph.new(insert_line_breaks: true).execute(content.dup)
 end
 
+Nanoc::Filter.define(:clean_indents) do |content, _params|
+	content.gsub(/^\s+$/, "\n").gsub(/^(\t*)(  )+/) { |match| $~[1] + "\t" * ($~.to_a.length - 2) }
+end
+
 $posts = {}
 def posts(*kinds)
-	patterns = kinds.map { |kind| /^\/#{kind}\/[^\/]+\/index/ }
+	patterns = "{#{kinds.join(",")}}"
 
-	$posts[kinds] ||= @items
-		.select { |item|
-			patterns.any? { |pattern| item.identifier.to_s =~ pattern }
-		}
+	$posts[[kinds, @items.first.class]] ||= @items.find_all("/#{patterns}/*/index.*")
 		.sort { |a, b| b[:date] <=> a[:date] }
 end
 
@@ -37,6 +46,18 @@ end
 
 def all_posts
 	posts "articles", "notes"
+end
+
+$year_index = {}
+def by_year(posts)
+	$year_index[[posts, @items.first.class]] ||= send(posts).group_by { |post| post[:date].year }
+end
+
+$tag_index = {}
+def by_tag(posts)
+	$tag_index[[posts, @items.first.class]] ||= send(posts).each_with_object(Hash.new { |h, k| h[k] = [] }) { |post, h|
+		Array(post[:tags]).each { |tag| h[Unicode::downcase(tag)] << post }
+	}
 end
 
 def char_for_kind(kind)

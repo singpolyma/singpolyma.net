@@ -1,0 +1,59 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1,SHA256
+
+I am in the process of moving my PGP key over from my old 1024 DSA key
+to my new 4096 RSA key.  The primary reason for this change is to help
+facilitate moving away from the deprecated SHA1 digest mechanism as
+discussed at <http://www.debian-administration.org/users/dkg/weblog/48>.
+
+I have signed my new key with my old key, and set it up as my default for
+signing and encryption.  I have posted the fingerprint for my new key on my
+website at <http://singpolyma.net>.  My old key will still work for some
+time, but I will eventually issue a revocation for it and use it only for
+decrypting my mail archive from before the switchover.
+
+This message is signed with both the old key and the new key.  Please verify
+the signatures so that you can trust my new key.  I have placed the key
+information for both keys below for verification purposes.
+
+Hopefully my choice of a rather large RSA key will keep me somewhat future
+proof for quite awhile.
+
+Old DSA key:
+
+pub   1024D/913D04EB 2008-08-12
+      Key fingerprint = E833 6D80 37FC 4260 F049  5724 EA84 B17A 913D 04EB
+uid                  Stephen Paul Weber (<http://singpolyma.net/>)
+                     <singpolyma@singpolyma.net>
+uid                  Stephen Paul Weber (GMail Address)
+                     <singpolyma@gmail.com>
+uid                  [jpeg image of size 3116]
+sub   2048g/BB203AF9 2008-08-12
+
+New RSA key:
+
+pub   4096R/CE519CDE 2009-05-20
+      Key fingerprint = 59E6 82C3 EAF3 9A21 0CA7  3534 D11C 2911 CE51 9CDE
+uid                  Stephen Paul Weber (http://singpolyma.net)
+                     <singpolyma@singpolyma.net>
+uid                  Stephen Paul Weber (XMPP) <singpolyma@gmail.com>
+uid                  [jpeg image of size 3116]
+sub   4096R/2FE7B5B2 2009-05-20
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.9 (GNU/Linux)
+
+iEYEARECAAYFAkoTplIACgkQ6oSxepE9BOvpdACgigoSvQ+9VXHlp7zbfwgaAjJv
++FMAn1MPT8HZch0HRiNXoCEoCnkc7oj0iQIcBAEBCAAGBQJKE6ZSAAoJENEcKRHO
+UZzeMqQP/1K9lF/dIYSwbwc6H/yxfBAbQLuxrda+zARuw+XXErlmRCn+fGEhW+6a
+aQhPpCXX11JYlNTNYwdybBL6sO6RLScwcnXDtkHL9+qk8gRwdti6fOPjr5/avqe8
+YHQ738Rdz/4VDB5LalrTChZ8gSq4/yfur906Zqhu7C5Y4xFlPRTLwnMEop2T341O
+24FKRiU1ZNjIHocFou0HQ4o6zfbwd/OLUh4cp1gR47TlmV4glM2M718s21r3Lv27
+sPqGRKPe3Z18vSS+T+JpR2GR1SRNrzA9TQWd0+V1CcRiZHA2N2GehB6Wm8ZriHel
+ZfJIif6JuWj/6wzqFSBt+x1C45yoIMLfcVYco68V7kGj7CxiUyIO5QBx/2w0zN1a
+cPNxlYVSk07RCwahTFtcSAiXHRKBrr8Dsk+wSCMPAx/QJRG3NhyrAaYCI2s9BEgZ
+QFWxL8ThDwOKMifKJ8nnPR0luDJs8TOL9ZBA7yCa0/YlEvTtq70jxiQhwyPeTBEg
+26oUESVd+enbDKQ5R88ajZcW0QwpOth/o6zUIC+1s92nPXFLJ8bP082ld97o0nFN
+z2DT5dWVr8sAWxvbT1BcO/YuMpmwdQ4JuaNe4zuKHP1JEJ2HuZQ5RsW6cqHNi/XP
+LGoYrF7ZgOuXI/acdVWdGf6QaZFff27FZZ6Taw1M8xbYE7xk1+Vh
+=48bM
+-----END PGP SIGNATURE-----

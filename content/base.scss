@@ -4,95 +4,26 @@ html, body {
 	font-family: sans-serif;
 }
 
+a {
+	color: #0af;
+
+	&:visited { color: #9af; }
+}
+
 img {
 	max-width: 100%;
 }
 
-article {
-	padding: 5%;
-	background-color: rgba(#000, 0.8);
-	color: #ccc;
-	max-width: 960px;
-	margin: auto;
-	overflow: hidden;
+.copyright, .copyright small {
+	display: inline;
+	font-size: 0;
+	margin: 0;
+}
 
-	a {
-		color: #0af;
-
-		&:visited { color: #9af; }
-	}
-
-	> .author {
-		overflow: hidden;
-
-		img {
-			max-height: 4em;
-			float: left;
-			margin-right: 2em;
-		}
-
-		.nickname {
-			font-size: 2em;
-			font-weight: bold;
-		}
-	}
-
-	> footer {
-		a[rel~=bookmark] {
-			display: block;
-			float: right;
-			margin-bottom: 1em;
-		}
-
-		nav {
-			margin-top: 1em;
-
-			h1 {
-				display: inline;
-				font-weight: normal;
-				font-size: 1em;
-			}
-
-			ul {
-				display: inline;
-				padding: 0;
-			}
-
-			li {
-				display: inline;
-				padding: 0;
-			}
-
-			a[rel~=tag] {
-				display: inline-block;
-
-				&:before {
-					content: " #";
-					display: inline-block;
-					color: #ccc;
-					text-decoration: none;
-				}
-			}
-		}
-
-		> .copyright, > .copyright small {
-			display: inline;
-			font-size: 0;
-			margin: 0;
-		}
-
-		a[rel~=license] {
-			background: url("https://i.creativecommons.org/l/by/4.0/88x31.png") no-repeat;
-			text-indent: -99999999px;
-			height: 31px;
-			width: 88px;
-			float: right;
-			clear: both;
-		}
-
-		a[rel~=conversation] {
-			display: block;
-			margin-top: 1em;
-		}
-	}
+a[rel~=license] {
+	display: block;
+	background: url("https://i.creativecommons.org/l/by/4.0/88x31.png") no-repeat;
+	text-indent: -99999999px;
+	height: 31px;
+	width: 88px;
 }

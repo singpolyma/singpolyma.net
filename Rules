@@ -1,31 +1,73 @@
+preprocess do
+	by_year(:all_posts).keys.each do |year|
+		@items.create(
+			'',
+			{
+				title: "Archive for #{year}",
+				posts: ->(ctx) { ctx.send(:by_year, :all_posts)[year] }
+			},
+			"/#{year}.html"
+		)
+	end
+
+	by_tag(:all_posts).keys.each do |tag|
+		@items.create(
+			'',
+			{
+				title: "Archive for ##{tag}",
+				posts: ->(ctx) { ctx.send(:by_tag, :all_posts)[tag] }
+			},
+			"/tags/#{tag}.html"
+		)
+	end
+end
+
 compile '/{notes,articles}/**/*.html' do
+	filter :erubis
 	filter :autop
 	filter :autolink
 	layout '/post.*'
+	filter :clean_indents
 end
 
 compile '/{notes,articles}/**/*.md' do
+	filter :erubis
 	filter :kramdown, auto_ids: false
 	filter :autolink
 	layout '/post.*'
+	filter :clean_indents
+end
+
+compile /\/(?:\d{4}.html)|tags\/.+/ do
+	layout '/archive.*'
+	layout '/default.*'
+	filter :clean_indents
 end
 
 compile '/**/*.slim' do
 	filter :slim, pretty: true, indent: "\t"
 	layout '/default.*'
+	filter :clean_indents
 end
 
 compile '/**/*.md' do
 	filter :kramdown, auto_ids: false
 	layout '/default.*'
+	filter :clean_indents
 end
 
 compile '/**/*.html' do
 	layout '/default.*'
+	filter :clean_indents
 end
 
 compile '/**/*.scss' do
 	filter :sass, syntax: :scss, style: :expanded
+	filter :clean_indents
+end
+
+compile '/htaccess.erb' do
+	filter :erubis
 end
 
 compile '/**/*' do
@@ -54,6 +96,10 @@ end
 
 route '/**/*.scss' do
 	item.identifier.without_ext + '.css'
+end
+
+route '/htaccess.*' do
+	'/.htaccess'
 end
 
 route '/**/*' do

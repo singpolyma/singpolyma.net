@@ -1,5 +1,70 @@
-= relative_path_to @items["/articles/hello/index.*"]
+header#profile.vcard
+	img.photo src="/avatar.jpg" alt="Avatar of"
+	.n
+		span.given-name> Stephen
+		span.additional-name> Paul
+		span.family-name Weber
+	h1.fn.nickname singpolyma
 
-ol
-	- all_posts.each do |article|
-		li: a href="#{relative_path_to article}" = article[:title] || strip_html(article.compiled_content)
+	dl
+		dt On the web:
+		dd: ul
+			li: a.url.uid rel="me" href="https://singpolyma.net" singpolyma.net
+			li: a.url rel="me" href="https://github.com/singpolyma" Github
+			li: a.url rel="me" href="https://twitter.com/singpolyma" Twitter
+
+		dt Jabber:
+		dd: a.url rel="me" href="xmpp:singpolyma@singpolyma.net" singpolyma@singpolyma.net
+
+		dt Email:
+		dd: a.email rel="me" href="mailto:singpolyma@singpolyma.net" singpolyma@singpolyma.net
+
+		dt SMS:
+		dd: a.tel rel="me" href="sms:+12266669991" +1 226 666 9991
+
+	section#pgp
+		h1: a.url rel="me pgpkey" type="application/pgp-keys" href="/public.asc" OpenPGP Key
+		dl
+			dt Fingerprint:
+			dd.key 59E6 82C3 EAF3 9A21 0CA7  3534 D11C 2911 <strong>CE51 9CDE</strong>
+
+			dt
+				a href="http://github.com/singpolyma/mnemonicode" mnemonicode
+				| :
+			dd dream&nbsp;basil&nbsp;valery. regular&nbsp;llama&nbsp;diana. hand&nbsp;ninja&nbsp;havana. order&nbsp;never&nbsp;caravan. <strong>edition&nbsp;right&nbsp;joseph</strong>
+
+section#communication
+	markdown:
+		# Communication Protocols
+
+		Or, my personal [email => efail](http://tantek.com/log/2008/02.html#d19t2359) battle.
+		Thanks to Tantek for [inspiration](http://tantek.pbwiki.com/CommunicationProtocols).
+
+		1. To follow me, subscribe to this site in any IndieWeb, OStatus, ActivityPub, or plain feed reader implementation.
+		2. For public communication (such as to send me a link), post on your site and send a [WebMention](https://webmention.net/) or Pingback to my homepage, or [mention me on Twitter](http://twitter.com/home?status=@singpolyma).
+		3. For private communication, use Jabber/XMPP or SMS (delivered to all my devices using [Cheogram](https://cheogram.com).
+
+	section: markdown:
+		# Some Tips
+
+		1. Links to public posts are always better than direct messages.  @singpolyma mentions and comments come right next.
+		2. If you find a solution, from me or elsewhere, *blog it*.  Someone else may benefit.
+		3. Sign messages, public or private, with your [PGP](OpenPGP) key. If you really want something to be private, encrypt it with the recepient's public key.
+		4. I don't check Facebook often, and I have most notifications turned off.  Don't expect a speedy reply there.
+		5. Check out [Tantek's etiquette tips](http://tantek.pbwiki.com/CommunicationProtocols#Etiquette).
+
+		*[PGP]: Pretty Good Privacy
+
+section#actionstream
+	h1 Feed
+
+	ol.entries
+		- all_posts[0..25].each do |post|
+			li == render "/feed_item.slim", item: post
+
+== render "/sidebar_and_footer.slim"
+
+div
+	' For the robots:
+	a> href="https://singpolyma.net/dioxide.php" chart
+	a href="xmpp:jesse@singpolyma.net" jesse

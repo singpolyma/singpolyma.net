@@ -1,0 +1,17 @@
+header#profile.vcard
+	img.photo src=relative_path_to(@items["/avatar.jpg"]) alt="Avatar of"
+	.n
+		span.given-name> Stephen
+		span.additional-name> Paul
+		span.family-name Weber
+	h1.fn.nickname
+		a.url href=relative_path_to(@items["/index.*"]) singpolyma
+
+section
+	h1 = @item[:title]
+
+	ol.entries
+		- @item[:posts][self].each do |post|
+			li == render "/feed_item.slim", item: post
+
+== render "/sidebar_and_footer.slim"

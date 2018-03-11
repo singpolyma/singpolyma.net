@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "nokogiri"
 
 class AutolinkFilter < Nanoc::Filter
@@ -25,7 +27,7 @@ class AutolinkFilter < Nanoc::Filter
 			end
 
 			doc
-		end.to_xhtml
+		end.to_xhtml(save_with: Nokogiri::XML::Node::SaveOptions::AS_XHTML)
 	end
 
 	def matched_to_url(url)
