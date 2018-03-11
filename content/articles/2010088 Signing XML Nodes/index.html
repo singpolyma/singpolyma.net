@@ -2,7 +2,7 @@
 title: Signing XML Nodes
 date: 2010-03-29 17:15:15 Z
 tags: ["Tech","XML","OpenPGP"]
-wordpress_path: /actionstream/signing-xml-nodes
+wordpress_path: /2010/03/signing-xml-nodes
 ---
 I've been thinking about signing XML nodes.  The existing mechanisms are either really complex (<a href="http://www.w3.org/TR/xmldsig-core/">XML-DSig</a>) or over-verbose (<a href="http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-magicsig-00.html">Magic Sig</a>).  This could be useful in RSS/ATOM feeds, XMPP, and other XML-based communication formats.  The purpose of this proposal is to provide a lightweight signing (and optionally, encyption) mechanism for embedding inside XML nodes, while not inventing any new XML namespaces, elements, or attributes, not inventing a new envelope format for the signature data, and not suggesting a new way of transmitting octet streams in a text safe way.
 

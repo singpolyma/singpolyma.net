@@ -2,7 +2,7 @@
 title: Del.icio.us JSONP is Native!
 date: 2006-02-21 12:41:00 Z
 tags: ["Tech","del.icio.us","JSON","JSONP"]
-wordpress_path: /actionstream/delicious-jsonp-is-native
+wordpress_path: /2006/02/delicious-jsonp-is-native
 ---
 For quite awhile now, del.icio.us has offered JSON support, but not a proper <a href="http://ecmanaut.blogspot.com/2006/01/jsonp-why-how.html">JSONP</a> implementation.  I even <a href="http://singpolyma-tech.blogspot.com/2006/01/delicious-json-with-callback.html">wrote my own proxying script</a> to fix this oversight.  It seems that that will no longer be necessary.  If you pass callback=CALLBACK to a del.icio.us JSON feed it will now output proper JSONP that does <span style="font-style: italic;">not</span> set the Delicious.posts variable (easy to fix in your callback function) but calls CALLBACK with the JSON object as a parameter.  Compare these:
 <a href="http://del.icio.us/feeds/json/singpolyma.techblog/">http://del.icio.us/feeds/json/singpolyma.techblog/</a>

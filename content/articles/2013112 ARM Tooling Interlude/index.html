@@ -2,7 +2,7 @@
 title: ARM Tooling Interlude
 date: 2013-04-22 17:53:46 Z
 tags: ["Tech","ARM:","singpolyma-kernel"]
-wordpress_path: /actionstream/arm-tooling-interlude
+wordpress_path: /2013/04/arm-tooling-interlude
 ---
 This is just a breif interlude to document something that it took me a very long time to <a href="http://stackoverflow.com/a/16117760/8611">find out</a>.  Some ARM cross-compiling toolchains default to thumb instructions.  Thumb instructions are this nifty feature of ARM that allow most common instructions to be represented in 16 bits instead of 32 bits, which can save RAM and improve instruction fetching.  Many of the instructions needed in the context-switch part of the kernel, however, <strong>must</strong> be in full 32-bit ARM.  No problem, there are instructions for switching the CPU mode, just make it switch whenever moving from one to the other, right?
 

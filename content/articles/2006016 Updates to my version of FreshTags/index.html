@@ -2,7 +2,7 @@
 title: Updates to my version of FreshTags
 date: 2006-01-16 12:05:00 Z
 tags: ["Tech","Tagging","Blogger","Hack","Hacks","Freshtags"]
-wordpress_path: /actionstream/updates-to-my-version-of-freshtags
+wordpress_path: /2006/01/updates-to-my-version-of-freshtags
 ---
 I have been doing some work on <a href="http://singpolyma-tech.blogspot.com/2005/11/in-blog-tag-viewing.html">my version</a> of the <a href="http://ghill.customer.netspace.net.au/freshtags/index.html">FreshTags</a> concept.  The first major addition is the ability to pull in other FreshTags users' data for use in the sidebar.  If you look at my links sidebar you'll see a '+' to the left of some items.  Only two of these use FreshTags, Freshblog and Ecmanaut.  If you click the '+' next to either of these when there is no query tag you will be presented with a list of the newest posts from those blogs.  If there <span style="font-style: italic;">is</span> a tag selected, however, you will be presented with a list of posts on those blogs matching that tag, unless they have none in which case the list of newest posts is again presented.  The template code to do this (without the show/hide magic) is:
 <span style="font-family:monospace;">&lt;script type="text/javascript"&gt;dynamic_delicious_load('<span style="color: rgb(255, 0, 0);">DELICIOUS USER</span>','<span style="color: rgb(255, 0, 0);">ANCHOR TAG</span>',function(){write_tagged_posts(false,false,'<span style="color: rgb(255, 0, 0);">FEED URL</span>');});&lt;/script&gt;</span>
