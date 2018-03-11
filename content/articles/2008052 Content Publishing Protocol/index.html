@@ -1,0 +1,25 @@
+---
+title: Content Publishing Protocol
+date: 2008-02-21 02:45:58 Z
+tags: ["Tech","Comments","Comment","Standards","Apis","DiSo","Atom"]
+wordpress_path: /actionstream/content-publishing-protocol
+---
+Since <a href="http://tools.ietf.org/html/rfc5023" title="RFC5023">APP</a> (<a href="http://www.ibm.com/developerworks/library/x-atompp1/">understand here</a>) is <a href="http://codex.wordpress.org/AtomPub">mainlined in WordPress</a>, it <a href="http://twitter.com/singpolyma/statuses/737272402">makes sense to use it</a> in <a href="http://diso-project.org/">DiSo</a> efforts.  I doubt that my <a href="http://groups.google.com/group/diso-project/browse_thread/thread/ac92ac157375e5c">OAuth plugin</a> will work here, but it's worth testing.  It may mean using <a href="http://twitter.com/singpolyma/statuses/736833852">headers</a>, but with <a href="http://twitter.com/singpolyma/statuses/736823802">comment</a> and <a href="http://twitter.com/singpolyma/statuses/736817512">discovery</a> support we should be able to build a <a href="http://groups.google.com/group/diso-project/browse_thread/thread/ec95bfb533c6da43/eaa985fcf9e2a52f">distributed commenting system</a>, at least for Wordpress.
+
+I've thought about other APIs that would be useful for DiSo.  For example, adding friends or groups.  APP does not fit this, but the general concepts do.  Perhaps APP can be abstracted into more of a CPP.
+
+GET on main endpoint to list items (ATOM can always be the main wrapper here).
+
+POST to main endpoint to create new items.
+
+PUT to node to edit.
+
+DELETE to node to delete.
+
+Authentication unspecified (HTTP Basic or OAuth work well).
+
+If the content of your POST and PUT requests is ATOM, you have AtomPub.  The same basics can easily work with other content.  (The other content types could be encapsulated in ATOM entry bodies on the GET list, or <a href="http://microformats.org/wiki/xoxo">XOXO</a>).
+
+For example, a POST body of XFN+hCard could add a friend.  A PUT body of hCard could edit a profile (ie, to add groups).
+
+I would also like to suggest that POST on a node could be used to add comments (create new content on a content node).

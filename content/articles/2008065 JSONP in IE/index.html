@@ -1,0 +1,11 @@
+---
+title: JSONP in IE
+date: 2008-03-05 23:15:41 Z
+tags: ["Tech","JSON","JSONP","Javascript","Twitter"]
+wordpress_path: /actionstream/jsonp-in-ie
+---
+Another post based on a previous <cite><a href="http://twitter.com/singpolyma/statuses/766660085">tweet</a></cite>.  This took me at least an hour to debug, so I thought it might be worthwhile sharing.
+
+<a href="http://ie7.com">IE</a>, apparently, gets unhappy when you append nodes to the end of a node it hasn't finished rendering yet.  In practice, this means it blows up when you say document.body.appendChild before the page has loaded.  The easy solution?  Append to a node that has already loaded!  What node is almost guaranteed to be there when the body is rendering?  The head node of course!  Here is code:
+
+<code>document.getElementsByTagName('head')[0].appendChild(script);</code>

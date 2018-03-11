@@ -1,0 +1,76 @@
+---
+title: Backlinks on Main Page
+date: 2005-12-30 07:34:00 Z
+tags: ["Tech","Blogger","Hack","Backlinks"]
+wordpress_path: /actionstream/backlinks-on-main-page
+---
+<b title="Update 2006-01-19">This hack has been superceded by <a href="http://singpolyma-tech.blogspot.com/2006/01/new-backlinks-hack.html">this better one</a>.</b>
+
+Getting Blogger baclinks to display on your main page is no picnic - wheather for peek-a-boo or permanent display.  The way the script works direct from Blogger it assumes that it is running on a post page.  So, after mor than a little fussing, I have come up with a hack that works for fixing this.  The following will install peek-a-boo backlinks on your Blogger blog (template hackers will be pleased to know that the backlink template-tag section is still intact for your hacking pleasure) :
+<ol><li>Enable backlinks on your blog -- an obvious, but necessary, step
+</li><li><span style="font-weight: bold;">a - </span>Put manual metadata in your template.  Feedburner users have already done this.  If you already have your metadata in your template manually for this or another reason, change this line:
+<pre>&lt;script type="text/javascript" src="http://www.blogger.com/js/backlink.js"&gt;&lt;/script&gt;</pre>To this:
+<pre>&lt;script type="text/javascript" src="http://www.awriterz.org/etcetc/backlink.js"&gt;&lt;/script&gt;</pre>Otherwise go on to 2b.
+
+<span style="font-weight: bold;">b - </span>Find this : '<span style="font-family:monospace;">&lt;$BlogMetaData$&gt;</span>', it should be somewhere near the top of your blog template.  Replace it with this:
+<pre>&lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /&gt;
+&lt;meta name="MSSmartTagsPreventParsing" content="true" /&gt;
+&lt;meta name="generator" content="Blogger" /&gt;
+&lt;link rel="alternate" type="application/xml" title="&lt;$BlogTitle$&gt;" href="&lt;$BlogSiteFeedUrl$&gt;" /&gt;
+&lt;link rel="service.post" type="application/atom+xml" title="&lt;$BlogTitle$&gt;" href="https://www.blogger.com/atom/&lt;$BlogID$&gt;" /&gt;
+&lt;link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.blogger.com/rsd.g?blogID=&lt;$BlogID$&gt;" /&gt;
+&lt;style type="text/css"&gt;
+ @import url("http://www.blogger.com/css/blog_controls.css");
+ @import url("http://www.blogger.com/dyn-css/authorization.css?blogID=&lt;$BlogID$&gt;");
+&lt;/style&gt;
+&lt;script type="text/javascript" src="http://www.awriterz.org/etcetc/backlink.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript" src="http://www.blogger.com/js/backlink_control.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript"&gt;var BL_backlinkURL='http://www.blogger.com/dyn-js/backlink_count.js', BL_blogId='&lt;$BlogID$&gt;';&lt;/script&gt;
+</pre></li><li>Put this code directly after that which you just inserted:
+<pre>&lt;script type="text/javascript"&gt;
+//&lt;![CDATA[
+function toggleitem (postid,linkid,newtxt) {
+var whichpost = document.getElementById(postid);
+if (whichpost.style.display != "none") {
+   whichpost.style.display = "none";
+} else {
+   whichpost.style.display = "block";
+}
+if(linkid) {
+   var lnk = document.getElementById(linkid);
+   lnk.href = "javascript:toggleitem('"+postid+"','"+linkid+"','"+lnk.innerHTML+"');";
+lnk.innerHTML = newtxt;
+}
+}
+//]]&gt;
+&lt;/script&gt;
+</pre></li><li>Find the section in your template that starts with '<span style="font-family:monospace;">&lt;BlogItemBacklinksEnabled&gt;</span>' and ends with '<span style="font-family:monospace;">&lt;/BlogItemBacklinksEnabled&gt;</span>' and replace the entire thing (these tags included) with this code:
+<pre>&lt;ItemPage&gt;&lt;div style="display:block;" id="backlinks&lt;$BlogItemNumber$&gt;"&gt;&lt;/ItemPage&gt;
+&lt;MainOrArchivePage&gt;&lt;div style="display:none;" id="bl&lt;$BlogItemNumber$&gt;"&gt;&lt;/MainOrArchivePage&gt;
+&lt;BlogItemBacklinksEnabled&gt;
+ &lt;a name="links"&gt;&lt;/a&gt;&lt;h4&gt;Backlinks:&lt;/h4&gt;
+ &lt;dl id="comments-block"&gt;
+&lt;script type="text/javascript"&gt;backlink = new Array();BL_Backlinks = new Array();&lt;/script&gt;
+&lt;script type="text/javascript" src="http://www.blogger.com/dyn-js/backlink.js?blogID=&lt;$BlogID$&gt;&amp;amp;postID=&lt;$BlogItemNumber$&gt;" defer="true"&gt;&lt;/script&gt;
+&lt;div id="blogger-dcom-block&lt;$BlogItemNumber&lt;div id="blogger-dcom-block&lt;$BlogItemNumber&lt;div id="blogger-dcom-block&lt;$BlogItemNumber&lt;div id="blogger-dcom-block&lt;$BlogItemNumber&lt;div id="blogger-dcom-block&lt;$BlogItemNumber&lt;div id="blogger-dcom-block&lt;$BlogItemNumber&lt;div id="blogger-dcom-block&lt;$BlogItemNumber&lt;div id="blogger-dcom-block&lt;$BlogItemNumber$&gt;" style="display:none"&gt;
+amp;gt;" style="display:none"&gt;
+amp;gt;" style="display:none"&gt;
+amp;gt;" style="display:none"&gt;
+     &lt;dt class="comment-title"&gt;
+     &lt;span class="comment-toggler"&gt; &lt;/span&gt;
+     &lt;a href="&lt;$BlogBacklinkURL$&gt;"&gt;&lt;$BlogBacklinkTitle$&gt;&lt;/a&gt;
+     &lt;/dt&gt;
+     &lt;dd class="comment-body"&gt;&lt;$BlogBacklinkSnippet$&gt;
+     &lt;br /&gt;
+     &lt;span class="comment-poster"&gt;
+     &lt;em&gt;posted by &lt;$BlogBacklinkAuthor$&gt; @ &lt;$BlogBacklinkDateTime$&gt;&lt;/em&gt;
+     &lt;/span&gt;
+     &lt;/dd&gt;
+ &lt;/div&gt;
+&lt;script type="text/javascript"&gt;BL_writeBacklinks('&lt;$BlogItemNumber$&gt;');&lt;/script&gt;
+ &lt;/dl&gt;
+ &lt;p class="comment-timestamp"&gt;&lt;$BlogItemBacklinkCreate$&gt;&lt;/p&gt;
+ &lt;/BlogItemBacklinksEnabled&gt;
+&lt;/div&gt;
+</pre>
+</li><li>Find the code for the 'links to this post' link in your post footer template code and replace it with '<span style="font-family:monospace;">&lt;a href="javascript:toggleitem('backlinks&lt;$BlogItemNumber$&gt;');"&gt;links to this post&lt;/a&gt;</span>'</li><li>Save your template and republish your blog!</li></ol> <div class="tags">Tags:<ul><li><a href="http://del.icio.us/singpolyma.techblog/blogger" rel="tag">blogger</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/backlinks" rel="tag">backlinks</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/hack" rel="tag">hack</a></li> </ul></div>

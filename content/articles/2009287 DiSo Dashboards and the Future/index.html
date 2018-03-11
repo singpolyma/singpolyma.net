@@ -1,0 +1,13 @@
+---
+title: DiSo Dashboards and the Future
+date: 2009-10-14 16:49:09 Z
+tags: ["Tech","Aggregation","DiSo"]
+wordpress_path: /actionstream/diso-dashboards-and-the-future
+---
+So, finally someone talking about the future of distributed social networking.  The tech and the connecty bits we want have really been mostly there for some time now, the problem is, no one has been very clear on what the next step is.  Chris Messina has been a bit distracted with the Activity Streams project, and no one else has really been saying much about DiSo.
+
+The next step, however, is really coherent UI.  I've been talking about it off and on as my "ultimate aggregator", <a href="http://www.slideshare.net/marccanter/diso-dashboard-outline-presentation">Marc Canter is calling it "dashboards"</a>.
+
+One of the things he talks about in the presentation is "distributed friending".  This is something I've brought up before.  IMHO, the best way to go about this is to have magical buttons that, when clicked, take the user to their "dashboard" with the target's URI (or one of them, anyway) already filled in.  At that point, you have an asynchronous friending model.  The local software can then do different things (like permissions, autofilling searches, pulling in content, just making the list available to other services than then do these things, whatever) based on this data, but no magical "protocol" or anything is needed, because with an asynchronous model all you're really doing is making a note of the relationship in a data model and letting the software use that list for whatever.
+
+Past integrating the posting/following/aggregation UI a bit more, I'm not really sure there's anything left, conceptually.  I'd like to dig up some code and make OAuth+AtomPub work for sure with the newest version (so that any aggregator can talk to my WP blog :) ), and code can always be improved, but really, what is a social network?  It's an aggregator of sorts, a posting mechanism of sorts, and email.  We've had the later two for ages, which is why so much work has been dancing around the first one.

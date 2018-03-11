@@ -1,0 +1,23 @@
+---
+title: Liberated Pixel Cup
+date: 2012-07-09 00:08:53 Z
+tags: ["Tech","LPC","Game","BitBrawl"]
+wordpress_path: /actionstream/liberated-pixel-cup
+---
+This is my first post about the <a href="http://liberatedpixelcup.org/">Liberated Pixel Cup</a>.  I only became aware of the contest near the end of last month (indirectly, though a discussion on identi.ca) and was immidiately intrigued.  The first phase of the contest (which is completed) involved pixel artists submitting compatible-yet-thematically-diverse isometric art.  One of the big blockers to me getting seriously involved in a video game project has always been access to a body of art.  Looking over the art that has been submitted, I think there is enough to do something I would be interested in, so I decided to start.
+
+Using my latest favourite hammer, <a href="http://haskell.org">Haskell</a>, as well as previous favourites of mine, <a href="http://www.libsdl.org/">SDL</a> (which has <a href="http://hackage.haskell.org/package/SDL">good Haskell bindings</a>) and <a href="http://chipmunk-physics.net/">Chipmunk Physics</a> (which has <a href="http://hackage.haskell.org/package/Hipmunk">acceptable Haskell bindings</a>, though a bit out of date), I played around with ideas until I hit some inspiration.  I am going to attempt to create a PvP brawler (dubbed "BitBrawl") since this is a sort of game that I have always enjoyed (and of which there are too few!)  I'm going to experiment with a twist involving "energy pellets" that players pick up which both decrease their odds of being eliminated (damage increases said odds) and gets used up by special abilities.
+
+I want the combat mechanics to be of medium complexity (more complex than "hit A repeatedly", but simpler than something like God of War), and auto-generated maps.  Though honestly that's a bit grandiose at this point.  My primary target with the project is really experience, though I hope to also get a playable game out of it that can maybe be improved upon after the competition ends.
+
+The last two days are the first chance I've really gotten to do some serious coding, and I've made quite a bit of progress, given my lack of experience with the tools and with game development in general.  I have a single player who can walk around the screen (using any of the walkcycle art submitted to the competition) using configurable (hard-coded, but in a datastructure) keyboard commands and configurable (I parse a text file) animations.
+
+Character control uses the top-down "Tank demo" physics from Chipmunk, which means that collisions and such will be nicely handled for me (once I get around to adding a second thing to the space).
+
+My next step will be allowing two characters to be walking around.  Then maybe a better background than just all-black.  Then trivial combat.  We'll see how far I get.
+
+One thing I've had to do is make a small patch to the Chipmunk bindings for Haskell to give me access to the maxForce and maxBias properties of constraints (necessary for the "Tank demo" physics).  I will submit the patch upstream, but may have to package the library myself for my submission if it does not get mainlined in time.
+
+I have <a href="https://github.com/singpolyma/BitBrawl">released the code on GitHub</a> under my normal ISC license, as well as the GPLv3.0 license required by the competition.  There is no art or data in the repository yet, so it won't run unless you put some in, but you can take a look.  It's a bit messy and IO-heavy right now, but it is getting cleaner as I go.
+
+Hope to write more later.

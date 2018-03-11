@@ -1,0 +1,44 @@
+---
+title: WidgetData
+date: 2006-09-19 00:27:00 Z
+tags: ["Tech"]
+wordpress_path: /actionstream/widgetdata
+---
+WidgetData is the new settings system that makes <a href="http://singpolyma-tech.blogspot.com/2006/09/freshtags-singpolyma-2.html">FreshTags-Singpolyma2</a> tick.  It is a standard way of storing data for JavaScript widgets, so that they can share data and be less likely to have namespace conflicts with each other.  It is by no means set in stone, however this post will be a brief description of the system, and how it is used in FreshTags.
+
+The basic WidgetData system is a JSON object stored in var WidgetData in the global JavaScript scope of a page with the following basic structure:
+<div style="font-family:monospace;">
+{
+   'Widget-System':{
+      'XHTML-block-ID':{
+         //widget data
+      }
+   }
+}
+</div>
+Where Widget-System is the name of the system that should render this widget (ie, 'freshtags') and XHTML-block-ID is the DOM ID of an XHTML block the widget will be rendered into (ie, 'freshtags_tags').
+
+<b>As Used in FreshTags</b>
+In the FreshTags WidgetData setup, there are certain standard fields on each block (all the fields here discussed are assumed to be on the JSON object at WidgetData['freshtags']['XHTML-block-id']).
+<ul>
+   <li><b>type</b> - Tells FreshTags what kind of widget this is.  Currently three types are supported: tags (a tag list), posts (a list of posts, either associated with a particular tag list or not), and external (a reserved type that simply tells FreshTags not to render this widget automatically).</li>
+   <li><b>tag_list</b> - posts/external widgets only, tells FreshTags that this widget is linked to the tags widget whose id is tag_list.</li>
+   <li><b>source</b> - Tells FreshTags what service to pull the data from.  On tags widgets the only currently legal value (and the default value) is 'del.icio.us'.  On posts (and external which are to act like posts) widgets this may be 'del.icio.us' (default), 'wordpress' (pull data from a FreshTags for Wordpress enabled blog), or 'feed'.  Posts/external widgets which are linked to a tags widget will default to the same source as the tags widget.</li>
+   <li><b>username</b> - the username to give the service when extracting data (currently only valid on del.icio.us source).  Posts/external widgets which are linked to a tags widget will default to the same username as the tags widget.</li>
+   <li><b>anchor</b> - The anchor tag to use when drawing in posts.</li>
+   <li><b>format</b> - The format to render widget in (such as 'drop' or 'drop-add', may also be an @-separated cust_html string, an array of the type produced by the FreshTags switch, or a function that takes the widget ID and renders it to a string which it returns).</li>
+   <li><b>rows</b> - Maximum number of posts/tags to display.</li>
+   <li><b>feedurl</b> - The URL to the feed for post data (to use if there is no other post data, or if source==feed)</li>
+   <li><b>url</b> - posts/external widgets with source==wordpress only.  The URL to the WordPress blog's main page.</li>
+   <li><b>prompt</b> - Default entry in a drop-down list.  Default '- Tags -' for tags, default blank for all else.</li>
+   <li><b>tag_url</b> - tags widgets only, the URL to send browser to on tag selection.  Blank for current page.  ?tags=TAGS tacked on automatically, %tags% also replaced with tags</li>
+   <li><b>join_char</b> - tags widgets only, the character to use between the tags in an intersection when replacing into %tags% for tag_url.</li>
+   <li><b>defs</b> - default tags if no tags detected.</li>
+   <li><b>no_autocapture</b> - default false, set to true to stop the attempt to autocapture rel=tag data on failure to detect tag from URL/refer URL.</li>
+   <li><b>curr_tags</b> - the tags currently detected/selected by this widget.</li>
+   <li><b>all_tag_data</b> - where the list of all tags in an account is stored in the JSON format {'TAG':'COUNT'}</li>
+   <li><b>tag_data</b> - where the list of all tags in an account matching curr_tags is stored in the JSON format {'TAG':'COUNT'}</li>
+   <li><b>posts_data</b> - posts/external widgets only, stores the JSON data for all posts in the widget.</li>
+</ul>
+
+<div class="tags">Tags:<ul><li><a href="http://del.icio.us/singpolyma.techblog/freshtags" rel="tag">freshtags</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/hack" rel="tag">hack</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/hacks" rel="tag">hacks</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/widgets" rel="tag">widgets</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/javascript" rel="tag">javascript</a></li> </ul></div>

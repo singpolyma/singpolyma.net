@@ -1,0 +1,21 @@
+---
+title: 'µsearch: Search ALL the Microblogs!'
+date: 2011-07-11 14:59:23 Z
+tags: ["Tech","Social_networking","DiSo","indieweb"]
+wordpress_path: /actionstream/%c2%b5search
+---
+It's really great that we're slowly seeing <a href="http://rstat.us">multiple</a> <a href="http://status.net">microblogging</a> <a href="http://tantek.pbworks.com/w/page/21743425/Falcon">platforms</a> crop up.  One of the problems with federating all our data across the web, however, is that there's no way to really track what's going on.  No way to search.  If all you care about is Twitter you can use <a href="http://search.twitter.com">search.twitter.com</a>, and identi.ca and others similarly have their own search for one site, but where is the central search option?
+
+Well, it turns out that it's really not that hard to build one.  Using the powerful libre <a href="http://xapian.org/">Xapian</a> full text index solution and <a href="http://code.google.com/p/pubsubhubbub/">PubSubHubBub</a>, a microblog search engine doesn't even need a crawler.
+
+I've launched an early version of this over at <a href="http://µsearch.singpolyma.net">µsearch.singpolyma.net</a> or the easier to type <a href="http://musearch.singpolyma.net">musearch.singpolyma.net</a>.  To seed content there is a script polling identi.ca and rstat.us periodically, until they implement a PSHB firehose, but any microblog site can get itself added by just adding PSHB feeds with the box on the homepage.
+
+I make no promises at this point about the quality or longevity of the data in the search engine.  Please <a href="https://github.com/singpolyma/musearch/issues">report any issues</a> or features you would like to see.
+
+Of course the <a href="https://github.com/singpolyma/musearch">source is available</a> under the ISC license.  Feel free to submit patches!
+
+<h2>Query Syntax</h2>
+
+Just typing words will search all the metadata and content of posts for those words.  Searching in quotes will search for a phrase.  You can also prefix words or phrases with a field name to search only one bit of metadata.  The currently indexed fields are:
+
+<ul><li>content</li> <li>category (like hashtags)</li> <li>in_reply_to</li> <li>bookmark (permalink)</li> <li>author</li> <li>to (mentioned users)</li></ul>

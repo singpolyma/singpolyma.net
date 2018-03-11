@@ -1,0 +1,27 @@
+---
+title: OpenID for WordPress
+date: 2006-04-24 11:36:00 Z
+tags: ["Tech","Comments","Plugin","Wordpress","Openid"]
+wordpress_path: /actionstream/openid-for-wordpress
+---
+<b title="Update 2006-10-17">Someone else has written a (imho) <a href="http://verselogic.net/projects/wordpress/wordpress-openid-plugin/">better plugin</a>.  I have a backlog of tweaks to do to this plugin to make it work on more systems which I haven't got around to blogging/integrating.  Note that this new plugin does not support using your blog as an OpenID server.  It does, however, support sreg (but not hCard) and integrates into the WordPress account system.</b>
+
+
+I have modified <a href="http://the-notebook.org/12/01/2006/openid-comments-for-wordpress/">Alexander Nikulin's plugin</a> for <a href="http://wordpress.org/">WordPress</a> that enables users to leave authenticated comments using <a href="http://openid.net/">OpenID</a> and enables blog owners/contributors to use the blog as their OpenId.  I have made the plugin compatible with WordPress 2.0, cleaned up the validity of the XHTML produced, and fixed a bug that kept some sites from finding the server.
+
+It is reccomended that when using the server the blog admin use the blogs main URL as their OpenID but that other users/contributors use BLOGURL/?author_name=USERNAME.
+
+When returning to the post page after posting a comment, if the comment was held for moderation ?moderated=true is appended to the URL.  Adding code like the following will alert your users to this fact:
+
+<div style="font-family: monospace;">
+&lt;?php if($_GET['moderated'] == 'true') echo '&lt;div style="display:block;padding:20px;background-color:#ccc; font-weight:bold;font-family:sans-serif;font-size:12pt;"&gt; Your comment is awaiting moderation.&lt;/div&gt;'; ?&gt;
+</div>
+
+Possible future features:
+<ul><li>Support for <a href="http://www.openidenabled.com/openid/simple-registration-extension">sreg</a> / <a href="http://microformats.org/wiki/hcard">hCards</a> to get an actual name for the commentor instead of just using their URL</li><li>Support for sreg / hCards in the server implementation</li><li>Support for <a href="http://yadis.org/">YADIS</a></li></ul><a href="http://filess.ning.com/get.php?xn_auth=no&amp;id=1019353">Download the plugin</a>
+
+To install the plugin:
+<ol><li>Download the gzip from the link above and unzip it</li><li>Upload the resulting folder into your /wp-content/plugins/ directory</li><li>Edit your template and replace your comments form code (likely in comments.php) with
+<span style="font-family:monospace;">&lt;?php include dirname(__FILE__).'/../../plugins/openid/openidform.php'; ?&gt;</span>
+</li></ol> 
+<div class="tags">Tags:<ul><li><a href="http://del.icio.us/singpolyma.techblog/wordpress" rel="tag">wordpress</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/plugin" rel="tag">plugin</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/comments" rel="tag">comments</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/openid" rel="tag">openid</a></li> </ul></div>

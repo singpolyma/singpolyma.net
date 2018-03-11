@@ -1,0 +1,76 @@
+---
+title: coComment JSONP Native
+date: 2006-04-05 11:19:00 Z
+tags: ["Tech"]
+wordpress_path: /actionstream/cocomment-jsonp-native
+---
+<a href="http://cocomment.com/">coComment</a> has added <a href="http://cocomment.com/json">native JSONP support</a>.  They seem to have worked out the bugs from their first implementation and I have reworked the code for my sidebar to use their system.  Out of this has come two generic coCo JSON functions.  One, coco_flat, takes their nested group-comments-by-article format and flattens it to one-element-per-comment with all the article and comment attributes intact:
+<div style="font-family:monospace;">
+function coco_flat(coco) {
+   var comments = [];
+   for(var i=0; i&lt;coco.length; i++) {
+      for(var i2=0; i2&lt;coco[i].comments.length; i2++) {
+         comments.push({
+                         "blogID":coco[i].blogID,
+                         "blogTitle":coco[i].blogTitle,
+                         "blogURL":coco[i].blogURL,
+                         "blogURLCoco":coco[i].blogURLCoco,
+                         "articleID":coco[i].articleID,
+                         "articleTitle":coco[i].articleTitle,
+                         "articleURL":coco[i].articleURL,
+                         "articleURLCoco":coco[i].articleURLCoco,
+                         "id":coco[i].comments[i2].id,
+                         "author":coco[i].comments[i2].author,
+                         "authorURL":coco[i].comments[i2].authorURL,
+                         "authorAlias":coco[i].comments[i2].authorAlias,
+                         "comment":coco[i].comments[i2].comment,
+                         "commentURLCoco":coco[i].comments[i2].commentURLCoco,
+                         "dateISO":coco[i].comments[i2].dateISO,
+                         "date":coco[i].comments[i2].date
+                         });
+      }//end for cocommentResultSet[i].comments
+   }//end for cocommentResultSet
+   return comments;
+}//end function coco_flat
+</div>
+
+The other, coco_compare, is for use in sorting so flattened results by date:
+<div style="font-family:monospace;">
+function coco_compare(a,b) {
+   if(a.date&lt;b.date) return -1;
+   if(a.date&gt;b.date) return 1;
+   return 0;
+}//end function coco_compare
+</div>
+
+To use this function to sort a flattened array of coComment data oldest to newest call <span style="font-family:monospace;"><i>array</i>.sort(coco_compare)</span>, and to sort by newest to oldest also call <span style="font-family:monospace;"><i>array</i>.reverse()</span> as well.
+
+Here is an example piece of code putting together all that is above, an incidentally what I am using in my sidebar:
+<div style="font-family:monospace;">
+function list_cocomment(blockid,username,charlimit,itemlimit,boxid) {
+   if(!charlimit) limit = 25;
+   if(!itemlimit) limit = 10;
+   if(!boxid) boxid = 0;
+   coco_callback = function(data) {
+      var block = document.getElementById(blockid);
+      var txt = '&lt;ul class="cocomment"&gt;';
+      comments = coco_flat(data);
+      comments.sort(coco_compare);
+      comments.reverse();
+      var elipsis = '';
+      for(var i=0; i&lt;comments.length &amp;&amp; i&lt;itemlimit; i++) {
+         elipsis = '';
+         if(comments[i].comment.length &gt; charlimit)
+            elipsis = '...';
+         txt += '&lt;li&gt;&lt;a href="'+comments[i].articleURL+'" title="Coment on '+comments[i].articleTitle+' by '+comments[i].author+'"&gt;'+striphtml(comments[i].comment).substr(0,charlimit)+elipsis+'&lt;/a&gt; &lt;a href="'+comments[i].articleURLCoco+'"&gt;&lt;img src="http://www.cocomment.com/images/logo-16x11.gif" alt="[co]" /&gt;&lt;/a&gt;&lt;/li&gt;';
+      }//end for comments
+      txt += '&lt;/ul&gt;';
+      txt += '&lt;a href="http://www.cocomment.com/comments/'+username+'"&gt;&lt;img src="http://www.cocomment.com/dyn/images/buttons/'+username.toUpperCase()+'.0.png" alt="More &amp;raquo;" /&gt;&lt;/a&gt; ';
+      txt += '&lt;a href="http://www.cocomment.com/mybox-rss2/'+username+'/'+boxid+'"&gt;&lt;img src="http://wrinks.ning.com/feedicon12x12.png" alt="[feed]" /&gt;&lt;/a&gt;&lt;br /&gt;';
+      block.innerHTML = txt;
+   }//end function-var coco_callback
+   writeScript('http://www.cocomment.com/mybox-json?nick=singpolyma&amp;box=1&amp;callback=coco_callback');
+}//end function list_cocomment
+</div>
+
+<div class="tags">Tags:<ul><li><a href="http://del.icio.us/singpolyma.techblog/json" rel="tag">json</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/jsonp" rel="tag">jsonp</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/javascript" rel="tag">javascript</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/cocomment" rel="tag">cocomment</a></li> </ul></div>

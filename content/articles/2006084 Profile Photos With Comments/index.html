@@ -1,0 +1,17 @@
+---
+title: Profile Photos With Comments
+date: 2006-03-25 15:09:00 Z
+tags: ["Tech","Comments","Blogger","Hack","Hacks"]
+wordpress_path: /actionstream/profile-photos-with-comments
+---
+Blogger does not provide a template tag for displaying the profile pictures of commentors in your blog template.  <a href="http://ecmanaut.blogspot.com/2005/10/blogger-hack-inline-comment-faces.html">Johan Sundström</a> had created a way around this using an IFrame, but I found that solution to be somewhat buggy, even on his own blog.  I have modified some of his code and added some of my own to create what I feel is a cleaner hack.  I have bundled the majority of the JavaScript into a <a href="http://jscripts.ning.com/view.php?id=830605">JScripts entry</a> and it also uses a script I wrote to scrape Blogger profiles to JSON(P) [<a href="http://singpolymaplay.ning.com/bloggerProfile.php?url=http://www.blogger.com/profile/10992009">example</a>].  The code to include the hack into your template is surprisingly simple:
+
+<div style="font-family: monospace;">&lt;script type="text/javascript" src="http://jscripts.ning.com/get.php?xn_auth=no&amp;amp;id=830605"&gt; &lt;/script&gt;
+&lt;script type="text/javascript"&gt;
+//&lt;![CDATA[
+addLoadEvent(function(){showCommentPhotos('<span style="color:red;">class of elements to put photos in</span>','<span style="color:red;">class of elements where links to authors can be found</span>',<span style="color:red;">number of &lt;a&gt; tags before the link to the author (0 if none)</span>);});
+//]]&gt;
+&lt;/script&gt;</div>
+You will need to add a &lt;div&gt; or other tag (with the class you pass in first) to the comment section, and style it so that the images show up the way you want.  The second class you pass is the element containing the link to the comment author, you must add a class to this element if one does not exist.  The third parameter is the number of &lt;a&gt; elements in this element before the link to the author.  The script runs after page load and should thus have no adverse affects on initial load times.
+
+<div class="tags">Tags:<ul><li><a href="http://del.icio.us/singpolyma.techblog/hack" rel="tag">hack</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/hacks" rel="tag">hacks</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/blogger" rel="tag">blogger</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/comments" rel="tag">comments</a></li> </ul></div>

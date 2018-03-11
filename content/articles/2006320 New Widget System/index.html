@@ -1,0 +1,13 @@
+---
+title: New Widget System
+date: 2006-11-16 14:06:00 Z
+tags: ["Tech"]
+wordpress_path: /actionstream/new-widget-system
+---
+<a href="http://bloggeratto.blogspot.com/2006/11/blogger-v30-one-click-widget.html">Bloggeratto</a> and <a href="http://phydeaux3.blogspot.com/2006/11/omg-puppies.html">phydeaux3</a> (and likely others) have blogged about a <a href="http://help.blogger.com/bin/answer.py?answer=53219&amp;topic=9083">new one-click widget adding system for Blogger</a>.  This system would allow us to create widgets and then just put a button in our blog post that, when clicked, places all the correct code into the user's template.  This is a huge step for ease-of-use, and could also be for prorogation (have users add a widget-adding widget to advertise instead of just linking back, etc.)  I've taken my look and the system is brilliant.  There is, however, one snag.
+
+You cannot define your widget to be of any type, it is simply in the <a href="http://help.blogger.com/bin/answer.py?answer=47270#global">global namespace</a>.  This means that, for example, it cannot be done with my <a href="http://singpolyma-tech.blogspot.com/2006/10/feed-links-in-beta.html">Feeds Widget</a>.  Why?  Some genius in Blogger decided to put that data in the <span style="font-style: italic;">post</span> namespace, and thus make it inaccessible to this new system.
+
+We won't let a little thing like that spoil our fun now though will we?  Brace yourselves for a hack of the mod system!  Coming very soon - one click feeds widget (with comments feed link too!)
+
+<div class="tags">Tags:<ul><li><a href="http://del.icio.us/singpolyma.techblog/beta" rel="tag">beta</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/blogger" rel="tag">blogger</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/widget" rel="tag">widget</a></li> </ul></div>

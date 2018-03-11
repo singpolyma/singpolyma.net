@@ -1,0 +1,23 @@
+---
+title: Replacing SMTP with XMPP
+date: 2007-07-21 00:14:37 Z
+tags: ["Tech","IM","Jabber","XMPP","Email"]
+wordpress_path: /actionstream/replacing-smtp-with-xmpp
+---
+The idea is out: <a href="http://mail.jabber.org/pipermail/standards/2006-January/009573.html">XMPP is a perfect replacement for SMTP</a>.  SMTP (the current standard e-mail program) is outdated for a variety of reasons, such as the fact that it's not <a href="http://en.wikipedia.org/wiki/SPAM">SPAM</a> resistant and that <a href="http://pranketh.com/avoid/">you can't know for sure (easily) who sent a message</a>.
+
+<a href="http://www.xmpp.org/">XMPP</a> (a.k.a. <a href="http://www.jabber.org/">Jabber</a>) solves a lot of this and is a fully extensible protocol that has already been adopted as a standard for <a href="http://en.wikipedia.org/wiki/Instant_messaging">IM</a>.  The benefits are many, and there is only one major hurdle: <strong>every server on the Internet would have to change software</strong>!
+
+Regular readers may be able to guess my (<a href="http://www.xmpp.org/internet-drafts/draft-saintandre-jabberid-05.html">and others'</a>) solution to that problem: backwards compatibility!  When using XMPP for primary email, one must provide a bridge back to the SMTP world.  There's no real way around that for now.  Fortunately, it's not too hard.  There are a few options:
+<ol>
+	<li>Write a client that supports both XMPP and SMTP (through POP3 or IMAP) and have an identical address on both networks (think @gmail.com).</li>
+	<li>Modify (/write) an SMTP-based mail server to support XMPP.</li>
+	<li>Modify (/write) an XMPP server to support SMTP.</li>
+</ol>
+I really believe option #3 is the way to go.
+
+What else may be required for this to become a reality?  Well, some way of keeping the traditional email experience (at least somewhat) may be required for the masses.  This means things like an inbox (for non-chat messages) and tags for message history.  Gmail actually already has this for offline messages.  There was also <a href="http://mibus.cgcommunity.com/index.php?id=405">some work in 2004</a> on an XMPP client that supported something like this.
+
+Some say that the <a href="http://www.deepdarc.com/2006/03/30/email-via-xmpp/">encoding of emails must be retained</a>.  I think this is bunk because it defeats the purpose of changing protocols and <strong>killing the old standard</strong>.  Some thought <em>does</em> need to go into the handling of offline payloads (especially <a href="https://stpeter.im/?p=1976">file transfers</a> / email attachments).  I think <a href="http://en.wikipedia.org/wiki/Data:_URI_scheme">data: URIs</a> may work for this, but something better may be in the works.
+
+All it takes is one person who decides to adopt this as their primary way of functioning.  They develop some software, and it spreads from there.  I'm sticking with GTalk servers for Jabber for now (although I have the power to run my own @singpolyma.net), just because it's easier for people who already have that address (I hate having multiple addresses).  What I'm really waiting for / looking for is a decent client for this.  Gmail has IM built in and handles this model for offline messages well, but it is not really even possible to reply to emails via Jabber, et cetera.  GTalk interfaces (including Gmail) actually don't support any XMPP message type except chat well just yet.  We're getting closer to something that could work though.

@@ -1,0 +1,129 @@
+---
+title: Writing a Simple OS Kernel — Part 1
+date: 2012-01-19 19:38:51 Z
+tags: ["Tech","singpolyma-kernel"]
+wordpress_path: /actionstream/writing-a-simple-os-kernel-part-1
+---
+This is the first of what I intend to be a series of posts detailing the specifics of writing and testing a simple OS kernel.
+
+Because some parts of any kernel have to be platform-specific, I had to choose a platform to target for this example.  In order to make the assembly code simple but still relevant, I chose ARMv6 for the architecture target.  In order to make testing easy, I chose the <a href="http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0224i/Chdbeibh.html">versatilepb</a> board as a target, which is very well supported by <a href="http://qemu.org">QEMU</a>.  As a result (unfortunately) the target is little-endian, but you can't have everything.  I will try to make sure I point out when something platform-specific is going on.
+
+<h1>Setting up your system</h1>
+
+First, you'll need a build system for the ARM target.  On Debian you'll need to add the <a href="http://www.emdebian.org/crosstools.html">emdebian repository</a> to get a cross-compiling toolchain.  On Ubuntu it is already in the repositories.  Instal the <q class="identifier">gcc-arm-linux-gnueabi</q> package.  Other systems may vary.  This package adds all your standard tools (like gcc, ld, etc) but with as <q class="identifier">arm-linux-gnueabi-</q> prefix.
+
+Then, you'll need the <q class="identifier">qemu-system</q> package for use in testing your code.
+
+<h1>Building code</h1>
+
+Create a file called kernel.c containing the following:
+
+<code>int main(void) { return 0; }</code>
+
+It's not very exciting, and we'll revisit it in a minute, but we need something there or we can't test our build.
+
+One thing our build system is going to need to handle is running the <q class="identifier">arm-linux-gnueabi-</q> prefixed commands instead of the normal toolchain.  There are multiple ways you can choose to do this:
+
+<ol><li>Write a simple env shell script that you source in any terminal you cross-compile in.  In this script, set aliases for all the standard commands to the cross-compiler commands.</li>
+<li>Write a simple env shell script that you source in any terminal you cross-compile in.  In this script, set environment variables (like CC, LD, OBJCOPY) to point at the cross-compiler commands.</li>
+<li>Set the cross-compiler commands as the defaults for your make variables at the top of your Makefile.</li></ol>
+
+Any of these ways, and probably many others, can work.  I'm going to choose option 3 for this example, so I'll start my Makefile off with:
+
+<code>CC=arm-linux-gnueabi-gcc</code>
+
+We're going to need to send some options to the C compiler to get it to generate the right sort of output, so that means defining a CFLAGS make variable.  We need to specify the target architecture, tell the compiler to emulate floating point in software and to generate position-independant code, and tell the assembler to generate complete stack frames.  I also prefer to turn on lots of warnings, so my CFLAGS looks like:
+
+<code>CFLAGS=-ansi -pedantic -Wall -Wextra -march=armv6 -msoft-float -fPIC -mapcs-frame</code>
+
+If you don't know what some of these options do, you can check the gcc man page.
+
+Now run the following to build the object code:
+
+<kbd>make kernel.o</kbd>
+
+<h1>Linking an ELF file</h1>
+
+Now we have some code compiled for our target, but we also need to link it.  You may be used to invoking the C compiler in order to link programs, but that won't work for us because it actually links in some extra things that we don't want, so we'll need direct access to the linker by adding this to the top of our Makefile:
+
+<code>LD=arm-linux-gnueabi-ld</code>
+
+Next we're going to have to send some special flags to the linker.  One to tell it not to do a bunch of formatting and dynamic linking, and another to tell it where to start the code (since our code will not be loaded by an OS, it needs to sit at a specific place in RAM.  This will depend on your bootloader and hardware.  The memory address for the loader we're using with QEMU is 0x10000).  My LDFLAGS looks like:
+
+<code>LDFLAGS=-N -Ttext=0x10000</code>
+
+Finally, we need to write a make rule to actually link *.o files into *.elf files.  Here it is:
+
+<pre><code>.SUFFIXES: .o .elf
+.o.elf:
+	$(LD) $(LDFLAGS) -o $@ $^</code></pre>
+
+You should now be able to link your code with the following:
+
+<kbd>make kernel.elf</kbd>
+
+It probably gives you a warning about not being able to find the entry symbol.  This is because the linker doesn't actually expect to start in <q class="identifier">main</q>, but rather in <q class="identifier">_start</q>.  We'll deal with this in a bit.
+
+<h1>Running the code</h1>
+
+It turns out that qemu's loader can actually load ELF files, so we now have something that we can run.  Run the following:
+
+<kbd>qemu-system-arm -M versatilepb -cpu arm1176 -nographic -kernel kernel.elf</kbd>
+
+The switches just select the target and tell QEMU not to bother launching a video display.  You will note that the program does not exit.  This is because when you <code>return 0;</code> in our trivial code, you have nowhere to return to except QEMU's loader, so the program just gets loaded again.  Hit Ctrl-a and then hit x to quit.
+
+<h1>Making the code do something interesting</h1>
+
+Ok, now that we have some code building and running, lets make it do something.  I'd like to emulate the good old "Hello, World!" program.  Unfortunately, our code is everything running on the system.  We have no standard out.  We haven't even initialised a video device.  Are we going to have to write a whole video driver before we can even see anything?
+
+Thankfully, serial ports come to our rescue.  You may think serial ports are outdated, but they have one major adavtage: writing a serial port driver is trivial.  When we run QEMU with -nographic, it is actually binding the first serial port of the emulated system to STDIN/STDOUT.  Nice!
+
+So, how does one talk to a serial port?  Well, that is platform specific.  If you look at the <a href="http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0224i/Chdbeibh.html">documentation for our target board</a>, you'll see that it uses reads and writes to special memory addresses in order to talk to devices.  This is called memory-mapped I/O.  The memory address we need to write to in order to send a byte over the first serial port (called UART0 in the documentation) is 0x101f1000.  So let's write a trivial C program to shove bytes into that memory address:
+
+<pre><code>int main(void) {
+	char *string = "Hello, World!\n";
+	while(*string) {
+		*(volatile char *)0x101f1000 = *string;
+		string++;
+	}
+
+	while(1); /* We can't exit, there's nowhere to go */
+	return 0;
+}</code></pre>
+
+Pretty simple.  If you haven't seen the <code>volatile</code> keyword before, it just tells the optomiser that this memory address needs to be treated like it is in RAM, otherwise the optomiser could decide to store it somewhere else, which wouldn't work for us because we're not actually storing a value, we're talking to a device.
+
+Notice that we also put an infinite loop at the end of the program, to keep it from going back to the QEMU loader.
+
+Rebuild kernel.elf and run it with QEMU again.  What happened?  Nothing?  Hmm, something's not right.
+
+<h1>Setting up the stack</h1>
+
+C programs store their area on a stack in RAM.  Unfortunately, we haven't told anything where in RAM to put that, so our C program is not a happy camper.  But how can we set things up if we can't run code?
+
+Well, we can run assembly code.  This sounds more complicated than it is.  All we need to do is set the stack pointer (which is a register that all C code defined for ARM knows about and uses to find the stack) and then call our main function.  Here's the code, saved as bootstrap.s:
+
+<pre><code>.global _start
+_start:
+	ldr sp, =0x07FFFFFF
+	bl main</code></pre>
+
+Ah!  There's the _start symbol that our liker has been looking for!  The first line just declares _start as visible to the linker.  The <code>ldr</code> instruction sets the stack pointer to 0x07FFFFFF, which is the the address of the end of the 128MB of RAM that our QEMU system gives us.  The <code>bl</code> instruction just jumps to our main function in the C program.
+
+<h1>Building assembly code</h1>
+
+We need to add some stuff to our Makefile so that we can build this new assembly file.  Here's the rule to build *.s files to *.o files:
+
+<pre><code>.SUFFIXES: .s .o
+.s.o:
+	$(CC) $(CFLAGS) -o $@ -c $^</code></pre>
+
+We also need to add a new rule for kernel.elf now, beacuse we're linking multiple *.o files into it:
+
+<code>kernel.elf: bootstrap.o kernel.o</code>
+
+<h1>We're done!</h1>
+
+If you rebuild kernel.elf and run it with QEMU again, you should see "Hello, World!" printed in your terminal.  Well done.  I think that's enough for one blog post, but I'll be back with more.
+
+The code from this post can be found <a href="https://github.com/singpolyma/singpolyma-kernel/tree/78dde600c3673839317905ef2c4ccf467a889f89">on Github</a>.

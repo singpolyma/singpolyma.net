@@ -1,0 +1,70 @@
+---
+title: POSHstream, a POSHformat profile of activitystrea.ms
+date: 2009-05-03 03:17:50 Z
+tags: ["Tech","Microformats","DiSo"]
+wordpress_path: /actionstream/poshstream-a-poshformat-profile-of-activitystreams
+---
+This is just a post to describe a proposal for a <a href="http://microformats.org/wiki/poshformats">POSHformat</a> that profiles the <a href="http://activitystrea.ms/" rel="reference">ActivityStreams ATOM extension</a>.
+
+It only really makes sense to use these fields in the context of <a href="http://microformats.org/wiki/hatom" rel="reference">hAtom</a>, and the fields of hAtom are used in the same way as the equivalent ATOM fields are used by the ATOM extension.  In other words, this is an "hAtom extension".
+
+<h3>Object Identifiers</h3>
+
+Object Identifiers (for types and verbs) can be specified using descriptive text (such as "link" or "weblog entry") but a more unambiguous IRI MAY be specified using the <a href="http://microformats.org/wiki/value-class-pattern" rel="reference">value class pattern</a>.  Descriptive text SHOULD conform to agreed-upon, or at least published, type names, similarly to how ActivityStreams Object Identifiers should be defined in published specs.
+
+<h3>class=object-type</h3>
+
+The content of the object-type field MUST be an Object Identifier.
+
+This field specifies the type of the Object described by this entry.  An entry MAY have more than one object-type or no object-type.
+
+Activity feed processors SHOULD use the most specific Object Type that they understand within each entry. The processor MAY use other information to infer the Object Type if it cannot understand any of the Object Types given.
+
+<h3>class=verb</h3>
+
+The content of the verb field MUST be an Object Identifier.
+
+This field defines the verb for this activity.  An entry MAY have more than one verb but MUST have at least one.
+
+Activity feed processors SHOULD use the most specific Verb that they understand within each entry. If none of the Activity's Verbs are understood by the processor, the processor MAY use other information to infer the Verb, or the processor MAY use the content of the hAtom title, summary and/or content to obtain a sentence describing the Activity.
+
+<h3>class=object</h3>
+
+This class MUST appear along with one or more others that describe another POSHformat or microformat OR appear on a  tag that inherently describes an external resource, such as &lt;a&gt;, &lt;object&gt;, or &lt;img&gt;.  The object data is extracted according to this other format.
+
+An additional object-type SHOULD be inferred from the other class(es), type attribute, and/or tag name present on this element.
+
+<h3>class=target</h3>
+
+The target field contains information about the target of the activity, for verbs that support a target. The target is the object that the action was done to. This field MUST appear along with one or more others that described another POSHformat or microformat OR appear on a  tag that inherently describes an external resource, such as &lt;a&gt;, &lt;object&gt;, or &lt;img&gt;, similarly to class=object.
+
+The precise meaning of the target as relates to the activity depends on the verb in use, but its meaning is somewhat similar to the English preposition "to". The target extension element MUST NOT be used for indirect objects that are not targets.
+
+<h3>actor</h3>
+
+The actor is taken from the class=author hCard present in the hAtom container.  An additional class "actor" MAY be added to the hCard in keeping with the ATOM extension.
+
+<h3>The 'post' Verb</h3>
+
+This verb has IRI http://activitystrea.ms/schema/1.0/post and descriptive text "posted".
+
+If the language of the activity is not English, the IRI or descriptive text should be provided using the <a href="http://microformats.org/wiki/value-class-pattern" rel="reference">value class pattern</a>.
+
+This Verb describes the act of posting or publishing an Object on the web. The implication is that before this Activity occurred the Object was not posted, and after the Activity has occurred it is  posted or published.
+
+If an activity using this verb has a target element, the target object is the collection in which the item was posted.
+
+<h3>An example</h3>
+
+<pre><code>
+	&lt;div class="hentry"&gt;
+		&lt;span class="author vcard"&gt;
+			&lt;span class="fn"&gt;Geraldine&lt;/span&gt;
+		&lt;/span&gt;
+		&lt;span class="verb"&gt;posted&lt;/span&gt;
+		a &lt;span class="object-type"&gt;photo&lt;/span&gt;
+		on PhotoPanic
+		@ &lt;span class="published"&gt;2008-11-02T15:29:00Z&lt;/span&gt;
+		&lt;img class="object entry-title" alt="My Cat" src="/geraldine/photo1.jpg" /&gt;
+	&lt;/div&gt;
+</code></pre>

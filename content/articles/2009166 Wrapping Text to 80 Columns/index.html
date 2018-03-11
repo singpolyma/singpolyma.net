@@ -1,0 +1,21 @@
+---
+title: Wrapping Text to 80 Columns
+date: 2009-06-15 18:17:45 Z
+tags: ["Tech","Personal","Mobile"]
+wordpress_path: /actionstream/wrapping-text-to-80-columns
+---
+It's an age-old practise in computing: limiting text files to a maximum of 80 characters per line (sometimes <a href="http://tools.ietf.org/html/rfc2646#section-4.1">as little as 72</a> is suggested).  <a href="http://tools.ietf.org/html/rfc2646#section-3.2">Problems have previously been identified</a> with this practise, but the prevelance of full-sized computer terminals has limited people's exposure to the problem outside of email quoting.
+
+I have been reading <span class="vcard url"><a href="http://craphound.com" class="url fn">Cory Doctorow</a></span>'s short stories and novels on my Google Ion (Android-based phone) for a while now using <a href="http://reader.audua.com/">auduaReader</a>, which is so far the best ebook program I've found for the platform.  Doctorow distributes his books as text files folded to 80 columns.  This has never been a problem on my laptop (where it simply means I do not have to call fold before less), but on my phone it is atrocious.  The abuse of newlines in places with no real semantics means the reader is unable to reflow the text in a suitable way for the small screen, and as a result every "line" becomes two and a half lines, like so:
+
+<samp>This would have originally been 
+one long line of text. It will 
+get folded funny.</samp>
+
+You can imagine how atrocious that gets when reading a whole book!
+
+All text viewers and editors can wrap and reflow text themselves these days.  Lets promise to use newlines to mean "new line" and not "word wrap".
+
+EDIT: I have written a perl one-liner that easily reflows wiki-style text where double line-breaks are paragraphs and single line breaks can be ignored.  This 80% works on Doctorow files, but munges some sections:
+
+<code>perl -0e '$_=&lt;&gt;; s/(?&lt;!\n)\r?\n(?!\r?\n)/ /g; print'</code>

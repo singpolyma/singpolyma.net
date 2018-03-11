@@ -1,0 +1,25 @@
+---
+title: Client-side Scripting
+date: 2007-06-27 18:43:38 Z
+tags: ["Tech","Java","Javascript","Ajax"]
+wordpress_path: /actionstream/client-side-scripting
+---
+So it's time for a post on technologies.  A specific set of competing technologies in the <em>client-side scripting</em> market.  I will look at the following technologies (I know, it's not a complete list) : Flash (/Shockwave), Silverlight, ActiveX, JavaFX, Java, and JavaScript.
+<h4>Introductory Notes</h4>
+I love standards.  If you've been around for any amount of time you know that.  Required browser plugins, closed technologies, or incompatible formats / protocols make me cringe. They make life on the Internet so much more complicated.  I want to be able to open ANY browser on ANY system and surf to ANY page and have it <strong>just work</strong>.  I also want to be able to develop without having to purchase software (IDE, compiler, whatever) to do it with.  Anything else is a headache for both developers and users, at least IMHO.
+<h4>Flash / Shockwave</h4>
+The Adobe family of client-side applications is one of the most popular.  Flash movies will run on almost any computer, because there is a flash plugin available for all major browsers and Operating Systems.  This plugin sometimes comes installed by default, but is free otherwise.  MANY sites require the use of this plugin, so to assume users have it is not that bad of an assuption.
+
+BUT, you have to purchase a flash-authoring tool from Adobe to create these wonderful snippets.  Then, what of the browsers, OSs, or architectures NOT supported (there are some)?  What about systems you do not have rights on where you cannot install plugins?  And think of the hassle when you must upgrade that plugin!  You are surfing just like normal on a site you often frequent when suddenly: "Adobe Flash 10 Required..."
+<h4>Silverlight</h4>
+This is a new Flash competitor with <a href="http://en.wikipedia.org/wiki/Multiple_sclerosis">MS</a>.  Browser, OS, and architecture support is promised by official release.  It's still free, but I believe that (like Flash) one must purchase software to author it.  Being new, it is not nearly so widespread as Flash, meaning that if one uses it in the development of a site MANY people are going to be forced to install Yet Another Plugin to view your page.
+<h4>ActiveX</h4>
+An older MS offering, this system was never implemented outside of Internet Explorer (to my knowledge).  This limits one's audience tremendously.  It also has a reputation for security holes.  That said, it is a very powerful plugin-free (but IE-only) system that can easily allow direct access onto the local system.  It competes more with Java Applets than with Flash.
+<h4>JavaFX</h4>
+A new plugin from Sun Microsystems that uses Java syntax to create Flash-competing content.  I believe that the free-to-use Java toolkits can be used to create the apps, which is a benefit.  An additional plugin MAY (not sure) be required to view it, however.  If so, similar issues to Silverlight.
+<h4>Java (applets)</h4>
+Java is a full-fledged programming language meant to replace C++.  It has been used to create small programs (applets) that execute inside a browser.  Open, standard, and recently open-source licensed, the language lacks only default adoption.  A plugin install is required to run applets.  This plugin is, however, quite widespread and supports more browsers, OSs, and architectures than any other system I am considering here.  Because the language is a complete language, it has the power of ActiveX to reach the local systems.  It has a better reputation when it comes to security, but has a reputation for being slow in the browser environment.
+<h4>JavaScript</h4>
+Any webdev reading this knew I would end up here.  JavaScript is lightweight, open, and <a href="http://www.ecma-international.org/publications/standards/Ecma-262.htm">standard</a>.  Available in most major browsers, OSs, and architectures, JavaScript code can be written that will, mostly, JUST WORK for users WITHOUT the need to install a plugin.  It can be written directly into a webpage, or in a separate file, requiring only a text editor to produce working snippets.  JavaScript has it's own share of problems, but is, IMHO, the best solution at this point.
+<h4>Conclusion</h4>
+Many will argue that JavaScript does not have the power of the other systems.  This is certainly true when comparing it to Java or ActiveX.  However, none of these systems overlap 100%.  They are merely used for many similar tasks.  Most of which JavaScript can handle just fine.  Slideshows, user interfaces, fancy animations, all can and have been done in JavaScript.  I vote we make things simpler for everyone and stick to it wherever possible (and that's a lot more than you may think!)

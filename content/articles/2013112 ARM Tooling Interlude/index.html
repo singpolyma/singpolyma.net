@@ -1,0 +1,13 @@
+---
+title: ARM Tooling Interlude
+date: 2013-04-22 17:53:46 Z
+tags: ["Tech","ARM:","singpolyma-kernel"]
+wordpress_path: /actionstream/arm-tooling-interlude
+---
+This is just a breif interlude to document something that it took me a very long time to <a href="http://stackoverflow.com/a/16117760/8611">find out</a>.  Some ARM cross-compiling toolchains default to thumb instructions.  Thumb instructions are this nifty feature of ARM that allow most common instructions to be represented in 16 bits instead of 32 bits, which can save RAM and improve instruction fetching.  Many of the instructions needed in the context-switch part of the kernel, however, <strong>must</strong> be in full 32-bit ARM.  No problem, there are instructions for switching the CPU mode, just make it switch whenever moving from one to the other, right?
+
+One of the downsides of writing C over raw assembly is that you don't have full control over what instructions are output.  I needed a way to make the toolchain realize that mode-switching instructions needed to be inserted.  I could not (at the time) find such a way.
+
+So, I used a different solution: tell the C compiler to always output 32-bit ARM, no matter what the default is.  This worked, but presented another problem: the default and standard libraries for my gcc were also in thumb, and the interwork was not getting set up there either!  So I could no longer use anything from libgcc or libc, which meant that not only could I not use their memcpy, etc (not neccessarily bad, since in an OS one might want to write one's own of much of libc anyway), but I couldn't use things like the <code>%</code> operator (which on ARM is implemented using a helper procedure in libgcc).
+
+A helpful StackOverflow user finally found the answer for me recently, and I have confirmed that by <a href="https://github.com/singpolyma/singpolyma-kernel/commit/a8223b3872e2568c02451f94913204831db84aac">marking procedure entry points as functions</a> I can <a href="https://github.com/singpolyma/singpolyma-kernel/commit/98c5daa839374c5cc8252ea87861e4ecc0482ebf">stop being concerned about -marm</a>, which allows me to <a href="https://github.com/singpolyma/singpolyma-kernel/commit/d94202f80b085a71c3bbefc0efe04eb10b087ab3">Use -lgcc and <code>%</code></a> and <a href="https://github.com/singpolyma/singpolyma-kernel/commit/0993b5a613c50cb3e36b19a79703048e8d07f776">even use parts of -lc</a>.

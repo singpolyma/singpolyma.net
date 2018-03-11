@@ -1,0 +1,89 @@
+---
+title: Static Pages in Blogger
+date: 2007-01-15 17:08:00 Z
+tags: ["Tech","Blogger","Hack","Hacks"]
+wordpress_path: /actionstream/static-pages-in-blogger
+---
+This is a long-standing feature/hack request from much of the Blogger community.  Pages that are not posts.  This hack is a little messy and not the be-all solution, but I feel it is mature enough to publish as a start.
+
+The pages are all addressed as http://yourblog.blogspot.com/?page=pagename
+
+As always there are multiple options for this hack, but the basic starting is the same:
+<ol>
+	<li>Go to <a href="http://pages.google.com/">Google Pages</a> (you're on the new Blogger, you have a Google Account) and create the page you want.</li>
+	<li>Click the 'View live' link from the Google Pages editor (after publishing the page)</li>
+	<li>Note the URL in the location bar / address bar, you will need it later</li>
+</ol>
+You will need to add this code to the &lt;head&gt; section of your blog <span style="font-style: italic;">first time only</span>, subsequent pages you can skip this:
+<code>
+&lt;script src='http://jscripts.ning.com/get.php?xn_auth=no&amp;amp;amp;id=2999987' type='text/javascript'/&gt;
+</code>
+In code that follows, replace the red <code style="color: red;">pagename</code> with the what you want used as pagename in the URL (See above) and the red <code style="color: red;">URL</code>.
+
+If you want to just redirect to the other page (<a href="http://singpolyma-tech.blogspot.com?page=aboutme-redirect">example</a>) use this code:
+<code>
+&lt;script type='text/javascript'&gt;</code>
+
+//make sure the WidgetData object and staticpage section are defined
+if(typeof(WidgetData) != 'object') WidgetData = {};
+if(typeof(WidgetData['staticpage']) != 'object') WidgetData['staticpage'] = {};
+
+WidgetData['staticpage']['<span style="color:red;">pagename</span>'] = {
+'url':'<span style="color:red;">URL</span>',
+'type':'redirect'
+};
+&lt;/script&gt;
+
+If you want the other page superimposed in an IFRAME (<a href="http://singpolyma-tech.blogspot.com/?page=aboutme-iframe">example</a>) use this code:
+<code>
+&lt;script type='text/javascript'&gt;</code>
+
+//make sure the WidgetData object and staticpage section are defined
+if(typeof(WidgetData) != 'object') WidgetData = {};
+if(typeof(WidgetData['staticpage']) != 'object') WidgetData['staticpage'] = {};
+
+WidgetData['staticpage']['<span style="color:red;">pagename</span>'] = {
+'url':'<span style="color:red;">URL</span>',
+'type':'iframe'
+};
+&lt;/script&gt;
+
+If you want the other page superimposed (<a href="http://singpolyma-tech.blogspot.com/?page=aboutme-raw">example</a>) use this code:
+<code>
+&lt;script type='text/javascript'&gt;</code>
+
+//make sure the WidgetData object and staticpage section are defined
+if(typeof(WidgetData) != 'object') WidgetData = {};
+if(typeof(WidgetData['staticpage']) != 'object') WidgetData['staticpage'] = {};
+
+WidgetData['staticpage']['<span style="color:red;">pagename</span>'] = {
+'url':'<span style="color:red;">URL</span>'
+};
+&lt;/script&gt;
+
+If you want the other page included in a DIV so that it fits better into your page (you must style the DIV so that it works well.  The <a href="http://singpolyma-tech.blogspot.com/?page=aboutme-inlineraw">example</a> simply styles it to fill the page), use this code and put a DIV in your code with an ID the same as pagename:
+<code>
+&lt;script type='text/javascript'&gt;</code>
+
+//make sure the WidgetData object and staticpage section are defined
+if(typeof(WidgetData) != 'object') WidgetData = {};
+if(typeof(WidgetData['staticpage']) != 'object') WidgetData['staticpage'] = {};
+
+WidgetData['staticpage']['<span style="color:red;">pagename</span>'] = {
+'url':'<span style="color:red;">URL</span>'
+};
+&lt;/script&gt;
+
+If you want the other page included as an IFRAME in a DIV so that it fits better into your page (you must style the DIV so that it works well.  The <a href="http://singpolyma-tech.blogspot.com/?page=aboutme-inlineiframe">example</a> simply styles it to fill the page), use this code and put a DIV in your code with an ID the same as pagename:
+<code>
+&lt;script type='text/javascript'&gt;</code>
+
+//make sure the WidgetData object and staticpage section are defined
+if(typeof(WidgetData) != 'object') WidgetData = {};
+if(typeof(WidgetData['staticpage']) != 'object') WidgetData['staticpage'] = {};
+
+WidgetData['staticpage']['<span style="color:red;">pagename</span>'] = {
+'url':'<span style="color:red;">URL</span>',
+'type':'iframe'
+};
+&lt;/script&gt;

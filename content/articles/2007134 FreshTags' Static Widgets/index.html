@@ -1,0 +1,36 @@
+---
+title: FreshTags' Static Widgets
+date: 2007-05-14 19:17:13 Z
+tags: ["Tech","Tagging","Blogger","Hack","Hacks","Freshtags","Update"]
+wordpress_path: /actionstream/freshtags-static-widgets
+---
+This enhancement to FreshTags in response to Amit, who has been persistently requesting the feature in comments and a ticket.  FreshTags now has the ability to generate widgets (from any source) which are locked on to a particular tag(s).  For example:
+<code>
+&lt;!-- FreshTags0.5-Singpolyma2 --&gt;
+&lt;script type="text/javascript"&gt;
+if(typeof(WidgetData) != 'object') WidgetData = {};
+if(typeof(WidgetData['freshtags']) != 'object') WidgetData['freshtags'] = {};
+WidgetData['freshtags']['<span style="color: purple">freshtags_static</span>'] = {
+"type":"posts",
+"source":"<span style="color: red">source</span>",
+"format":"drop",
+"defs":"<span style="color: red">tags</span>",
+"force_defs":true,
+"username":"<span style="color: blue">del.icio.us username</span>",
+"url":"<span style="color: blue">blog url</span>",
+"join_char":"<span style="color: blue">/</span>",
+"tag_url":"/search/label/%tags%",
+"sort":"alpha",
+"rows":100
+};
+&lt;/script&gt;
+<span style="color: purple">&lt;script src="http://jscripts.ning.com/get.php?xn_auth=no&amp;id=818185" type="text/javascript"&gt;&lt;/script&gt;</span>
+&lt;div id="<span style="color: purple">freshtags_static</span>"&gt;&lt;/div&gt;
+&lt;a href="http://ghill.customer.netspace.net.au/freshtags/" title="Categories by FreshTags"&gt;&lt;img alt="FreshTags" src=" http://ghill.customer.netspace.net.au/freshtags/freshtags-btn.png"/&gt;&lt;/a&gt;
+&lt;!-- /FreshTags0.5-Singpolyma2 --&gt;
+</code>
+The above code must (for new Blogger users) be inserted into a new HTML/JavaScript sidebar widget.  Source (in red) must be either del.icio.us, blogger, or mediawiki (use blogger for labels on posts in the new Blogger).  Defs (in red) should be a +-separated list of tags to load into the widget (or just one tag).  Username (in blue) must be replaced with your del.icio.us username (if source is del.icio.us) or the whole line must be removed.  URL (in blue) must be replaced with the full URL to your Blogger blog (ie, http://you.blogspot.com/) if source is blogger or the whole line must be removed.  Join_char (in blue) must be / if source is blogger and + otherwise.
+
+The ID (in purple) is fine to leave if you are only going to insert this widget once.  For the second, third, etc widgets you must change it to something like freshtags_static2.  The higher reference (also in purple) to freshtags_static must also be changed.  Second, third, etc widgets do not need the &lt;script&gt; tag that is in purple near the end.
+
+If you have any questions, just ask!

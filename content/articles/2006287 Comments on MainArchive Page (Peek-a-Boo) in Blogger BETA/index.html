@@ -1,0 +1,111 @@
+---
+title: Comments on Main/Archive Page (Peek-a-Boo) in Blogger BETA
+date: 2006-10-14 12:38:00 Z
+tags: ["Tech","Comments","Blogger","Hack","Hacks","Beta"]
+wordpress_path: /actionstream/comments-on-mainarchive-page-peek-boo
+---
+<b title="Update 2007-01-18">There was a typo in this post!  I finally found it.  Your templates should be able to save after applying this hack now ;)</b>
+
+<b title="Update 2007-01-09">I have released an <a href="http://singpolyma-tech.blogspot.com/2007/01/asynchronous-peek-boo-comments.html">asynchronous version</a> of this hack.</b>
+
+<b title="Update 2006-12-21">So now that people have stopped asking me for this feature (because I said I couldn't do it) I've done it!  Screen-scraping to the rescue!  If you re-install this hack you'll get more manageable code in your template, bug fixes for timezone logic, and <i>comment author links</i>.  Finally!  Yay!  This also improves compatibility between this hack and my comment photos hack.</b>
+
+<b title="Update 2006-12-11">You can not link to author's blogs or profiles from the main page because that data is <i>not available</i> in the feed Blogger provides.  Some day I may dream up a way to do this -- or Blogger may start providing the information.  For now, it's not happening.</b>
+
+<b>Updated 2006-11-27 to work with new <a href="http://singpolyma-tech.blogspot.com/2006/11/json-from-google.html">Native JSONP</a>, should be faster now.</b>
+
+As I said back when I <a href="http://singpolyma-tech.blogspot.com/2006/09/first-blogger-beta-template.html">first released my BETA template</a>, displaying comment data anywhere but on item pages in Blogger BETA is 'impossible'.  That is what this hack overcomes.  Both just plain displaying comments on main and also peek-a-boo comments are now possible (revised template coming soon ;) ).
+<ol> <li>Go to the layout on your BETA blog and select 'Edit HTML'.</li> <li>Check the 'Expand Widget Templates' box.</li> <li>Paste the following code into the &lt;head&gt; section of the template:
+<code>
+&lt;script type="text/javascript"&gt;
+//&lt;![CDATA[
+var comment_form_template = '&lt;div class="commentelem"&gt;&lt;div class="comment-poster"&gt;[[AUTHOR]]&lt;/div&gt;\n'
++ '&lt;div class="comment-body"&gt;&lt;div class="innerCmntBody"&gt;[[BODY]]&lt;/div&gt;&lt;/div&gt;\n'
++ '&lt;div class="comment-timestamp"&gt;&lt;a href="[[PERMALINK]]" title="comment permalink"&gt;[[DATE]]&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;\n';
+//]]&gt;
+&lt;/script&gt;
+
+&lt;script src='http://jscripts.ning.com/get.php?xn_auth=no&amp;amp;amp;id=2706908' type='text/javascript'&gt;&lt;/script&gt;
+</code>
+Advanced users will note that the first &lt;script&gt; section is taken from the <a href="http://singpolyma-tech.blogspot.com/2006/06/asynchronous-comment-form.html">asynchronous comment form</a> code, and that if that is installed (presuming I get a version working for Blogger BETA) that the code only needs to be in here once.  It can be changed to fit the code of the blog itself to improve appearance, etc.  Kudos to <a href="http://ecmanaut.blogspot.com/">Johan Sundström</a> for his help with the date code.
+</li> <li>If you want peek-a-boo functionality, you will need this code in your &lt;head&gt; section somewhere as well:
+<div style="font-family:monospace;">
+&lt;script type="text/javascript"&gt;
+   function toggleitem(postid,linkid,newtxt,displaytype) {
+      if(!displaytype) {displaytype = 'block';}
+      var whichpost = document.getElementById(postid);
+      if (whichpost.style.display != "none") {
+         whichpost.style.display = "none";
+      } else {
+         whichpost.style.display = displaytype;
+      }
+      if(linkid) {
+            var lnk = document.getElementById(linkid);
+            lnk.href = "javascript:toggleitem('"+postid+"','"+linkid+"','"+lnk.innerHTML+"');";
+            lnk.innerHTML = newtxt;
+       }
+   }//end function toggleitem
+&lt;/script&gt;
+</div>
+</li> <li>Find the place in your template where the comments are generated on item pages, it will probably look something like this:
+<div style="font-family:monospace;">
+&lt;b:loop values='data:post.comments' var='comment'&gt;
+  &lt;dt class='comment-author' expr:id='"comment-" + data:comment.id'&gt;
+</div>
+And directly before that, insert this code:
+<div style="font-family:monospace;">
+&lt;b:loop values='data:post.feedLinks' var='f'&gt;
+   &lt;b:if cond='data:blog.pageType != "item"'&gt;
+      &lt;script expr:src='data:f.url + "?alt=json-in-script&amp;amp;amp;callback=peekaboo_comments_display"' type='text/javascript'/&gt;
+   &lt;/b:if&gt;
+&lt;/b:loop&gt;
+</div>
+</li> <li>If you want to use peek-a-boo functionality put, find  the code a little bit before that which you just inserted that looks something like:
+<div style="font-family:monospace;">
+&lt;b:includable id='comments' var='post'&gt;
+  &lt;div class='comments' id='comments'&gt;
+</div>
+And replace that second line with:
+<div style="font-family:monospace;">
+   &lt;div class='comments' expr:id='"comments" + data:post.id'&gt;
+&lt;b:if cond='data:blog.pageType != "item"'&gt;
+   &lt;script type='text/javascript'&gt;
+      document.getElementById('comments&lt;data:post.id/&gt;').style.display = 'none';
+   &lt;/script&gt;
+&lt;/b:if&gt;
+</div></li> <li>Next, find the post-generating code.  It will look start something like this:
+<div style="font-family:monospace;">
+&lt;b:includable id='main' var='top'&gt;
+  &lt;!-- posts --&gt;
+</div>
+</li> <li>In this section there will be a block of code that looks something like:
+<div style="font-family:monospace;">
+&lt;b:if cond='data:blog.pageType == "item"'&gt;
+   &lt;b:if cond='data:post.allowComments'&gt;
+      &lt;b:include data='post' name='comments'/&gt;
+   &lt;/b:if&gt;
+&lt;/b:if&gt;
+</div>
+Replace it with this:
+<div style="font-family:monospace;">
+   &lt;b:if cond='data:post.allowComments'&gt;
+      &lt;b:include data='post' name='comments'/&gt;
+   &lt;/b:if&gt;
+</div>
+</li> <li>If you want to use peek-a-boo functionality you need to find the post template section, which starts something like this:
+<div style="font-family:monospace;">
+&lt;b:includable id='post' var='post'&gt;
+</div>
+And then find the link to the comments area, which looks something like:
+<div style="font-family:monospace;">
+&lt;b:if cond='data:post.allowComments'&gt;
+   &lt;a class='comment-link' expr:href='data:post.addCommentUrl' expr:onclick='data:post.addCommentOnclick'&gt;&lt;b:if cond='data:post.numComments == 1'&gt;1 &lt;data:top.commentLabel/&gt;&lt;b:else/&gt;&lt;data:post.numComments/&gt; &lt;data:top.commentLabelPlural/&gt;&lt;/b:if&gt;&lt;/a&gt;
+&lt;/b:if&gt;
+</div>
+And replace it with:
+<div style="font-family:monospace;">
+&lt;b:if cond='data:post.allowComments'&gt;
+   &lt;a class='comment-link' expr:href='data:post.url + "#comments"' expr:onclick='"toggleitem(&amp;amp;quot;comments" + data:post.id + "&amp;amp;quot;);return false;"'&gt;&lt;b:if cond='data:post.numComments == 1'&gt;1 &lt;data:top.commentLabel/&gt;&lt;b:else/&gt;&lt;data:post.numComments/&gt; &lt;data:top.commentLabelPlural/&gt;&lt;/b:if&gt;&lt;/a&gt;
+&lt;/b:if&gt;
+</div>
+</li> <li>Click 'Save Template' and, if it appears, 'Confirm &amp; Save', then view your blog.</li> </ol>

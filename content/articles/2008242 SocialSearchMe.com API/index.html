@@ -1,0 +1,35 @@
+---
+title: SocialSearchMe.com API
+date: 2008-08-29 03:10:22 Z
+tags: ["Tech"]
+wordpress_path: /actionstream/socialsearchmecom-api
+---
+First off, my <a href="/2008/08/diso-gets-search/">social network search engine</a> now has a domain thanks to <a href="http://tantek.com/">Tantek</a>!  It's just a redirect forwarder for now, but much easier to remember!
+
+I have been polishing some bits of the search engine and am pleased to report that it now has a complete API!
+
+First off, the microformat API.  All data is marked up with hCard, this allowing pages on the engine to double as API output.  This is the preferred method.  If you really must, a JSON(P) variant is available.
+
+These are the endpoints for a standard search:
+
+http://scrape.singpolyma.net/profile/?q=NAME
+
+http://scrape.singpolyma.net/profile/search.js.php?q=NAME
+
+These are the endpoints to search from the "point of view" of a particular person (specify a URL):
+
+http://scrape.singpolyma.net/profile/?q=NAME&amp;amp;pov=URL
+
+http://scrape.singpolyma.net/profile/search.js.php?q=NAME&amp;amp;pov=URL
+
+To retrieve data about a specific user use:
+
+http://scrape.singpolyma.net/profile/person.php?id=ID
+
+http://scrape.singpolyma.net/profile/person.js.php?id=ID
+
+http://scrape.singpolyma.net/profile/person.php?url=URL
+
+http://scrape.singpolyma.net/profile/person.js.php?url=URL
+
+And that's it!  This stuff powers <a href="/contacts">my contacts page</a> and the <a href="http://scrape.singpolyma.net/profile/bookmarklet.html">bookmarklet</a>.

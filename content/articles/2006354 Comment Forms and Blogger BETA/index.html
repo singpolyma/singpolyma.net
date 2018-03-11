@@ -1,0 +1,75 @@
+---
+title: Comment Forms and Blogger BETA
+date: 2006-12-20 21:50:00 Z
+tags: ["Tech","Comments","Blogger","Hack","Hacks","Beta"]
+wordpress_path: /actionstream/comment-forms-and-blogger-beta
+---
+<strong>Blogger now has an inline comment form that is native: <a href="http://buzz.blogger.com/2008/10/commenting-made-easier.html">http://buzz.blogger.com/2008/10/commenting-made-easier.html</a></strong>
+
+ Update 2007-02-08 : Contrary to a bit of a misunderstanding this hack DOES work with the new Blogger out of beta.  If you can't find the code try checking the 'Expand Widget Templates' checkbox.  I have added a bugfix for the redirection bug some were experiencing.
+
+The <a href="http://singpolyma-tech.blogspot.com/2006/06/asynchronous-comment-form.html">old inline comment form</a> is <a href="http://singpolyma-tech.blogspot.com/2006/11/inline-comment-form-for-beta-news.html">dead to Blogger BETA</a> (or, should I say, <a href="http://buzz.blogger.com/2006/12/new-version-of-blogger.html">the new Blogger</a>).  Deader than ever, the form now does absolutely nothing.
+
+Have no fear -- there is good news!
+
+Since we must use Blogger's ugly comment page in some form (because of their new security token system), I wanted to include this in our pages somehow. I thought of making it inline, but discarded this idea because it would look rather dumb (since we can't style that page) and would be displaying comments twice on the page, etc.
+
+Enter <a href="http://singpolyma-tech.blogspot.com/2006/12/lightbox-gone-wild-for-blogger.html">lightbox</a>. The following hack gives you a nice, integrated comment form that still appears somewhat separated (so visitors know you didn't create that ugliness!). Visitors can close the 'popup' without commenting, but if they comment it will close and reload the page automatically. (See a <a href="http://singpolyma-beta.blogspot.com/">demo on my test blog</a>, but I can't guarantee it will be there forever.  My test blog is for testing and is therefore unpredictable.)
+
+To install the hack, follow these steps:
+<ol>
+	<li>Go to the 'Template' tab and select 'Edit HTML'.</li>
+	<li>Check the 'Expand Widget Templates' box.</li>
+	<li>Add this code right before your &lt;/head&gt; tag (if you have my <a href="http://singpolyma-tech.blogspot.com/2006/12/blogger-calendar.html">calendar hack</a>, or any other <a href="http://singpolyma-tech.blogspot.com/2006/12/lightbox-gone-wild-for-blogger.html">Lightbox Gone Wild for Blogger</a> hack, installed, this step in unnecessary):
+<code>
+&lt;script src='http://jscripts.ning.com/get.php?xn_auth=no&amp;amp;id=1093361' type='text/javascript'/&gt;
+&lt;script src='http://jscripts.ning.com/get.php?xn_auth=no&amp;amp;id=2655847' type='text/javascript'/&gt;
+&lt;link href='http://singpolyma.googlepages.com/lightbox.css' rel='stylesheet' type='text/css'/&gt;
+</code></li>
+	<li>Find this code:
+<code>
+&lt;a expr:href='data:post.addCommentUrl' expr:onclick='data:post.addCommentOnclick'&gt;&lt;data:postCommentMsg/&gt;&lt;/a&gt;
+</code>
+and replace it with this:
+<code>
+&lt;a class='lbOn' expr:href='"#comment-form-" + data:post.id'&gt;&lt;data:postCommentMsg/&gt;&lt;/a&gt;
+</code></li>
+	<li>If you do not use <a href="http://singpolyma-tech.blogspot.com/2006/10/comments-on-mainarchive-page-peek-boo.html">peek-a-boo</a> comments or have a footer link pointing to the inline comments section (if you don't know, you don't) then find this code:
+<code>
+&lt;b:if cond='data:post.allowComments'&gt;
+&lt;a class='comment-link' expr:href='data:post.addCommentUrl' expr:onclick='data:post.addCommentOnclick'&gt;&lt;b:if cond='data:post.numComments == 1'&gt;1 &lt;data:top.commentLabel/&gt;&lt;b:else/&gt;&lt;data:post.numComments/&gt; &lt;data:top.commentLabelPlural/&gt;&lt;/b:if&gt;&lt;/a&gt;
+&lt;/b:if&gt;
+</code>
+and replace it with this:
+<code>
+&lt;b:if cond='data:post.allowComments'&gt;
+&lt;a class='comment-link lbOn' expr:href='"#comment-form-" + data:post.id'&gt;&lt;b:if cond='data:post.numComments == 1'&gt;1 &lt;data:top.commentLabel/&gt;&lt;b:else/&gt;&lt;data:post.numComments/&gt; &lt;data:top.commentLabelPlural/&gt;&lt;/b:if&gt;&lt;/a&gt;
+&lt;/b:if&gt;
+</code></li>
+	<li>Find this code:
+<code>
+&lt;b:loop values='data:posts' var='post'&gt;
+&lt;b:if cond='data:post.dateHeader'&gt;
+&lt;h2 class='date-header'&gt;&lt;data:post.dateHeader/&gt;&lt;/h2&gt;
+&lt;/b:if&gt;
+</code>
+And directly after it put this code:
+<code>
+&lt;script type='text/javascript'&gt;
+var isLoad&lt;data:post.id/&gt; = 0;
+function checkDeactivate&lt;data:post.id/&gt;() {
+if(isLoad&lt;data:post.id/&gt; &gt; 1) {
+//&lt;![CDATA[
+document.getElementById('lbContent').innerHTML = '&lt;div style="text-align:center;width:100%;font-size:16pt;font-family:sans-serif;"&gt;&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;Reloading...&lt;/div&gt;';
+//]]&gt;
+window.location.reload();
+}//end if isLoad
+isLoad&lt;data:post.id/&gt;++;
+}//end function checkDeactivate
+&lt;/script&gt;
+&lt;div expr:id='"comment-form-" + data:post.id' style='display:none;'&gt;
+&amp;amp;lt;iframe onload=&amp;quot;checkDeactivate&lt;data:post.id/&gt;();&amp;quot;  src=&amp;quot;&lt;data:post.addCommentUrl/&gt;&amp;amp;amp;isPopup=true#commentForm&amp;quot; frameborder=&amp;quot;0&amp;quot; style=&amp;quot;border-width:0px;width:100%;height:380px;&amp;quot;&amp;amp;gt;&amp;amp;lt;/iframe&amp;amp;gt;
+&lt;div style='text-align: right;'&gt;&lt;a class='lbAction' href='#' rel='deactivate'&gt;&lt;img alt=''  src='http://www.ning.com/xnstatic/icn/cross.gif' style='display: inline; width: 10px; height: 10px;'/&gt; Close&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;
+</code></li>
+	<li>Save your template</li>
+</ol>

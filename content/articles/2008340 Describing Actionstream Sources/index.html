@@ -1,0 +1,32 @@
+---
+title: Describing Actionstream Sources
+date: 2008-12-05 19:34:00 Z
+tags: ["Tech","DiSo","Actionstream"]
+wordpress_path: /actionstream/describing-actionstream-sources
+---
+I mantain <a href="/plugins/actionstream/">wp-diso-actionstream</a>, a plugin heavily inspired by <a href="http://www.movabletype.org/2008/01/building_action_streams.html">MT Action Streams</a>.
+
+Early on, one of the things that made these two plugins so cool is that they share a config file format.  It's YAML, which I'm not a fan of, but there was one big advantage to using it when I started: I was <strong>guaranteed</strong> someone would be interoperable with me, because I was using <strong>their</strong> format.
+
+I've changed that YAML file quite a bit, but I've not added many "extensions" because I want MT Action Streams, at any moment, to be able to take the extra sources I've described and add them in.
+
+There are essentially two parts to describing any source.
+<h3>profile_services:</h3>
+Yes, that's the highest-level YAML heading for the first part.  Underneath is a list of simple hashes, described like so:
+<script type="text/javascript" src="http://pastie.org/332083.js"></script> This is relatively straightforward. The source_identifier is a unique string (it must match what is used in the next part) identifying the source.  The name is a human-readable label for the source.  The url is a template for the profile URL, with %s where the user identifier goes.  At this point you really have all you need.  With a service identifier and user identifier you can contruct a URL, and vice-versa.  There are three optional parameters that help make the UI nicer looking.   ident_label provides the human-readable string users would be used to seeing associated with this particular identifier (ie, Username, Screenname, etc).   ident_example is an example identifier (I usually use my own username on the service in question).  ident_suffix is any text a user might be used to seeing come after the username (such as .myopenid.com).  This first part is relatively uncontroversial.  There are rarely multiple ways to map a user and service to a profile URL.  Ideally, I would love to see services hosting this YAML fragment somewhere and making it discoverable in some standard way (whether &lt;link&gt; tag or YADIS).
+<h3>action_streams:</h3>
+This section varies a bit more, since not everyone will agree on the right place to get data from, what data needs to be parsed, or how it should be output in an actionstream.  Here is an example description: <script type="text/javascript" src="http://pastie.org/332098.js"></script>
+
+The high-level identifier (here, twitter:) must match the source_identifier from the previous section.  Because one profile can have multiple sources of actions associated with it (for example, tweets and favourites), there is another lever of nesting where you give the identifier for the content type.  This is currently pretty arbitrary, but I'd like to see it move towards being the <a href="http://wiki.diso-project.org/activity-streams-verbs">"standard" activity verb</a>.
+
+The name is the human readable label for the kind of content in this stream.  Description is more optional human-reabable information about the data.
+
+html_form is any XHTML, with [_1] being replaced by the action owner, [_2], etc, being replaced with the n+1st field from html_params.
+
+url is the URL to get the stream content from.  If not present it is assumed to be the profile URL. RSS/ATOM feeds can be detected on this endpoint if the content to be parsed is such a feed.  {{ident}} here is the same as %s in profile_services. I would like to deprecate this and switch to %s everywhere in a future version.
+
+The final parameter describes how the data is to be parsed.  You may use atom:, rss2:, or xpath:.  RSS/ATOM feeds automatically have fields for their most popular elements (title, created_at). Any extra fields you wish are given a name and an XPath expression to use in parsing.  A more complete discussion of these field names, ones currently being used, and how I would like to see this progress <a href="http://pastie.org/332113">can be found in this pastebin</a>.
+<h3>Moving Ahead</h3>
+If the above two YAML snippets were made available by most sites with actionstream content, then the plugin could easily provide a nice set of defaults that kept themselves in sync with site evolution.  Users could override anything locally, of course.
+
+There is one thing that neither of these describe, however: private items.  While a feed could be protected by OAuth, and the plugin could then authorize to pull in the data, this seems like going about it the wrong way around.  I'd really like to see some way of telling a site: "push my activity over there" and having it discover and hit a callback with the activity data.

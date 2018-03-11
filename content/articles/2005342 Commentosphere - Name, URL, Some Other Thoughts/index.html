@@ -1,0 +1,21 @@
+---
+title: Commentosphere - Name, URL, Some Other Thoughts
+date: 2005-12-08 11:34:00 Z
+tags: ["Tech","Commentosphere"]
+wordpress_path: /actionstream/commentosphere-name-url-some-other
+---
+I have decided that, at this early stage at least, the <span style="font-style: italic;">name</span> for Commentosphere is rather immaterial. The URL comment.ning.com, is sufficiently abstract, I think, to be maintained no matter what the service ends up being called. Even though the scope of the service may well prove to be outside that of blog comments, the URL works well enough for (as they may be termed) comments on forums and other things as well. Should a move be in order it will be dealt with when the time comes, but I think that, for now at least, the current URL will suffice.
+
+I have been talking some with <a href="http://cheerleader.yoz.com/">Yoz Grahame</a> (from Ning) about Commentosphere. Most of this discussion has centred around the methods of getting data into the service. A summation of the results follows, and I will be quick to point out that most of this idea is his with only minor additions of my own.
+
+Write a JavaScript piece that is hosted on Commentosphere and can be included by blog owners in their pages. Then, on the occurance of a comment posting form in the page, a function defined in this JavaScript can be called with a reference to the comment form itself, and to the names of the necessary fields (comment content, poster name) and other data (page title, page url, these cannot be pulled by the JavaScript itself because the script may be running on the blog's main page). The script then alters the form to include a checkbox (defaultly checked) that turns on/off the automatic posting of any comments entered into that form to Commentosphere. Optionally, fields for tagging the comment and specifying parent(s) may be added by the script. Additionally, a small piece stating wheather or not the user is currently logged in on Ning will be inserted.
+
+If the user is logged in, then when they post the comment to the blog it will automatically also be added to their account on Commentosphere by the method described below. If the user is not logged in, and chooses not to sign in (or has, indeed, no account) the comment will <span style="font-style: italic;">still<span style="font-style: italic;"> be added</span></span>, but to an anonymous account and merely have the user's name (as specified in the appropriate place on the form) stored for display purposes.
+
+For Blogger blogs that use the Blogger comments form, a simple Greasemonkey script will suffice to inject a script tag into the page calling this same script from Commentosphere with the appropriate data being supplied by the Greasemonkey script instead of the blog template.
+
+The posting method runs as follows : An onsubmit handler is added to the comment posting form. When it is run it creates a new Image object and loads into in an image which is really the result of a PHP script running at Commentosphere. Data is pulled from the form and passed to this script via GET (so the URL to the 'image' would be something like http://comment.ning.com/addExternal.php?content=...). The function loops until Image.complete is TRUE, and then returns TRUE, thus waiting until the request to Commentosphere has completed before submitting. If the user is logged in this cookie will be passed with the image request and the script will detect it and add the comment to the correct account. No popup windows.
+
+I can find only one potential problem with this method, and that is that the comment's permalink URL is not set until it has been posted into the blog system, so how could that be passed to the server beforehand? It warrants some thought, however, because if this worked it would make Commentosphere an almost seamless service.
+
+Tags: <a href="http://del.icio.us/singpolyma.techblog/Commentosphere" rel="tag">Commentosphere</a>

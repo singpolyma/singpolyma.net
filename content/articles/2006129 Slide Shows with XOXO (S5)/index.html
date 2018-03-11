@@ -1,0 +1,35 @@
+---
+title: Slide Shows with XOXO (S5)
+date: 2006-05-09 09:23:00 Z
+tags: ["XOXOBlog","XOXO","Format"]
+wordpress_path: /actionstream/slide-shows-with-xoxo-s5
+---
+If you combine <a href="http://meyerweb.com/eric/tools/s5/">S5</a> with XOXO you get a format you can use to build simple slideshows for the internet and that makes sense to microformats parsers.  S5 is a simple slideshow system with many <a href="http://meyerweb.com/eric/tools/s5/features.html">features</a> that can pull the data for slides right out of an XOXO block.  To use S5 you will have to download the JavaScript and CSS files from <a href="http://meyerweb.com/eric/tools/s5/">the homepage</a> and then build a page with slide content that links in these files.  While there is a quite adequate <a href="http://meyerweb.com/eric/tools/s5/xoxo-structure-ref.html">S5-with-XOXO reference</a>, the format will be summarised here for completeness.
+
+<b>Notes</b>
+S5 documents must be DOCTYPE XHTML 1.0 Strict, and there are certain &lt;meta&gt; tags that are required.  See <a href="http://meyerweb.com/eric/tools/s5/xoxo-structure-ref.html">the specification</a> for more details.
+
+<b></b><b>Meta Data</b>
+Meta data in S5 is encapsulated in a set of &lt;meta&gt; tags.  This means that the data will not be available to XOXO-only processors.  The page &lt;title&gt; must be the title of the presentation and the &lt;meta name="version" content="S5 1.1" /&gt; element is also required, along with the tags to include the JavaScript and basic CSS.
+
+There is also a controls/header/footer section that must be present first in the &lt;body&gt; tag before the XOXO data.  The code for this section follows:
+<div style="font-family: monospace;">
+&lt;div class="layout"&gt;
+&lt;div id="controls"&gt;&lt;!-- DO NOT EDIT --&gt;&lt;/div&gt;
+&lt;div id="currentSlide"&gt;&lt;!-- DO NOT EDIT --&gt;&lt;/div&gt;
+&lt;div id="header"&gt;
+SLIDESHOW HEADER
+&lt;/div&gt;
+&lt;div id="footer"&gt;
+SLIDESHOW FOOTER
+&lt;/div&gt;
+</div>
+Where SLIDESHOW HEADER and SLIDESHOW FOOTER are the contents for the header and footer of the slideshow, respectively.
+
+<b>Classes</b>
+In order for the S5 code to interface with your data properly the class 'presentation' must be present on the main &lt;ol&gt; or &lt;ul&gt; tag. The class 'xoxo' is also reccomended in accordance with the <a href="http://microformats.org/wiki/xoxo">XOXO specification</a>.
+
+<b>Nodes</b>
+Each root node in the XOXO tree for the slides must have the class 'slide'.  The direct contents of the node (along with any XHTML markup) are considered to be the text (/images etc.) of the slide.  If the first element in the node is an &lt;h1&gt; element the contents of that tag are considred the title of the slide.  Subnodes are rendered as points in the presentation.  If the &lt;ul&gt; or &lt;ol&gt; root tag for the subpoints has the class 'incremental' the points will be introduced one at a time.  Additionally a &lt;div&gt; element of class 'handout' will not be rendered on-screen but only when the presentation is printed.
+
+<div class="tags">Tags:<ul><li><a href="http://del.icio.us/xoxo.blog/format" rel="tag">format</a></li> <li><a href="http://del.icio.us/xoxo.blog/xoxo" rel="tag">xoxo</a></li> </ul></div>

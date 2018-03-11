@@ -1,0 +1,19 @@
+---
+title: How About That Tablet?
+date: 2016-01-02 16:41:02 Z
+tags: ["Tech"]
+wordpress_path: /actionstream/how-about-that-tablet
+---
+Last year I <a href="https://singpolyma.net/2015/01/electronic-device-freedom/">announced</a> that I would spend a good chunk of 2015 working on the creation of a freedom-respecting tablet computer.  How did that go?
+
+Well, first, unsurprisingly, I ran into the massive wall of companies-will-not-talk-to-you.  I only managed to get a tiny number of PCAP vendors to even begin discussions with me, and even fewer were willing to sell me prototyping gear.  I spent too much on some stuff that ultimately wouldn't work well (too bulky/heavy) but that I'm still tinkering with anyway.  However, back to where I started, I eventually got in touch with people at <a href="http://www.chalk-elec.com/">Chalkboard Electronics</a> about doing custom/bulk orders.  They will do very small (MoQ 100) custom board spins (for simple changes like "please use LVDS directly instead of a built-in HDMI converter").  I have tested their generally-available hardware with my Novena and it works quite well.
+
+The software situation is overall much better than I expected.  Many GNOME applications support multitouch gestures already, and there are several on-screen keyboards that work reasonably well.  Auto-rotation of the display on the Novena is a <a href="https://gist.github.com/singpolyma/77004677bffbe1cbfeb2">pretty simple shell-script</a>.  Though getting a browser that works well might be some more effort.
+
+The battery situation turned out to be more complex than I had imagined.  There is no (that I have found) good, free-design USB battery charging + passthrough solution.  Maxim proved to be pretty willing to sell an eval kit for their <a href="https://www.maximintegrated.com/en/products/power/battery-management/MAX8895X.html">MAX8895</a> series if I want to try building a solution based on that.  The Novena and PiTop both use a higher-voltage barrel-jack charger, which could work for a tablet but is not ideal.  The PiTop ended up going with a "smart battery", so there is not reusable part to try there.  I have an extra Novena battery board that I hope to experiment with this year and <a href="http://www.kosagi.com/forums/viewtopic.php?id=309">get it to power alternate SBCs</a>.
+
+I also got distracted this year, not least of all by my Free Culture project which resulted in a (very) small-run print of the <a href="https://archive.org/details/BigBuckBunnyBoardBook">Big Buck Bunny Board Book</a>, of which I gave one to my niece for Christmas.
+
+Also making good-looking progress is LKCL's projects at rhombus-tech.  While he has some strange ideas, he seems very close to executing on the <a href="http://rhombus-tech.net/community_ideas/laptop_15in/">laptop design</a> and has been quite willing to share information about his suppliers, etc.
+
+So where next?  Am I going to really build a tablet for sale?  Probably not any time soon.  But I've learned a lot, and will keep tinkering with the hardware that I have.  Maybe I'll get a battery charging solution working this year, that would be nice.

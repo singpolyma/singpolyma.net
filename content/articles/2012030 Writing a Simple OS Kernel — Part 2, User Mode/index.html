@@ -1,0 +1,155 @@
+---
+title: Writing a Simple OS Kernel — Part 2, User Mode
+date: 2012-01-30 22:53:43 Z
+tags: ["Tech","singpolyma-kernel","define","include","0x10","0xDF","0xD3","0x00","0x38","0x04"]
+wordpress_path: /actionstream/writing-a-simple-os-kernel-user-mode
+---
+<strong>Updated 2012-33 to fix a bug in the context switch assumptions.</strong>
+<strong>Edited for clarity, 2012-34.</strong>
+
+<a href="/2012/01/writing-a-simple-os-kernel-part-1/">Last time</a>, we got a basic bit of C code bootstrapped and running all by itself on QEMU.  This is often called "bare-metal" programming.  This time we're going to add to that and do something a bit more complicated: we're going to run a single user-mode program on our kernel.
+
+<h1>What is User Mode?</h1>
+
+User mode is the name given to the mode we put the computer in when running anything other than the kernel.  This often has implications for <a href="http://en.wikipedia.org/wiki/Memory_protection">memory protection</a> and similar, but we don't have any of that.  For us it's just going to be the CPU mode in which certain things (such as changing CPU modes) cannot be done.
+
+User mode also often refers to the slices of the system resources given to different processes, etc, such that they can all be run on the same computer without interfering with each other.
+
+<h1>First, some abstractions</h1>
+
+We hard-coded some values and functionality last time to write to the serial port.  That code was very simple for printing one statement, but we may want to clean it up a bit if we're going to use the serial port a lot.
+
+First, let's pull out everything machine-specific from kernel.c and put it in a header file for the machine, call it versatilepb.h:
+
+<code>#define UART0 ((volatile unsigned int*)0x101f1000)</code>
+
+So far we just throw the characters at the serial port as fast as we can, and hope they get caught.  That will probably always work on QEMU, but will not work on real hardware, so let's add the ability to check if the serial port can handle a byte right now.  For that we'll need two more constants:
+
+<code>#define UARTFR 0x06
+#define UARTFR_TXFF 0x20</code>
+
+<q class="identifier">UARTFR</q> is the offset (in words) from the <q class="identifier">UART0</q> base address of the flags for the serial port.  <q class="identifier">UARTFR_TXFF</q> is the mask that gets the bit representing if the transmit buffer is full.
+
+Now you can put the following at the top of kernel.c:
+
+<pre><code>#include "versatilepb.h"
+
+void bwputs(char *s) {
+	while(*s) {
+		while(*(UART0 + UARTFR) &amp; UARTFR_TXFF);
+		*UART0 = *s;
+		s++;
+	}
+}</code></pre>
+
+Now you can replace the big mess in <q class="identifier">main</q> with <code>bwputs("Hello, World!\n");</code> or any other message.  Much cleaner!
+
+<a href="https://github.com/singpolyma/singpolyma-kernel/tree/9eb61268690df892282bec3e524d86fbca52f894">Code so far on GitHub</a>
+
+<h1>Calling Into Assembly Code</h1>
+
+Last time, we had a small piece of assembly code that called in to our C program.  This time, we are going to want to call into assembly code from our C code.  If you are on Ubuntu or some other systems, your C compiler may be defaulting to generating "thumb mode" instructions, which are not what we need to use for our assembly code.  So we need to tell the C compiler to generate normal ARM instructions.  To do this with gcc, add <code>-marm</code> to the end of your <q class="identifier">CFLAGS</q>
+
+<h1>A User Program</h1>
+
+Create a simple "user program" in the form of a function in kernel.c called <q class="identifier">first</q> that just prints and then hangs (since we will not build the ability to get out of user mode until later):
+
+<pre><code>void first(void) {
+	bwputs("In user mode\n");
+	while(1);
+}</code></pre>
+
+<h1>Assembly stub</h1>
+
+Create a new file called context_switch.s with the following:
+
+<code>.global activate
+activate:</code>
+
+And a new file called asm.h with the following:
+
+<code>void activate(void);</code>
+
+Include this new header file into kernel.c so that you can call the assembly stub from your C code, then add a call to <q class="identifier">activate</q> to your <q class="identifier">main</q>.
+
+Finally, add <q class="identifier">context_switch.o</q> as a dependency to kernel.elf in your Makefile so that it will get built.
+
+<h1>The Context Switch</h1>
+
+Alright, what are the absolute minimum things we need our switch to user mode (called the "context switch") to do?  Well, it the very least we need a way to start running some function in user mode.
+
+The way to switch an ARM system into user mode is to use the <q class="identifier">movs</q> instruction to put some address to jump to (like the address of our function) into the <q class="identifier">pc</q> register (the "program counter", which is where the CPU is currently executing).  But what mode will the CPU enter when we do this?  The answer is that it will read the contents of a special register called <q class="identifier">SPSR</q> (Saved Processor Status Register) and use that to change <q class="identifier">CPSR</q> (Current Processor Status Register), and thus change modes.  Couldn't we just change <q class="identifier">CPSR</q> directly?  Because we're not in user mode, we could, but since we want to jump into our function the moment we switch modes, this is the safest way to do it:
+
+<code>mov r0, #0x10
+msr SPSR, r0
+ldr lr, =first
+movs pc, lr</code>
+
+0x10 is just the value that sets the bit meaning "user mode".  We set that to <q class="identifier">SPSR</q>, load the location of <q class="identifier">first</q> and then <q class="identifier">movs</q> there.
+
+You can stick that at the start of <q class="identifier">activate</q> and try to run that if you like, but it won't work.  Why is that?  Remember how we had to set up the stack in order to jump into C code?  Well, it turns out that one of the differences of user mode is that it uses a different <q class="identifier">sp</q> register.  This can be very handy later when we're doing more complicated things, but for now we can just set the user mode stack to be the same as the kernel stack, by adding the following before the <q class="identifier">movs</q>:
+
+<code>mov ip, sp
+msr CPSR_c, #0xDF /* System mode */
+mov sp, ip
+msr CPSR_c, #0xD3 /* Supervisor mode */</code>
+
+So what are we doing here?  We copy our current <q class="identifier">sp</q> to <q class="identifier">ip</q> (because we'll have a different <q class="identifier">sp</q> in user mode, so we need to copy it somewhere), then we set a part of <q class="identifier">CPSR</q> directly to enter "system mode".  What is system mode?  It's a special mode on the ARM processor that lets us access the registers as though we were in user mode, but still be able to do privileged things.  We set user mode <q class="identifier">sp</q> to our copy, then switch back to supervisor mode (which is where we normally operate in the kernel).
+
+If you build the kernel now, and run it under QEMU, you should get "In user mode" printed out.  Good job!
+
+<a href="https://github.com/singpolyma/singpolyma-kernel/tree/fd87bf3081102b74913e5ea136e84a32a7b1ea3a">Code so far on GitHub</a>
+
+<h1>A Better Stack</h1>
+
+Using the same kernel stack for our user mode program isn't going to work very well if we want to be able to pause the program and go back to it, because other things will use the kernel stack in between, so we really want the program to have it's own stack.
+
+First, declare some space for your user stack:
+
+<code>unsigned int first_stack[256];</code>
+
+Then pass <code>first_stack + 256</code> to activate, and change asm.h to have activate take an argument.
+
+The first four arguments to an assembly call come in as r0-r3, so we can easily access this parameter inside activate:
+
+<code>msr CPSR_c, #0xDF /* System mode */
+mov sp, r0
+msr CPSR_c, #0xD3 /* Supervisor mode */</code>
+
+One less line, since we can access r0 from user mode directly.
+
+<h1>Less hardcoding</h1>
+
+The program should still run, but now it's using its own stack.  We still have the value of <q class="identifier">SPSR</q> and the name of the function we're calling hardcoded into the assembly.  We could pass these as parameters, but then we would have to remember them in a special way when it comes to being able to enter and re-enter the same user mode function multiple times (since the current stack, CPU mode, and entry point can change between calls), so it's actually easiest to store these two additional values on the user mode program's stack.  We will store them in special positions so that all the user mode registers can be saved along with them easily.
+
+We'll want to move the calculation of the end of the stack up, so that we can put our data into in:
+
+<code>unsigned int *first_stack_start = first_stack + 256 - 16;
+first_stack_start[0] = 0x10;
+first_stack_start[1] = (unsigned int)&amp;first;</code>
+
+You'll note the cast to (unsigned int) of the function pointer.  This is mostly to make the compiler not warn us about using a function pointer as data.  You should now pass first_stack_start to activate.  If you want to, you can test that it still works, but we aren't actually using this new data yet.
+
+We've done a lot of work on the assembly, and are about to change it quite a bit, so I'll reproduce the whole context switch here with the changes to use these values:
+
+<pre><code>.global activate
+activate:
+	ldmfd r0!, {ip,lr} /* Get SPSR and lr */
+	msr SPSR, ip
+
+	msr CPSR_c, #0xDF /* System mode */
+	mov sp, r0
+	pop {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,fp,ip,lr}
+	msr CPSR_c, #0xD3 /* Supervisor mode */
+
+	movs pc, lr</code></pre>
+
+This loads the first two elements from the passed-in stack to <q class="identifier">SPSR</q> and <q class="identifier">lr</q> (<q class="identifier">ldmfd</q>, when coupled with the ! on the first argument, is the same as <q class="identifier">pop</q>, but works with any register instead of just <q class="identifier">sp</q>), then we switch to usermode and set the stack to r0, as before.  Finally we use the <q class="identifier">pop</q> instruction to load the rest of the stuff into our registers.  We have nothing in there just now, but we'll use more later, and this also makes the stack skip over all that stuff so that the process can use all of the space.
+
+You'll note we had to set <q class="identifier">lr</q> twice.  This is because, like <q class="identifier">sp</q>, <q class="identifier">lr</q> has a different version used in user mode from the one used in supervisor mode.
+
+<h1>That's it!</h1>
+
+We now have a kernel that sets up a user mode task and then switches to it.  Next time: getting back out of user mode!
+
+The code for this post is <a href="https://github.com/singpolyma/singpolyma-kernel/tree/bcd38d3b61e9a19c5da34055d05d18d3f9ba7e7f">on GitHub</a>.

@@ -1,0 +1,20 @@
+---
+title: How Can XOXO Be Used?
+date: 2006-02-15 11:43:00 Z
+tags: ["XOXOBlog","XOXO","Introduction","Microformats"]
+wordpress_path: /actionstream/how-can-xoxo-be-used
+---
+XOXO is the most abstract and extensible of all the <a href="http://microformats.org/wiki/microformats">microformats</a>.  While what it can be used for certainly is not infinite, and there are some things it should <i>not</i> be used for, it can certainly be used for a great many varying applications.  This post intends to be a discussion of some examples of such use cases.
+
+<b>No Available Microformat</b>
+If you want to mark up a part of a webpage in a structured way, either because you feel that a reason for someone wanting to write code to parse the data is probable, or because you wish to write such code yourself, you should first check the <a href="http://microformats.org/wiki/Main_Page">microformats list</a> for an existing microformat dealing with your data type.  If no suitable microformat exists, XOXO may be the answer.  Be careful however, if your particular usage can be generalised into something common across the web that would benefit from standardised markup you may have a candidate for <a href="http://microformats.org/wiki/process">suggesting a new microformat</a>.
+
+XOXO can usually easily be styled using CSS to look the same as a non-XOXO page.  This combined with the ease of parsing the format makes it very useful in most cases where data needs to be parseable but there is no existing microformat available.  It is reccomended to use 'standard' fields (fields not included in the optional DL-list element) wherever possible, however whether or not to use anchor tags when there is no HREF is debateable.
+
+<b>Extending Existing Microformats</b>
+XOXO can also be easily used to extend existing microformats.  For example, the XOXO Blog Format complies fully with the <a href="http://microformats.org/wiki/hatom">hAtom</a> microformat, but also adds options for more data to be encapsulated.  XOXO is very useful for this because its markup can easily be made to comply with most other microformats, meaning that parsers of the microformat in question will be able to handle it just fine, while XOXO parsers will be able to extract the extra data as well.  In addition to this, if the extra data provided by the XOXO extension is stored in 'Alternate-A fields', and not in 'DL-fields', most microformat parsers can be easily modified to support the extra fields without strict XOXO compliance.
+
+<b>When <i>not</i> to use XOXO</b>
+There are a couple reasons not to use XOXO to mark up your data.
+<ol><li>If there is an existing microformat that will serve your purpose as it is (check the <a href="http://microformats.org/wiki/Main_Page">microformats list</a>)
+</li><li>If your use case qualifies for the <a href="http://microformats.org/wiki/process">creation of a new microformat</a></li></ol> <div class="tags">Tags:<ul><li><a href="http://del.icio.us/xoxo.blog/introduction" rel="tag">introduction</a></li> <li><a href="http://del.icio.us/xoxo.blog/microformats" rel="tag">microformats</a></li> <li><a href="http://del.icio.us/xoxo.blog/xoxo" rel="tag">xoxo</a></li> </ul></div>

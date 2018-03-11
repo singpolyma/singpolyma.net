@@ -1,0 +1,96 @@
+---
+title: Asynchronous Comment Form
+date: 2006-06-08 10:01:00 Z
+tags: ["Tech"]
+wordpress_path: /actionstream/asynchronous-comment-form
+---
+<b title="Updated 2006-12-21">See <a href="http://singpolyma-tech.blogspot.com/2006/12/comment-forms-and-blogger-beta.html">this page</a> for a similar hack for the new version of Blogger.</b>
+
+<b title="Updated 2006-12-05">This hack <a href="http://singpolyma-tech.blogspot.com/2006/11/inline-comment-form-for-beta-news.html">does not</a> work with Blogger BETA.</b>
+
+This is a new, partly experimental, upgrade to <a href="http://singpolyma-tech.blogspot.com/2006/01/new-inline-comments-form.html">my inline comments form</a>.  Credit goes to Aditya of <a href="http://the-lastword.blogspot.com/">The Last Word</a> for inspiring this hack.  Comments are posted without ever leaving the post page and then the page is reloaded.  You never see the Blogger comment page unless there is an error.  The form is still <a href="http://cocomment.com/">coComment</a> compatible and supports posting using your Blogger account :)
+
+<ol><li>Word verification for comments must be turned off (to do this go to the 'comments' tab in your blog settings, scroll to 'Show word verification for comments?' and select 'No')</li><li>Turn comment posting by anonymous users on (to do this go to the 'comments' tab in your blog settings, scroll to 'Who Can Comment?' and select 'Anyone')</li><li>Insert the following code into the &lt;head&gt; section of your blog template :
+<div style="font-family: monospace;">
+&lt;script type="text/javascript" src="http://jscripts.ning.com/get.php?xn_auth=no&amp;amp;id=1338954"&gt;&lt;/script&gt;
+&lt;script type="text/javascript"&gt;
+//&lt;![CDATA[
+ var comment_form_template = '&lt;div class="comment-poster"&gt;[[AUTHOR]]&lt;/div&gt;\n'
+          + '&lt;div class="comment-body"&gt;&lt;div class="innerCmntBody"&gt;[[BODY]]&lt;/div&gt;&lt;/div&gt;\n'
+          + '&lt;div class="comment-timestamp"&gt;&lt;a href="[[PERMALINK]]" title="comment permalink"&gt;[[DATE]]&lt;/a&gt;&lt;/div&gt;\n';
+//]]&gt;
+&lt;/script&gt;
+
+</div></li><li>Insert the following code directly after your &lt;body&gt; tag:
+<div style="font-family: monospace;">
+&lt;iframe id="comment_form_target" name="comment_form_target" style="display:none;" onload="if(comment_form) {check_comment_posted();}"&gt;&lt;/iframe&gt;
+</div>
+</li><li>Replace the &lt;$BlogItemCreate$&gt; tag with the following code:
+<div style="font-family: monospace;">
+&lt;div id="comment_form_preview&lt;$BlogItemNumber$&gt;"&gt;&lt;/div&gt;
+
+&lt;ItemPage&gt;
+&lt;script type="text/javascript"&gt;
+
+var blogTool = "Blogger";
+var blogURL = "&lt;$BlogURL$&gt;/";
+var blogTitle = "&lt;$BlogTitle$&gt;";
+var postURL = "&lt;$BlogItemPermalinkUrl$&gt;";
+var postTitle = "&lt;BlogItemTitle&gt;&lt;$BlogItemTitle$&gt;&lt;/BlogItemTitle&gt;";
+var commentAuthorFieldName = "anonName";
+var commentAuthorLoggedIn = "false";
+var commentFormID = "cformtag&lt;$BlogItemNumber$&gt;";
+var commentTextFieldName = "postBody";
+var commentButtonName = "post";
+var cocomment_force = false;
+
+&lt;/script&gt;
+&lt;script id="cocomment-fetchlet" type="text/javascript" src="http://www.cocomment.com/js/cocomment.js"&gt; &lt;/script&gt; 
+&lt;/ItemPage&gt;
+
+&lt;ItemPage&gt;&lt;a href="javascript:toggleitem('cform');"&gt;Post a Comment&lt;/a&gt;
+&lt;div style="display:block;" id="cform"&gt;&lt;/ItemPage&gt;
+&lt;MainOrArchivePage&gt;&lt;a href="javascript:toggleitem('cform&lt;$BlogItemNumber$&gt;');"&gt;Post a Comment&lt;/a&gt;
+&lt;div style="display:none;" id="cform&lt;$BlogItemNumber$&gt;"&gt;&lt;/MainOrArchivePage&gt;
+   &lt;form target="comment_form_target" id="cformtag&lt;$BlogItemNumber$&gt;" action="http://www.blogger.com/login-comment.do" onsubmit="comment_form_submit(this);isSubmit=true;" method="post"&gt;&lt;div&gt;
+      &lt;input type="hidden" name="blogID" value="&lt;$BlogID$&gt;" /&gt;
+      &lt;input type="hidden" name="postID" value="&lt;$BlogItemNumber$&gt;" /&gt; 
+      &lt;div&gt;
+         &lt;h2 class="sidebar-title form-title"&gt;&lt;label class="cbody"&gt;Leave your comment &lt;/label&gt;&lt;/h2&gt;
+         &lt;h2 class="sidebar-title"&gt;  You can use some HTML tags, such as &lt;b&gt;  &amp;lt;b&amp;gt;, &amp;lt;i&amp;gt;, &amp;lt;a&amp;gt;  &lt;/b&gt; &lt;/h2&gt;
+         &lt;textarea name="postBody" class="comment" rows="8" cols="40" onkeyup="comment_form_preview(this.form);"&gt;&lt;/textarea&gt;
+         &lt;h2 class="sidebar-title identity"&gt; Choose an identity &lt;/h2&gt;
+         &lt;div&gt;
+            &lt;div&gt;
+               &lt;input id="idenBlogger&lt;$BlogItemNumber$&gt;" type="radio" name="iden" value="Blogger" checked="checked" onchange="toggleitem('cfo&lt;$BlogItemNumber$&gt;');comment_form_preview(this.form);" /&gt;
+               &lt;label&gt; Your Blogger display name &lt;/label&gt;
+            &lt;/div&gt;
+            &lt;div&gt;
+               &lt;input type="radio" name="iden" value="Other" onchange="toggleitem('cfo&lt;$BlogItemNumber$&gt;');comment_form_preview(this.form);" /&gt;
+               &lt;label&gt;Other&lt;/label&gt;
+               &lt;div style="display:none;" id="cfo&lt;$BlogItemNumber$&gt;"&gt;
+                  &lt;table style="margin-left: 4em;" cellpadding="0" cellspacing="0"&gt;
+                  &lt;tr&gt; &lt;td colspan="2" style="padding-top:.4em;position:relative;left:-4em;" align="left"&gt; These fields are optional, but I would appreciate it if you filled them out. &lt;/td&gt;&lt;/tr&gt; 
+                  &lt;tr&gt; &lt;td&gt; &lt;label&gt; Name &lt;/label&gt; &lt;/td&gt;
+                  &lt;td&gt; &lt;div class="errorbox-good"&gt; &lt;input  type="text" name="anonName" value="" maxlength="100" class="text" /&gt;  &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+                  &lt;tr&gt; &lt;td&gt; &lt;label&gt; Your web page &lt;/label&gt; &lt;/td&gt;
+                  &lt;td&gt; &lt;div class="errorbox-good"&gt; &lt;input  type="text" name="anonURL" value="" maxlength="100" class="text" /&gt;  &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+                  &lt;/table&gt;
+               &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div class="diff-user"&gt;  Or you can sign in  &lt;a href="http://www.blogger.com/login.g?r=http%3A%2F%2Fwww.blogger.com%2Fcomment.g%3FblogID%3D&lt;$BlogID$&gt;%26postID%3D&lt;$BlogItemNumber$&gt;"&gt;  as a different user&lt;/a&gt;.&lt;/div&gt;
+         &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="errorbox-good"&gt;  &lt;/div&gt;
+      &lt;p class="buttons"&gt;
+         &lt;input style="margin-right:.3em" name="post" value="Publish Your Comment" class="publish"  type="submit" tabindex="2" /&gt;
+         &lt;input value="Preview" type="submit" name="preview"  tabindex="3" /&gt;
+      &lt;/p&gt;
+   &lt;/div&gt;&lt;/form&gt;
+&lt;/div&gt;
+
+</div></li><li>Save your template and republish your blog</li></ol>
+
+Note to advanced users : The variable set in step 3 is the template used by the script to generate previews.  You can modify it to be closer to the code generated for comments on your blog so that users get a better preview :)  Some may also wish to <a href="http://jscripts.ning.com/get.php?xn_auth=no&amp;id=1338954">browse the JavaScript source</a>.
+
+<div class="tags">Tags:<ul><li><a href="http://del.icio.us/singpolyma.techblog/comments" rel="tag">comments</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/blogger" rel="tag">blogger</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/hacks" rel="tag">hacks</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/hack" rel="tag">hack</a></li> </ul></div>

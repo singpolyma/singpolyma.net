@@ -1,0 +1,22 @@
+---
+title: Eduroam on Maemo (on the N900)
+date: 2010-11-24 01:04:27 Z
+tags: ["Tech","Maemo"]
+wordpress_path: /actionstream/eduroam-on-maemo-on-the-n900
+---
+The University of Waterloo has joined the eduroam international educational institution WiFi access exchange program.  I am very happy about this, since eduroam uses good WPA2+RADIUS authentication instead of stupid captive portal stuff.  Since I had to do some research to figure out how to connect from my N900, I thought I would share that here.
+
+<ol>
+<li>Go to Settings &gt; Internet connections &gt; Connections &gt; New</li>
+<li>Select WPA with EAP for security.</li>
+<li>EAP type: PEAP</li>
+<li>Certificate: none</li>
+<li>EAP method: EAP MSCHAPv2</li>
+<li>User name: user@uwaterloo.ca</li>
+<li>Password: Your Quest password</li>
+<li>Hit "Advanced"</li>
+<li>Go to the EAP tab</li>
+<li>Check the box "Use manual user name" and enter user@uwaterloo.ca again</li>
+</ol>
+
+The last three steps are the extra part.  I go this information from <a href="http://talk.maemo.org/showthread.php?p=881669">this thread</a>.  I have no idea what the difference is between a "manual user name" and the username that is part of the login prompt.  Maybe someone else knows?

@@ -1,0 +1,13 @@
+---
+title: On Actionstreams and Blogging Your Own Work
+date: 2008-03-12 03:03:50 Z
+tags: ["Tech","Blogging","Plugin","Wordpress","DiSo","Actionstream"]
+wordpress_path: /actionstream/on-actionstreams-and-blogging-your-own-work
+---
+So first, the plugin.  I have basically ported the <a href="http://www.movabletype.org/2008/01/building_action_streams.html">MT Actionstream</a> plugin <a href="/plugins/actionstream/">to Wordpress </a>(you can see it in action on my main page).  This is pretty cool, and it means we can easily share settings with other efforts.
+
+New in this release is the ability to import a list of services from another page (like MyBlogLog or  FriendFeed) using <a href="http://code.google.com/apis/socialgraph/">SGAPI</a>.
+
+Code lesson: sometimes the Wordpress docs lie.  They say that you pass a function name (or array with object reference and function name) to wp-cron hooks to schedule regular actions.  Not true.  You pass the name of a Wordpress action (added with add_action).
+
+Blogging Lesson: Blog your own work.  This plugin has been covered by at least four blogs now (more than most of my stuff) and not yet by me.  I just posted the plugin on the DiSo mailing list and people liked it.  I'm not complaining, but I'll definately post my own stuff up front in the future!

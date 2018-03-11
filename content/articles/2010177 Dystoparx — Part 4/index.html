@@ -1,0 +1,115 @@
+---
+title: Dystoparx — Part 4
+date: 2010-06-26 16:43:40 Z
+tags: ["Writing","Dystoparx","Fiction"]
+wordpress_path: /actionstream/dystoparx-part-4
+---
+<div class="section">
+
+Our protagonist is skimming headlines.  Most news these days makes it to him by way of messages from individuals, but he still follows a handful of sites just in case there's something he misses.  There is a story about the kiddie porn issue.
+
+<blockquote>
+
+	<h1>Privacy Commissioner's Report on Spyware</h1>
+
+	The Privacy Commissioner released a report today on the proposed use of personal information gathering software, such as MusicBox, in the fight against child pornography.  The report makes several good arguments in favour of giving the information to police, citing similarities to existing police information sources, such as access to security camera footage.
+
+	The report, however, stood strongly against giving private investigation firms access to this information, saying, "Private investigators are really just private citizens.  They should not get access to such potentially personal information."
+
+	</blockquote><strong>UPDATE</strong>: the RCMP have begun collecting &lt;link&gt; information from MusicBox and others.  The Commissioner has issued a statement, saying, "We are not going to wait for a decision on this.  It seems legal.  Let anyone in favour of child abuse sue us."
+
+
+
+</div>
+
+<div class="section">
+
+Bill is leaving private investigation.  He used to be a cop, long ago, and he switched for one reason: to get things done.  He had been sick of having his hands tied as a cop, and wanted the freedom to bend the rules that came from acting as a private citizen.  Now, however, the situation has changed.  The information that will be instrumental in helping him eradicate child abuse is only available to the RCMP, so to the RCMP he applies.  He has no fears that this new information source will be cut off from him.  The Privacy Commissioner seems mostly in favour of letting the RCMP use the data, the RCMP themselves are using the data, and who is going to sue the RCMP for trying to stop child abuse?  He knows some hackers are upset, but in his mind that's only because hackers are criminals, they have something to hide.  Only criminals have anything to hide.
+
+Now, you must understand, it is not a lack of intelligence that leads Bill to think this way, but it is only ignorance.  He has been misinformed as to the nature of hacking and the motives of most hackers.  In his mind, hackers and crackers and the Russian mob are all one and the same.  The differences between tinkering and experimenting, breaking for personal gain, and controlling botnets have not been explained to him, at least not in a way that he can relate to.  Privacy, similarly, is not something he has ever been taught to value for its own sake.  Since this data is being used be an organisation he trusts, he cannot fathom its abuse.
+
+The phone is ringing.  It is the call.  He's in.  Really, it is no surprise.  He found the data: it was his idea.  They're putting him in charge.  Good.
+
+</div>
+
+<div class="section">
+
+Jack (jjdavis) is in town for the week.  He and some others have been organising a keysigning.  Our protagonist is perfectly happy to go along with this plan.  It should be some geeky fun, at the very least.  Jack seems convinced that the hammer is going to fall on crypto pretty soon, but even if his motives are paranoid he hasn't gone crazy yet.
+
+As Nicnus arrives he sees the following written on a whiteboard:
+
+<blockquote>
+UserIDs, Fingerprints: ssh://anonymous@jjdavis.name/~jjdavis/Public/keysign23.txt
+SSH Fingerprint: rodeo window crater. precise mailbox benny. apple brazil angel. decade danube cake
+SHA256: split wisdom vortex. water mile love. castle cafe magenta. cola quick critic. norway victor ivory. symbol charter apollo. ozone basic option. animal reunion africa
+</blockquote>
+
+Nicnus pulls out his laptop and taps a key to bring it out of suspend mode.  He opens a terminal and soon has verified that the jjdavis.name he is connecting to is the real one, pulled down the file, and verified that said file has not been tampered with since the message went up on the whiteboard.
+
+Jack waves at him, and he smiles back.  He opens the text file and makes sure that his information is correct.  Everything seems to be in order.
+
+The room is quickly filling up.  Many of the geeks are coming in with laptops, a few with only their smartphones, and some old-school paranoids with moleskin notebooks and fountain pens.  There are also a few obvious non-geeks with lined or even regular printer paper and dollar-store pens.
+
+One of the paranoids is complaining to Jack that the fingerprints and other security information being written down as a string of words instead of in hexadecimal makes it impossible to do the signing without a computer.  Jack is pointing out that the file has been up for two whole days and the paranoid could have checked his information at home.  He'll need a computer for some parts of the process anyway.
+
+Nicnus steps in to the conversation, interrupting, "How were you planning to verify your information in a text file without a computer?"
+
+The paranoid waves a printout under our protagonist's nose.  "I shouldn't need to carry around my secure information on portable hardware as part of the system whereby I protect my privacy."
+
+"Of course," Jack rushes, "but the words are much easier for normals—"
+
+"Do you have evidence of that?  Pictures, I could see, but words?"
+
+"Well, maybe.  I certainly find them easier to rememb—"
+
+"You can remember it either way.  It's not like you attracted a large number of mortals this way."
+
+Nicnus tries to shoulder back into the conversation, "You could just write down—"
+
+"I <em>could</em> just do a lot of things.  The organiser should have been more organised."
+
+"Pointing this out ahead of time—"
+
+"That may be my fault," Jack is trying to stop a full-fledged geekfight now, "This whole thing <em>was</em> put together quickly."
+
+Someone else has come into the discussion, "Just write down the information, and verify it later at home."
+
+Nicnus is happy.  That's exactly what he had been trying to suggest.
+
+The paranoid is not happy, but this solution will have to do.
+
+At this point, some readers may want to know what this event is all about.  It seems like a number of geeks of varying levels of paranoia are getting together and… verifying things?  What things?  What is a keysigning?
+
+It's like this: some people (especially paranoid geeks) want to know who they're talking to when they send someone a message.  Especially if they are going to encrypt the message.  It's no good encrypting a message (which keeps anyone but the recipient from reading it) if you're not sure the recipient is even the right person!  There is encryption-related technology, called cryptographic signatures, that allows one to be certain that a message was signed by (and therefore from, or at least approved of by) a certain cryptographic key.  Unfortunately, cryptographic keys are just really big random numbers.  There is no way to tell, just by looking at a key, whose key it is.  Enter keysigning.  If <em>you</em> know who someone is, and you know which key is theirs, you can sign <em>their</em> key (along with a statement about whose it is) with <em>your</em> key.  Then, anyone who knows which key is yours will see that you claim that key is theirs.  Eventually, if enough people do this to enough keys, network effects make it so that everyone can know who owns every key.  This is called the web of trust.
+
+So, as this meeting progresses, Nicnus and everyone else in attendance stands up to verify that the keys noted in keysign23.txt are indeed correct.  Then, photo identification, handwritten signatures, and other means of verifying identity are exchanged.  Finally, everyone in the room knows who everyone else really is (to the extend that you trust their ID), and which key they own.  Afterwards, people sign the keys that belong to the other attendees, encrypt the signature, and email this encrypted signature to the key owner.  That way, only the key owner can publish the signature to the world, and they only receive it if they did not lie about their email address (which is usually included with the key).
+
+During the meeting, our protagonist and Acklas hang out with Jack.  He's a friend, but he's been living in Atlanta lately.  Acklas is the first to bring up the incongruity of their friend being so security conscious as to run this event, yet choosing to live south of the border.
+
+"It's like this," Jack says, "It's more dangerous, privacy wise, <em>right now</em>, but that could change."
+
+"So go somewhere safer if you don't like Canada either.  Hole up in Switzerland, or the third world."  Acklas points out.
+
+"Maybe.  But situations anywhere can change.  Better to know how to protect yourself."
+
+"Agreed, yes," Nicnus breaks in, "but <em>also</em> a good part of protecting yourself is not living in the most dangerous of places."
+
+"To be fair, there are more dangerous places.  China, for example."  Jack is trying to get around the issue, but they are not going to let him.
+
+"Just because there are places that respect your rights less than the USA, that doesn't—"
+
+"Sure, fine, yes."  Jack is a bit agitated, "I like my job, and I'm close to friends.  It works well, and the government only occasionally causes me problems.  I keep a low profile, and anything that needs to be private is invisible."
+
+"What about going across the border?"  Acklas.
+
+"Or walking down the street looking as Middle Eastern as you do?"  Nicnus.
+
+Jack makes a face, "Racism is a big problem everywhere.  The police have surprisingly not been a big bother.  They hate black citizens more than me still.  Border crossings are a pain, but my papers are in order and I don't keep anything encrypted on the laptop when I take it with me.  Everything goes up to the cloud," by which he means, the Internet, "and I shred those portions of the drive.  It looks to most anyone like there was never any private or encrypted data there."
+
+"Well…" Acklas is not convinced, but he can't win this one.
+
+"Do you have a plan to get out?" Nicnus has given in on the "staying there for now" argument.
+
+"Yes.  I live close to the airport, and I have a geek friend with a minivan.  I keep Canadian, US, and Euro cash on me at all times.  In the event that I need to jump, I order a plane ticket or ride out with my friend.  My data syncs to the cloud constantly.  Destroy the hard drive contents and run.  Pretty simple."
+
+</div>

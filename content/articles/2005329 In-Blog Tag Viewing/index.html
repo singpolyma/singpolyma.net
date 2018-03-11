@@ -1,0 +1,48 @@
+---
+title: In-Blog Tag Viewing
+date: 2005-11-25 14:02:00 Z
+tags: ["Tech"]
+wordpress_path: /actionstream/in-blog-tag-viewing
+---
+<b title="2006-02-28">This hack has been superceeded by a <a href="http://singpolyma-tech.blogspot.com/2006/02/freshtags-singpolyma.html">newer version</a>.</b>
+
+A <a href="http://blogfresh.blogspot.com/2005/11/category-integration-between-sites.html">recent post at Freshblog</a> got me to thinking about integrating the viewing of tags directly into my blogger blog. The solution presented there loads the results from tag queries into your sidebar, and checks the referrer if no tags are specified. The idea here is that if you are on my blog and query a tag, and then click a link to his blog, his sidebar will show his posts for the tag you selected here. It's a great system, but <a href="http://blogfresh.blogspot.com/2005/11/category-integration-between-sites.html#113282722740286802">my only problem with it</a> was that it reloaded the current page with no apparent change at first, until you checked the sidebar. So I have modified the code for my own hack.
+
+This hack will present a drop-down list of tags in your sidebar, pulled from the del.icio.us account you use to tag your blog and filtered for the anchor tag you use (if you use one). Selecting a tag from the drop-down list will take you to a post page on <span style="font-style: italic;">your</span> blogger blog, so you never leave the site, that lists the results of a tag query for the selected tag. The sidebar will also update the same was as on <a href="http://blogfresh.blogspot.com/">Freshblog</a> to facilitate the inter-blog browsing.  Selecting another tag from the drop-down in the sidebar will <span style="font-style: italic;">add</span> that tag to your query, not replace your query.
+
+<b title="added December 28, 2005">A 'reset' link is placed next to the drop-down box so that you can clear the tag query and switch to another tag without adding it.  My version also fixes a minor bug in the original so that when tags in a referrer URL have '%20's in them they are replaced by the del.icio.us-compatible '+'</b>
+
+<b title="Update 2006-01-17">If no tag is found in the &lt;head&gt; section, the script attempts to pull one out of your posts.  This can be disabled on your main page by inserting this code along with that in step 2:
+<span style="font-family:monospace;">&lt;MainPage&gt;&lt;script type="text/javascript"&gt;var no_autocapture = true;&lt;/script&gt;&lt;/MainPage&gt;</span></b>
+
+Now, without further boring explanation, here's how to implement the hack :
+
+<ol>   <li>Create a new post on the blog you would like to implement this hack on with the title 'Tags' and click the 'Edit Html' tab for the post body, pasting the exact code '&lt;div id="tagspostpage"&gt;&lt;/div&gt;' into the post body. Turn comments off for the post and set the post date to January 1, 2000. The time doesn't matter. Post this post.
+</li>   <li>Edit the template for your blog and insert the following code into the &lt;head&gt; section :
+
+<span style="font-family:courier new;">&lt;script type="text/javascript"&gt;</span>
+<span style="font-family:courier new;">//&lt;![CDATA[</span>
+<span style="font-family:courier new;">var del_user = "</span><span style="color: rgb(255, 0, 0);font-family:courier new;">username</span><span style="font-family:courier new;">";</span>
+<span style="font-family:courier new;">var anchor = "</span><span style="color: rgb(255, 0, 0);font-family:courier new;">anchortag</span><span style="font-family:courier new;">";</span>
+<span style="font-family:courier new;">document.write('&lt;script src="http://del.icio.us/feeds/json/tags/'+del_user+'/'+anchor+'?count=100" type="text/javascript"&gt;&lt;\/script&gt;');</span>
+<span style="font-family:courier new;">//]]&gt;</span>
+<span style="font-family:courier new;">&lt;/script&gt;</span>
+<span style="font-family:courier new;">&lt;script src="http://www.awriterz.org/etcetc/tagspostpage.js" type="text/javascript"&gt;&lt;/script&gt;</span>
+
+Replacing 'username' with the del.icio.us username where you tag your blog posts and 'anchortag' with the anchor tag you use (if you use one). If, like me, you don't use an anchor tag, then replace 'anchortag' with nothing.</li>   <li>At the bottom of your template, right before the '&lt;/body&gt;' tag insert this code :
+
+<span style="font-family:courier new;">&lt;script type="text/javascript"&gt;</span>
+<span style="font-family:courier new;">var thediv = document.getElementById("tagspostpage");</span>
+<span style="font-family:courier new;">if(thediv)</span>
+<span style="font-family:courier new;">   thediv.innerHTML = return_tagged_posts(true);</span>
+<span style="font-family:courier new;">&lt;/script&gt;</span>
+
+</li><li>Insert this code into your template where you want the tags drop-down box and matched posts to appear (as they do in my sidebar) :
+
+<span style="font-family:courier new;">&lt;script type="text/javascript"&gt;</span>
+<span style="font-family:courier new;">list_side_tags();</span>
+<span style="font-family:courier new;">write_tagged_posts();</span>
+<span style="font-family:courier new;">&lt;/script&gt;</span>
+
+</li>   <li>Save your template and republish your whole blog.</li> </ol>
+<div class="tags">Tags:<ul><li><a href="http://del.icio.us/singpolyma.techblog/blogger" rel="tag">blogger</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/del.icio.us" rel="tag">del.icio.us</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/delicious" rel="tag">delicious</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/freshblog" rel="tag">freshblog</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/tagging" rel="tag">tagging</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/hack" rel="tag">hack</a></li> </ul></div>

@@ -1,0 +1,183 @@
+---
+title: Writing a Simple OS Kernel — Part 4, Multitasking
+date: 2012-02-04 16:03:30 Z
+tags: ["Tech","singpolyma-kernel","define","0x0","0x1"]
+wordpress_path: /actionstream/writing-a-simple-os-kernel-multitasking
+---
+<strong>Added a description of fork, 2012-36.</strong>
+
+<a href="/2012/01/writing-a-simple-os-kernel-syscalls/">Last time</a> we got our kernel switch back and forth between a user mode task.  The focus in this post is going to be adding the ability to run multiple tasks.
+
+<h1>Hack Two Tasks in There</h1>
+
+Our kernel currently has no way for tasks to exit, so we need to make sure they never try to return, since that will probably cause an error and hang the system (in the best case).  So change the <q class="identifier">syscall</q> invocation at the end of <q class="identifier">first</q> to be in an infinite loop, such that if the task gets re-activated after it is done it just immediately calls back into the kernel.
+
+Then, add a second function so that we have something else to run:
+
+<pre><code>void task(void) {
+	bwputs("In other task\n");
+	while(1) syscall();
+}</code></pre>
+
+We're going to run two tasks, so change the <q class="identifier">first_stack</q> and <q class="identifier">first_stack_start</q> to something like:
+
+<code>unsigned int stacks[2][256];
+unsigned int *tasks[2];</code>
+
+And setup both tasks, in basically the same way as we did before:
+
+<code>tasks[0] = stacks[0] + 256 - 16;
+tasks[0][0] = 0x10;
+tasks[0][1] = (unsigned int)&amp;first;
+
+tasks[1] = stacks[1] + 256 - 16;
+tasks[1][0] = 0x10;
+tasks[1][1] = (unsigned int)&amp;task;</code>
+
+Then, call <q class="identifier">activate</q> with <q class="identifier">tasks[0]</q> and <q class="identifier">tasks[1]</q> instead of <q class="identifier">first_stack_start</q>.  Recompile and run, you should see both tasks running in the order that you activate them.
+
+<h1>Some abstractions</h1>
+
+We've hardcoded a bunch of stuff again.  We should clean it up so that we don't have to keep copying these chunks every time we want a new task.  Let's move those magic numbers into constants and make a function to set up a new task:
+
+<pre><code>#define STACK_SIZE 256 /* Size of task stacks in words */
+#define TASK_LIMIT 2   /* Max number of tasks we can handle */
+
+unsigned int *init_task(unsigned int *stack, void (*start)(void)) {
+	stack += STACK_SIZE - 16; /* End of stack, minus what we're about to push */
+	stack[0] = 0x10; /* User mode, interrupts on */
+	stack[1] = (unsigned int)start;
+	return stack;
+}</code></pre>
+
+Then, back in <q class="identifier">main</q>  clean up the task initialisation to use these abstractions:
+
+<code>unsigned int stacks[TASK_LIMIT][STACK_SIZE];
+unsigned int *tasks[TASK_LIMIT];
+
+tasks[0] = init_task(stacks[0], &amp;first);
+tasks[1] = init_task(stacks[1], &amp;task);</code>
+
+<h1>Scheduling</h1>
+
+Scheduling (deciding what tasks to run, when, and for how long, in a multitasking system) is a <a href="http://en.wikipedia.org/wiki/Scheduling_%28computing%29">big topic</a>.  We are going to implement the simplest possible (in our situation) schedule: round-robin.  This means that we'll just activate each task in the order that they were created, and then go back to the beginning and activate each in sequence again.
+
+Since we have no way for tasks to exit, make sure the following is at the end of each task:
+
+<code>while(1) syscall();</code>
+
+This will just cause the task to repeatedly call back into the kernel when it is done.
+
+We'll also need to keep track in <q class="identifier">main</q> of how many tasks there are and which one we're currently running:
+
+<code>size_t task_count = 0;
+size_t current_task = 0;</code>
+
+In order to use <q class="identifier">size_t</q> you'll need to include stddef.h.  Now just make sure that task_count gets set correctly, and replace the code that activates user tasks with this:
+
+<pre><code>while(1) {
+	tasks[current_task] = activate(tasks[current_task]);
+	current_task++;
+	if(current_task &gt;= task_count) current_task = 0;
+}</code></pre>
+
+This just activates each task in order, repeatedly, forever.  Fairly simple.
+
+You may be wondering why I didn't use the classic <code>current_task = (current_task + 1) % task_count</code> trick.  The reason is that, at least on ARMv6, gcc actually generates a library call for the % operator.  You could try linking in libgcc, but there are some problems.  For this case, it just wasn't worth it, and so I'm using an if statement instead.
+
+<a href="https://github.com/singpolyma/singpolyma-kernel/tree/bd962b162f76f813324aeaa7a91f892a6d989450">Code so far on GitHub</a>
+
+<h1>Setup for new Syscall</h1>
+
+So, our <q class="identifier">syscall</q> syscall is cute, but it's not very useful.  For good multitasking, we want a way for a user mode task to create new tasks.  We'll do this the way Unix does: <q class="identifier">fork</q>.  This syscall copies the current process, and then returns the ID of the new process to the parent, and 0 to the child.
+
+We need a way for the kernel to know what the user mode task wants it to do.  As I mentioned in a previous post, this is what the "argument" to <q class="identifier">svc</q> is for.  We could add code to our context switch to mask the bits off of the end of the <q class="identifier">svc</q> instruction, but let's not bother our context switch now.  We're going to store the id of our syscall in a register.  syscalls.s is now:
+
+<pre><code>.global syscall
+syscall:
+	push {r7}
+	mov r7, #0x0
+	svc 0
+	pop {r7}
+	bx lr
+
+.global fork
+fork:
+	push {r7}
+	mov r7, #0x1
+	svc 0
+	pop {r7}
+	bx lr</code></pre>
+
+That's two syscalls, and the context switch will save the new value of <q class="identifier">r7</q> on the top of the stack, which we can read in the kernel.  The actual value of <q class="identifier">r7</q> gets saved and restored by the syscall wrapper.
+
+In order to call our new syscall, we'll need to add the following to asm.h:
+
+<code>int fork(void);</code>
+
+<h1>memcpy</h1>
+
+As you may have guessed, we're going to implement the <q class="identifier">fork</q> syscall, in order to make our multitasking more actually useful.  To do that, we're going to need to copy stuff.  Because we're not linking in libc at this point, we need our own <q class="identifier">memcpy</q>, like so:
+
+<pre><code>void *memcpy(void *dest, const void *src, size_t n) {
+	char *d = dest;
+	const char *s = src;
+	size_t i;
+	for(i = 0; i &lt; n; i++) {
+		d[i] = s[i];
+	}
+	return d;
+}</code></pre>
+
+<h1>Forking</h1>
+
+We're going to use <q class="identifier">fork</q> to spawn <q class="identifier">task</q> from <q class="identifier">first</q>.  So, move <q class="identifier">task</q> up above <q class="identifier">first</q>, and replace the first call to <q class="identifier">syscall</q> with:
+
+<code>if(!fork()) task();</code>
+
+Then, modify <q class="identifier">main</q> so that only <q class="identifier">first</q> gets set up to run.
+
+<h1>The Actual Syscall</h1>
+
+So, we're jumping into the kernel now, but so far we don't actually do anything with this new syscall.  How can we even tell which syscall is being called?  Well, remember that the syscall id is in <q class="identifier">r7</q> when the context switch happens, so by the time we get to the kernel, we can access it like so:
+
+<pre><code>switch(tasks[current_task][2+7]) {
+	case 0x1:
+		bwputs("fork!\n");
+	break;
+}</code></pre>
+
+What's that 2+7 for?  Well, remember, we push SPSR and the supervisor mode lr on the top of the stack, so we have to move past those to get to the registers.
+
+Our kernel has a limitation.  Specifically, <q class="identifier">TASK_LIMIT</q>.  If we call <q class="identifier">fork</q> when there is no space for a new task, that would be bad, so we should return an error:
+
+<pre><code>if(task_count == TASK_LIMIT) {
+	tasks[current_task][2+0] = -1;
+} else {
+}</code></pre>
+
+What are we doing here?  We're changing the saved value of <q class="identifier">r0</q>, which, you will recall, is the return value of a function.  So, we are setting the return value that the user mode task will see to -1.
+
+Now, what does <q class="identifier">fork</q> actually need to do?  It copies all the state from one task into a new one.  The new task will need a stack pointer, and said stack pointer will need to be exactly as far from the end of the stack as the current task's stack pointer:
+
+<code>size_t used = stacks[current_task] + STACK_SIZE - tasks[current_task];
+tasks[task_count] = stacks[task_count] + STACK_SIZE - used;</code>
+
+Now we actually have to copy the stack over.  Luckily, we know exactly how much to copy, since it's the same as the distance from the stack pointer to the end:
+
+<code>memcpy(tasks[task_count], tasks[current_task], used*sizeof(*tasks[current_task]));</code>
+
+<q class="identifier">fork</q> is specified to return the new PID in the parent process, and 0 in the child process:
+
+<code>tasks[current_task][2+0] = task_count;
+tasks[task_count][2+0] = 0;</code>
+
+And, finally, we should probably record the fact that there's a new task:
+
+<code>task_count++;</code>
+
+<h1>That's it!</h1>
+
+We now have a multitasking kernel (remember to increase <q class="identifier">TASK_LIMIT</q> if you want to run more tasks!), and user mode tasks can start new tasks.  Next time: hardware interrupts!
+
+Code for this post is <a href="https://github.com/singpolyma/singpolyma-kernel/tree/3ae1426a1a2825891de4f54e46126ec2e6ef8a57">on GitHub</a>.

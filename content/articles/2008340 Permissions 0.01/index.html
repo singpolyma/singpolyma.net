@@ -1,0 +1,9 @@
+---
+title: Permissions 0.01
+date: 2008-12-05 04:45:18 Z
+tags: ["Tech","Plugin","Wordpress","DiSo"]
+wordpress_path: /actionstream/permissions-001
+---
+Over the course of working with <a href="http://will.norris.name">Will</a>, it was decided that the ability to show certain data only to certain viewers, based on permission settings, was more general than just profiles.  All permission logic and UI had previously lived in the diso-profile plugin.  Other plugins, however, such as actionstream, supported using the functionality if it was there.  It was reasoned that someone might want to use permissions on their actionstream (or anywhere else! just wrap the output up in an if statement and call diso_user_is('relationship') ) without having the profile plugin installed.  Will nicely extracted the functionality into a separate plugin which I have now packaged for download at the DiSo code site.
+
+<a href="http://code.google.com/p/diso/downloads/detail?name=permissions0.01.tar.bz2">Download the plugin</a>

@@ -1,0 +1,43 @@
+---
+title: PGP UI Suggestions
+date: 2008-08-30 15:33:03 Z
+tags: ["Tech","PGP"]
+wordpress_path: /actionstream/pgp-ui-suggestions
+---
+Lets face it: currently, <a href="http://en.wikipedia.org/wiki/Pretty_Good_Privacy">PGP</a> is hard.  Most geeks even consider it "geeks only".  While few average users can benefit from encryption (few people say things that secret) - everyone can benefit from signed authenticity (at very least to <a href="http://pranketh.com/avoid/">cut down on spoofing</a>).  The biggest obstacles to end users are (a) they don't see the point (b) they freak out when they see "weird" inline content or attachments (c) verifying long hexadecimal signatures is hard.  I will make suggestions about these is order.
+
+The fact that users don't see the point really is the biggest problem.  If more users cared about authenticity, more would be willing to endure the pain of doing things "right".  My hope here is that if seamless enough solutions become common enough, some people will use it because it is "right there" and as more people they know are sending signed messages perhaps some network effect can be leveraged.
+
+Weird content is on it's way to being fixed.  If everyone installs <a href="http://getfiregpg.org/">FireGPG</a> and uses a mail client (/webmail supported by FireGPG) that supports PGP (a growing number) then at the very least, the noise gets hidden behind a "this message is signed" notice.
+
+Few people want to <a href="http://en.wikipedia.org/wiki/Key_signing_party">read off long hex number to each other in person</a>.  Here's where it gets touchy, because anything we change here changes the security of the transaction.  I'm ok with that.  I'd rather my non-geek friends have a somewhat-trusted key than an untrusted key or no key at all.  My geek friends and I will still verify each others' fingerprints.
+
+Alice receives an email from Bob, with whom she has never previously shared cryptographic information.  Neither Alice nor Bob is a geek, tech savvy, or familiar with cryptography.  Alice knows her email program has a new feature that lets people verify each others' messages and decides to try it out.
+<p style="text-align: center;"><img class="alignnone aligncenter" src="http://singpolyma.net/wordpress/wp-content/uploads/pgp_share_key.jpg" alt="Alice elects to share her PGP key with Bob." /></p>
+Alice has never shared her key with anyone before (she doesn't have one).  She is told this and asked to wait while "some setup occurs".  The key is generated and UI moves to the next step.  Somewhere in here there should be a notice to backup the key, "since if you lose it you can no longer send verified messages". Public keys should be sent to a public key server automatically.
+<p style="text-align: center;"><img class="alignnone aligncenter" src="http://singpolyma.net/wordpress/wp-content/uploads/pgp_secure_key.jpg" alt="Alice secures her key to Bob." /></p>
+Alice now picks a secure question and answer to prove to Bob (within a reasonable, but not cryptographically rigorous) measure of certainty.  An email is sent to Bob's address with the output of `gpg -a --openpgp --export KEYID | gpg -ac --openpgp -` attached.  Also attached, it sends an unencrypted export of the public key, for use (moot in this case, on a new key) if this key has been signed by others Bob knows.  That is, Alice's public key is symmetrically encrypted with an algoritm allowed by the OpenPGP standard (currently 3DES) with the passphrase as the answer to the secure question.  I've marked it case sensitive, but all UIs COULD downcase passphrases to simplify this.  The secure question becomes the body of the email and the subject can be something like "Alice is sharing her verification key with you!"
+
+Bob recieves the email, an his client flags it (with an icon or similar) as containing verification information.  Some clients may find it makes more sense to process the message immidiately upon receipt, instead of just flagging it.
+
+Bob opens (or his client auto-opens) the message.  Instead of being presented with an email full of gook, he is presented with a window by his client.
+<p style="text-align: center;"><img class="alignnone aligncenter" src="http://singpolyma.net/wordpress/wp-content/uploads/pgp_decrypt_key.jpg" alt="Bob decrypts the key." /></p>
+Bob enters the answer and is presented with a window describing the key.  This window should say "Alice is claiming..." or similar and display the image in the key (if there is one) and all UIDs/comments.  There should then be a list of how well Bob knows this key:
+
+It claims to be alice@example.com and was sent from there: very low
+
+It was found to be the same as one available on public key servers: very low
+
+It was verified using a secret question: medium
+
+It has not been verified by anyone you know [aka, key signatures, high]
+
+[Button: Advanced Verification, showing the key fingerprint - for advanced users]
+
+[Button: trust this key]
+
+[Button: I have talked to Alice and know this is her key (ultimate trust, signs key)]
+
+If three or more signatures from people Bob trusts are on the key (remember, the unencrypted one) the client may skip to this step and provide a "verify using secret question" button.
+
+Opening this message in the future should sync with keyservers, and then show the last dialog again, showing any new signatures from people Bob trusts, and allowing him to verify/sign it.

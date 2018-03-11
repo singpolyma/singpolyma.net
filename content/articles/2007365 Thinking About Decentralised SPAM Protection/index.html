@@ -1,0 +1,21 @@
+---
+title: Thinking About Decentralised SPAM Protection
+date: 2007-12-31 02:13:49 Z
+tags: ["Tech","SPAM","DiSo"]
+wordpress_path: /actionstream/thinking-about-decentralised-spam-protection
+---
+We all hate <a href="http://en.wikipedia.org/wiki/Spam_in_blogs">SPAM</a>.  We all love <a href="http://akismet.com/">Akismet</a>.  GMail is also great at killing SPAM.  Why are Akismet and GMail so great?  They have huge databases of SPAM from their many users to train filters with.
+
+Only one problem : they're commercial and closed.  Same old story, if they go down or evil we're screwed.
+
+Solution : decentralise.
+
+The way that I've been thinking this could work is threefold.
+
+First off, write a plugin for Wordpress/other things that logs all SPAM in the Wordpress database and allows anyone to easily access this list in standard formats.  This could hook into Akismet and other solutions to track what existing solutions mark as SPAM, as well as what users manually mark as SPAM/ham.
+
+Then, create a site that simply lists sites that are publishing SPAM data, with links.
+
+Third, create simple server software that either scrapes sites publishing, accepts submissions of data, or has a public API for individual SPAM submissions (like Akismet) or a combination of the above.  This server could also include filter logic that trains itself and offers a public API, or that could be other servers that rely on these ones.
+
+The big thing is that this code all be open source so that anyone can run a server.  Each server would either scrape from all publishing sites, or publishing sites could cache a lists of operating servers to submit to.  Either way, we end up with a multiple-server environment with distributed data / load.

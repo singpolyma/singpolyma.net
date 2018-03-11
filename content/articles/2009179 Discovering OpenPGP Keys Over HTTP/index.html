@@ -1,0 +1,42 @@
+---
+title: Discovering OpenPGP Keys Over HTTP
+date: 2009-06-28 01:16:25 Z
+tags: ["Tech","Communications","DiSo","Communication","PGP","OpenPGP"]
+wordpress_path: /actionstream/discovering-openpgp-keys-over-http
+---
+First off, why would one want to do this?  Well, cryptographic security is useful in communications medium other than email, and sometimes one may not have an email address for the person one is contacting.  Also, a public key got from someone's profile page is more likely to be their current key than the one got off a keyserver.  Finally, if the discovery is done over TLS (or upcoming XRD signing techinques) then one can use the <a href="http://en.wikipedia.org/wiki/Public_key_infrastructure"><abbr title="Public Key Infrastructure">PKI</abbr></a> to verify that the public key is, at very least, the one the owner of the URL claims.  Which, for pseudonymous communications, may often be enough.
+
+I will here propose three different ways to make this discovery work.  Consumers <em>must</em> try all three.  Publishers <em>may</em> publish more than one.
+
+<h3>Content Negotiation</h3>
+
+A public key represents a person.  If a URL represents a person (such as on a profile page), then were that page's data to be represented in the OpenPGP key format, one would get the user's OpenPGP public key.
+
+Send the header <code>Accept: application/pgp-keys</code> along with an HTTP GET request.  If the Content-Type on the response is <samp>application/pgp-keys</samp> then the body is the user's OpenPGP public key.
+
+<h3>Links</h3>
+
+If a GET or HEAD request is performed on the URL and in the headers is a Link header with rel=me and type=application/pgp-keys, then the URL of that link is the user's OpenPGP public key.
+
+If the Content-Type header of the GET request is text/html or application/xhtml+xml, then look in the page for &lt;a&gt; and &lt;link&gt; tags with rel=me and type=application/pgp-keys.  If there is such a tag, then its href attribute is the URL to the user's OpenPGP key.
+
+<h3>LRDD+XRD</h3>
+
+If LRDD discovery is performed on an endpoint, leading to the discovery of an XRD document containing a section like the following:
+<code>
+   &lt;Link&gt;
+      &lt;Rel&gt;http://www.iana.org/assignments/relation/me&lt;/Rel&gt;
+      &lt;MediaType&gt;application/pgp-keys&lt;/MediaType&gt;
+      &lt;URI&gt;...&lt;/URI&gt;
+   &lt;/Link&gt;
+</code>
+
+Then the URI is the URI of the user's OpenPGP key.
+
+<h3>Security Considerations</h3>
+
+The URLs used in all methods above <em>should</em> be either HTTPS URIs secured using TLS and a certificate issued by a CA known to the client, <em>or</em> data URIs.
+
+<h3>Application to Other Crytography Schemes</h3>
+
+Everything in this document applies equally well to public keys for any cryptography scheme, as long as the MIME types are changed appropriately.

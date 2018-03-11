@@ -1,0 +1,22 @@
+---
+title: The State of Distributed Social Networking
+date: 2007-05-10 00:30:07 Z
+tags: ["Tech","XOXOBlog","Web2.0","Blogger","Wordpress","Standards","Microformats","hCard","XFN","Social_networking","Facebook"]
+wordpress_path: /actionstream/the-state-of-distributed-social-networking
+---
+Also known as Portable Social Networking, this is the concept of decentralising the social networking functionality of sites like Facebook so that one does not have to use every service to connect with everyone (<a href="/2007/01/distributed-social-networking/">previously covered here</a>).
+
+<a href="http://videntity.org/">Videntity</a> is a wonderful service for this movement, and one that I have been using as the hub of much of <a href="/plugins/videntity/">my efforts</a>.  <a href="http://explode.elgg.org/">Explode</a> seems promising, but they're down for upgrade.
+
+So let's talk about my list from last time:
+<ol>
+	<li><a href="http://microformats.org/wiki/hcard">hCards</a> and Pingerati : For <a href="/2007/01/hcard-profile-generator/">Blogger I have a wizard</a>.  <a href="http://pingerati.net/">Pingerati</a> pings still manual.  For WordPress there is a <a href="http://redmonk.net/projects/widget_hcard_about/">widget</a>.  Pings still manual.  For even more professional information (such as <a href="/resume">my resume</a>) there is an <a href="http://hresume.weblogswork.com/?page_id=3">hResume WordPress Plugin</a>.  For other websites/services there is always the <a href="http://microformats.org/code/hcard/creator">hCard Creator</a>.  Of course, Videntity.org supports hCard by default.</li>
+	<li>XFN Friends lists : For <a href="/2007/01/xfn-xoxo-hcard-blogroll-generator/">Blogger I have a wizard</a>.  This wizard will actually work on any web page or on any service where you can post (X)HTML (including MySpace or Xanga!)  For <a href="http://factorycity.net/projects/wp-microformatted-blogroll/">WordPress there is a nice plugin</a>, although a widget version would be a bonus.  Videntity supports this by default.As far as finding/adding friends goes I have a <a href="/2007/04/videntity-bookmarklet/">bookmarklet for Videntity</a> that allows one to add hCards, Facebook results, or <a href="http://wink.com/">Wink.com</a> people results as friends/contacts.  Bookmarklets for other services would not be hard.  For Blogger we would need an actual blogroll-producing service beyond just a wizard to make this work.</li>
+	<li>Public/private profiles : Again, Videntity has this built right in (as long as you have the URL that the contact uses for OpenID on the friend list, it does not follow rel=me).  I am working on a solution for WordPress.  Would people be interested in a solution for Blogger/other websites?</li>
+	<li>Messaging : not sure where I stand on this.  Lots of nice contact options, and creating a 'wall'-like interface on WordPress would be easy.  The question is : what is the goal of this?  If it is just the address book features then a way to integrate social networking contact lists with email clients / Gmail might be better.  If it is being able to communicate without revealing your email address a protocol/system for that might be easy enough.My brother (and avid Facebooker) says that it is about visibility.  The benefit of Facebook messaging, for him, is the unified notifications area that he KNOWS his friends all check.  He KNOWS that they will see his message.  He is not sure they check their email.</li>
+</ol>
+I still promote the idea of supporting rel=tag on hCards.  We need a better hCard search engine, one that takes Pingerati pings, crawls <em>regularly</em> (some of my pings from months ago were never indexed by the Technorati Kitchen hCard search), outputs results as hCards (to facilitate things like my bookmarklet), and recognizes rel=tag.
+
+Perhaps a tagspace could do a rev=tag for members.  If an hCard URL has rel=tag to a page that has rev=tag to it that would give credibility to the category.
+
+Notifications (think Facebook mini-feed) need to fit into this idea somehow.  Events are hCalendar.  Notes/posts/shares are hAtom/xFolk.  Status is something I've blogged about recently too.  Services like Twitter are heading in the right direction.

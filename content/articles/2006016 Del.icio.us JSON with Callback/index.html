@@ -1,0 +1,60 @@
+---
+title: Del.icio.us JSON with Callback
+date: 2006-01-16 12:54:00 Z
+tags: ["Tech"]
+wordpress_path: /actionstream/delicious-json-with-callback
+---
+<b title="Update 2006-03-23">This code will remain in the public domain, however since <a href="http://singpolyma-tech.blogspot.com/2006/02/delicious-jsonp-is-native.html">del.icio.us JSONP is now native</a> I will no longer guarantee hosting for it.</b>
+
+In updating <a href="http://singpolyma-tech.blogspot.com/2006/01/updates-to-my-version-of-freshtags.html">my version of FreshTags</a> I ran into a problem -- there's no way to make your script block until the JSON data comes in from del.icio.us.  I tried numerous different blocking/callback techniques, but they were slow, complicated, and somewhat beyond my JavaScript knowledge.  What I kept coming back to was trying to get a callback function to run when the JSON data was done loading.  Finally an idea hit me -- why not just modify the del.icio.us JSON data to fire a callback itself, like my Commentosphere JSON does?  Simple, yet insane.  It worked.
+
+Instead of calling the del.icio.us JSON directly, call this:
+
+http://www.awriterz.org/etcetc/deliciousjsonp.php?url=<span style="color: rgb(255, 0, 0);">URL TO DELICIOUS JSON</span>
+
+the resulting JSON data checks to see if you have set Delicious.callbacks.posts (or Delicious.callbacks.tags, depending what type of JSON data you're pulling in) and if you have, calls it, passing Delicious.posts as a parameter to the function.  Delicious.posts still gets set in the same way as if you had called direct from del.icio.us.  For even greater customisability you can use this URL form:
+
+http://www.awriterz.org/etcetc/deliciousjsonp.php?url=<span style="color: rgb(255, 0, 0);">URL TO DELICIOUS JSON</span>&amp;callback=<span style="color: rgb(255, 0, 0);">CALLBACK</span>
+
+Where CALLBACK is the name of your callback function.
+
+Using this script to access del.icio.us JSON data also provides a measure of graceful degredation, since the script attempts to determine if valid JSON data is present, and if not, outputs null data instead.
+
+I am placing the PHP code I used to do this in the public domain.  Please feel free to modify, translate, or host this code yourself.  Particularly to host it, which will save bandwidth on my server.  The code is below:
+
+<div style="font-family: monospace;">&lt;?php
+
+
+header('Content-Type: text/javascript;');//output header for JSON
+
+if(!$_GET['url']) {//if we weren't passed the url, die gracefully
+   echo 'if(typeof(Delicious) == "undefined") Delicious = {}; Delicious.posts = [];'."\n";
+} else {
+   $deldata = file_get_contents($_GET['url']);//get the original del.icio.us JSON
+   f(!stristr($deldata,'Delicious.tags') &amp;&amp; !stristr($deldata,'Delicious.posts')) {
+      echo 'if(typeof(Delicious) == "undefined") Delicious = {}; Delicious.posts = [];'."\n";
+   } else {
+      echo $deldata.";\n";//and output it
+   }//end if-else not JSON
+}//end if-else !url
+
+if(stristr($deldata,'Delicious.tags')) {//if it is tags JSON
+   if($_GET['callback']) {//if we were passed the name of the callback
+      echo 'if('.$_GET['callback'].')'."\n";
+      echo '   '.$_GET['callback'].'(Delicious.tags);';
+   } else {//otherwise use generic callback
+      echo 'if(Delicious.callbacks &amp;&amp; Delicious.callbacks.tags)'."\n";
+      echo '   Delicious.callbacks.tags(Delicious.tags);';
+   }//end if callback
+} else {//otherwise assume post JSON
+   if($_GET['callback']) {//if we were passed the name of the callback
+      echo 'if('.$_GET['callback'].')'."\n";
+      echo '   '.$_GET['callback'].'(Delicious.posts);';
+   } else {//otherwise use generic callback
+      echo 'if(Delicious.callbacks &amp;&amp; Delicious.callbacks.posts)'."\n";
+      echo '   Delicious.callbacks.posts(Delicious.posts);';
+   }//end if callback
+}//end if-else stristr deldata Delicious.tags
+
+?&gt;</div>
+<div class="tags">Tags:<ul><li><a href="http://del.icio.us/singpolyma.techblog/del.icio.us" rel="tag">del.icio.us</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/delicious" rel="tag">delicious</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/json" rel="tag">json</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/callback" rel="tag">callback</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/hack" rel="tag">hack</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/hacks" rel="tag">hacks</a></li> </ul></div>

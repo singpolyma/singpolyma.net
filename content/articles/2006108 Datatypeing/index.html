@@ -1,0 +1,12 @@
+---
+title: Datatypeing
+date: 2006-04-18 09:47:00 Z
+tags: ["XOXOBlog","XOXO","Apis"]
+wordpress_path: /actionstream/datatypeing
+---
+There is <a href="http://microformats.org/wiki/rest/datatypes">some work going on</a> at the <a href="http://microformats.org/">microformats site</a> to provide a datatypeing mechanism for microformats.  XOXO being the most flexible format, it stands to gain much from such a system.  While the work is as yet not done, it has come a fair way since I first saw it.  Here is a basic overview of the system as it applies to XOXO :
+
+Add the class 'typed' to the root XOXO element to specify that this XOXO makes use of datatypeing.  Then, to each 'a' or 'dd' tag add one of the following classes:
+<ul><li>'string' for strings (this is the default if you do not specify a datatype class)</li><li>'boolean' for boolean values (should be in page as '1' or '0')</li><li>'int' or 'long' for integer values</li><li>'double' for decimal values</li><li>'datetime' for dates and times (should be encoded using the <a href="http://microformats.org/wiki/datetime-design-pattern">datetime-design-pattern</a>)</li><li>'binary' for binary data (should be encoded using a <a href="http://en.wikipedia.org/wiki/Data:_URI_scheme">data URI</a>)</li><li>'nil' for NULL values</li></ul>Note that other field types (such as HREF and TITLE) will simply always be treated as strings and this can only be applied to the direct contents of 'a' or 'dd' field-tags.
+
+<div class="tags">Tags:<ul><li><a href="http://del.icio.us/xoxo.blog/apis" rel="tag">apis</a></li> <li><a href="http://del.icio.us/xoxo.blog/datatype" rel="tag">datatype</a></li> <li><a href="http://del.icio.us/xoxo.blog/xoxo" rel="tag">xoxo</a></li> </ul></div>

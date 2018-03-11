@@ -1,0 +1,16 @@
+---
+title: Microsummaries in Blogger
+date: 2007-01-15 15:18:00 Z
+tags: ["Tech","Blogger","Hack","Hacks","Firefox","Microformats"]
+wordpress_path: /actionstream/microsummaries-in-blogger
+---
+I recently learned of the <a href="http://wiki.mozilla.org/Microsummaries">Microsummaries</a> feature of <a href="http://getfirefox.com/">Firefox 2.0</a> from <a href="http://lastword.blogspot.com/2007/01/microscope-on-microformats.html">Aditya</a>.
+
+Basically, when you bookmark a site that supports it there is an option to have Firefox automatically pull in the title of the most recent article (or similar) as the title/label on the bookmark.  Like simplified Live Bookmarks.  So I created a quick hack to let us generate these with Blogger.  If you have <a href="http://blogxoxo.blogspot.com/2007/01/mostly-hatom-in-new-blogger.html">marked up your blog with hAtom</a> put this in your &lt;head&gt; section:
+<code>
+&lt;link expr:href='"http://xoxotools.ning.com/extract_by_class.php?xn_auth=no&amp;amp;amp;class=entry-title&amp;amp;amp;url=" + data:blog.homepageUrl + "&amp;amp;amp;_microsummary"' rel='microsummary' /&gt;
+</code>
+Otherwise use this code, which should work for 90% of new Blogger blogs:
+<code>
+&lt;link expr:href='"http://xoxotools.ning.com/extract_by_class.php?xn_auth=no&amp;amp;amp;class=post-title&amp;amp;amp;url=" + data:blog.homepageUrl + "&amp;amp;amp;_microsummary"' rel='microsummary' /&gt;
+</code>

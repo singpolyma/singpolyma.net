@@ -1,0 +1,123 @@
+---
+title: Why Care About Typeclasses?
+date: 2013-02-05 16:58:55 Z
+tags: ["Tech","types"]
+wordpress_path: /actionstream/why-care-about-typeclasses
+---
+Let's say you have some code and you want it to be able to iteract in a very similar way with either a network connection or a named pipe.  You might structure this using a sum type (also called a tagged union):
+
+<pre><code>
+data Stream = Network NHandle | Pipe PHandle
+
+def interaction(h)
+	input = case h
+		when (Network handle)
+			readNetwork(handle)
+		when (Pipe handle)
+			readPipe(handle)
+	end
+
+	output = transform_input(input)
+
+	case h
+		when (Network handle)
+			writeNetwork(handle, output)
+		when (Pipe handle)
+			writePipe(handle, output)
+	end
+end
+</code></pre>
+
+Since "dynamic typing" is just the practise of giving every value the exact same type, which is a giant sum type, a dynamically typed construction would look like this:
+
+<pre><code>
+def interactionDynamic(h)
+	input = case h
+		when is_a?Network
+			readNetwork(h)
+		when is_a?Pipe
+			readPipe(h)
+	end
+
+	output = transform_input(input)
+
+	case h
+		when is_a?Network
+			writeNetwork(handle, output)
+		when is_a?Pipe
+			writePipe(handle, output)
+	end
+end
+</code></pre>
+
+This is basically the same, but it introduces a tradeoff.  In the original, if we wanted to add another supported stream, we needed to add a case to the sum type *and* cases to the function, and in return we were guarenteed that we would only ever be passed cases we could handle.  With the dynamically typed version, we can just add cases to the function, but any value can be passed to us and if we can't handle it the code will just crash.
+
+Neither of these solutions are very nice in this case.  We really want abstracted operations:
+
+<pre>
+def read(h)
+	case h
+		when is_a?Network
+			readNetwork(h)
+		when is_a?Pipe
+			readPipe(h)
+	end
+end
+
+def write(h,output)
+	case h
+		when is_a?Network
+			writeNetwork(h, output)
+		when is_a?Pipe
+			writePipe(h, output)
+	end
+end
+
+def interactionDynamicAbstract(h)
+	write(h, transform_input(read(h)))
+end
+</pre>
+
+Much nicer!  One issue here, though, is that these operations really are fundamental to Networks and Pipes, and we have defined them as part of our code.  It is likely that other people using Networks and Pipes will end up writing similar code.  What if we bundled up all the operations you could do with a Pipe right alongside the data?
+
+<pre><code>
+def interactionDuckTyped(h)
+	h.write(transform_input(h.read()))
+end
+</code></pre>
+
+Now the operations live inside the datatype.  This has the added advantage that we don't even need to write any code to support a new type of stream, as long as the stream comes packaged with a read and a write operation.
+
+There are two issues here, though.  One is very similar to the tradeoff we made for dynamic typing, which is that the compiler cannot infer from what we've written which operations are necessary and so cannot check that values being passed to our procedure actually implement these operations until runtime.  The other problem is that the only thing we know about the operations for sure is their names.  We cannot easily document that these operations should have certain properties, because the users of our function cannot easily what operations we are using.
+
+Can we fix these issues while keeping the extensability and power?  We could try bundling the operations up seperately:
+
+<pre><code>
+def interactionRecord(h, ops)
+	ops[:write](h, transform_input(ops[:read](h)))
+end
+</code></pre>
+
+Now we can know that these operations will be present, and we can document that the operations the user passes in must satisfy certain properties.  This seems like a pretty good solution.  We have, however, leaked the management of which operations to use back to our user.  Can we keep this safety while regaining the conveniance of having the stream type author specify the operations instead of our user?
+
+This is exactly what typeclasses do.  Consider:
+
+<pre><code>
+typeclass Stream a where {
+	void write(handle, bytestring);
+	bytestring read(handle);
+}
+
+hastypeclass Stream Network where {
+	write = ...;
+	read = ...;
+}
+
+def interactionTypeclass(h)
+	Stream::write(h, transform_input(Stream::read(h)))
+end
+</code></pre>
+
+Now we have a natural place to document the properties operations must have (the typeclass definiton), and their relationships with each other.  The compiler can look up the correct hastypeclass to figure out what code to run for each type, and while it does so it can check that the operations we need (the ones that are part of Stream) are in fact defined for the input type.
+
+Safety, extensability, and ease of use, all in one solution.

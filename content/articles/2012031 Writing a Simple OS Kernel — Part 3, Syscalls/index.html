@@ -1,0 +1,113 @@
+---
+title: Writing a Simple OS Kernel — Part 3, Syscalls
+date: 2012-01-31 18:12:25 Z
+tags: ["Tech","singpolyma-kernel","0xDF","0xD3","0x08","0x0","0x4"]
+wordpress_path: /actionstream/writing-a-simple-os-kernel-syscalls
+---
+<strong>Updated 2012-33 to fix a bug in the context switch assumptions.</strong>
+<strong>Edited for clarity, 2012-34.</strong>
+
+<a href="/2012/01/writing-a-simple-os-kernel-user-mode/">Last time</a>, we got our kernel to set up space for a task, and run that task in user mode.  This time we're going to add a facility for the user mode task to call back into the kernel.
+
+<h1>Syscalls</h1>
+
+But wait!  Didn't I say last time that one of the things user mode tasks cannot do is change the CPU mode?  Well, yes, they can't change it directly.  What they <em>can</em> do is trigger an event that will make the CPU switch to supervisor mode and then jump to some predefined bit of code.  That way, there's no security problem, only kernel code is running in supervisor mode, but the user mode task can still ask the kernel to do things for it.
+
+The instruction that lets us do this on an ARMv6 CPU is <q class="identifier">svc</q> (used to be called <q class="identifier">swi</q>).  It takes an immediate value as an "argument", which it actually does nothing with.  If the kernel wants to use that number for something (like specifying what the user mode task wants done), it has to read the number right out of the instruction in RAM.  This is doable, but not always ideal, and so some kernels (such as modern Linux) actually just always use a zero, and then store information they want to pass elsewhere.
+
+<h1>Vector Interrupt Table</h1>
+
+The <q class="identifier">svc</q> instruction actually causes an interrupt.  Interrupts are signals that (when they're enabled) cause the CPU to switch modes and jump to some predefined instruction.  What instruction will it jump to? Well, ARM CPUs have something called the vector interrupt table that is at the very start of RAM.  These locations are where it will jump to (each word, starting at 0x0, is the location of a particular sort of interrupt, up until there are no more interrupt types).
+
+That may not seem very useful.  We can only execute one instruction?  Well, yes, but that instruction can jump us to somewhere more useful.  Now, your first thought may be to put a branch instruction there.  Great idea, but it won't work.  Branch instructions are calculated relative to their position in the linked binary.  If we copy one of them to another location in RAM, the offset will be wrong.  We need to use a load instruction to load an absolute value into the program counter.  What value should we load?  The address of a function in our kernel, of course!  It turns out that the assembler contains a syntax for including the address of a function directly, which is then an absolute value and so does not move when we copy it.
+
+Here's what the new bootstrap.s looks like:
+
+<pre><code>.global _start
+_start:
+	mov r0, #0x08
+	ldr r1, =interrupt_table
+	ldr r3, =interrupt_table_end
+keep_loading:
+	ldr r2, [r1, #0x0]
+	str r2, [r0, #0x0]
+	add r0, r0, #0x4
+	add r1, r1, #0x4
+	cmp r1, r3
+	bne keep_loading
+
+	ldr sp, =0x07FFFFFF
+	bl main
+
+interrupt_table:
+	ldr pc, svc_entry_address
+	svc_entry_address: .word svc_entry
+interrupt_table_end:</code></pre>
+
+Why do we need to copy two instructions?  Well, even that load instruction is loading from a relative address.  Luckily if we move them both then the relative position remains the same.  This may look a bit complicated, and that's because it is.  You could just copy the two words directly across, but this way we have a loop that copies everything from our interrupt table section, so we can easily add other interrupt handlers to it later.  You'll note we started at 0x8 instead of 0x0, because that's where the SVC handler is, so if we want to add ones that come before 0x8, we just have to remember to change the base address at the start.  With some hacks we could do the copying part in C, but for this example I decided that keeping all the bits for this in assembly was easiest.
+
+<h1>Syscall Wrapper</h1>
+
+We need a way for our C code to call the <q class="identifier">svc</q> instruction.  Since we don't have anything we really need to pass through, we'll just add a dummy wrapper for now.
+
+Create a new file called syscalls.s and add it to the Makefile as a dependency of kernel.elf.  Put this in it:
+
+<pre><code>.global syscall
+syscall:
+	svc 0
+	bx lr</code></pre>
+
+Pretty simple.  It just activates the <q class="identifier">svc</q>, and then when it comes back jumps to the caller (note that this assumes the registers it had before it called <q class="identifier">svc</q> are reset before it comes back).
+
+You'll also need to add a line to asm.h:
+
+<code>void syscall(void);</code>
+
+<h1>Save Kernel State</h1>
+
+Now, let's think about what we want the kernel to do when it actually gets control back.  We'd like to go back to the point in our kernel code we left off when calling <q class="identifier">activate</q> in the first place.  The problem is, we've not got any clue where that was!  In loading the user mode task state, we did not keep around any information about what state the kernel was in.  Let's add that to <q class="identifier">activate</q> now:
+
+<code>mov ip, sp
+push {r4,r5,r6,r7,r8,r9,r10,fp,ip,lr}</code>
+
+Put that at the top of <q class="identifier">activate</q>, before we begin messing about with the registers.  That's all the kernel state we need to save!
+
+<h1>SVC Entry</h1>
+
+Alright, we're now ready to define our first version of the <q class="identifier">svc_entry</q> function.  All we really want to go at this point is get the kernel back into a state where it can run, and then return to our code.  We'll put this in context_switch.s:
+
+<pre><code>.global svc_entry
+svc_entry:
+	pop {r4,r5,r6,r7,r8,r9,r10,fp,ip,lr}
+	mov sp, ip
+	bx lr</code></pre>
+
+Just reverse the save we just did, and jump back to where we came from in the kernel.  How is <q class="identifier">lr</q> where we came from?  Well, you'll have noted that when we call functions (and the C compiler does this as well), we use <q class="identifier">bl</q>, which saves the address of the instruction after itself in <q class="identifier">lr</q> before jumping to the function.
+
+Alright, add a call to <q class="identifier">syscall</q> to the end of <q class="identifier">first</q> and then add another <q class="identifier">bwputs</q> call after the <q class="identifier">activate</q> call in <q class="identifier">main</q>, build, and run.  You should see your new message printed last.
+
+<a href="https://github.com/singpolyma/singpolyma-kernel/tree/b44adbacda9117c1faef53facf2ca7d840dffb17">Code so far on GitHub</a>
+
+<h1>Heading Back to User Mode</h1>
+
+Add another print and another syscall to <q class="identifier">first</q>, and another print and call to <q class="identifier">activate</q> to <q class="identifier">main</q>.  Compile and run your code.  What do you see?
+
+When we call <q class="identifier">activate</q> again, the user mode task re-starts at the beginning!  That's not what we want, but it makes sense.  We never saved our place inside the user mode task.  In fact, we don't even have a reference to where its stack was when it called the syscall, so we're just going back with the stack from before.  That's not going to work.  We need to add some code to our SVC entry to save the user mode task's state.  If you recall the way we set up the task before, you'll now see why.  The way the stack looks after we save our state on it is exactly the same as the way we set it up!  Everything will be where <q class="identifier">activate</q> expects it:
+
+<code>msr CPSR_c, #0xDF /* System mode */
+push {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,fp,ip,lr}
+mov r0, sp
+msr CPSR_c, #0xD3 /* Supervisor mode */
+
+mrs ip, SPSR
+stmfd r0!, {ip,lr}</code>
+
+There, all the registers are on the user stack.  We use <q class="identifier">stmfd</q> which is just like <q class="identifier">push</q>, but lets us operate on another register.  You'll note we had to save both versions of <q class="identifier">lr</q>.  One is state for the syscall wrapper to use, the other is the address inside the syscall wrapper we need to jump back to later.  Now we just need some way to get the new location of the top of the stack back to the kernel.
+
+Conveniently, our C code expects the return value of a function to be in r0, which is where I've put the user mode sp in this example.  Just change the definition of <q class="identifier">activate</q> in asm.h to return the right type, and then assign the return value somewhere and pass that to the next call to <q class="identifier">activate</q>.  You can now keep calling into your user mode task as many times as you want!
+
+<h1>That's It!</h1>
+
+We now have a kernel that can start a user mode task, and switch back and forth between the kernel and the user mode task at will.  Next time we'll look at multitasking and maybe some other stuff.
+
+Code for this post is <a href="https://github.com/singpolyma/singpolyma-kernel/tree/f77f5d1320270820edd7c48feed2b3418e858112">on GitHub</a>.

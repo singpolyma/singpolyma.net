@@ -1,0 +1,43 @@
+---
+title: Signing XML Nodes
+date: 2010-03-29 17:15:15 Z
+tags: ["Tech","XML","OpenPGP"]
+wordpress_path: /actionstream/signing-xml-nodes
+---
+I've been thinking about signing XML nodes.  The existing mechanisms are either really complex (<a href="http://www.w3.org/TR/xmldsig-core/">XML-DSig</a>) or over-verbose (<a href="http://salmon-protocol.googlecode.com/svn/trunk/draft-panzer-magicsig-00.html">Magic Sig</a>).  This could be useful in RSS/ATOM feeds, XMPP, and other XML-based communication formats.  The purpose of this proposal is to provide a lightweight signing (and optionally, encyption) mechanism for embedding inside XML nodes, while not inventing any new XML namespaces, elements, or attributes, not inventing a new envelope format for the signature data, and not suggesting a new way of transmitting octet streams in a text safe way.
+
+<h2>Normalization</h2>
+
+In order to preserve the form of the XML being signed, an exact textual representation of the XML tree to be signed must be included in the signature packet ("opaque signing").  This is similar to the strategy employed by Magic Sig.
+
+It is recommended that the fragment be encoded as a valid standalone XML document, so that parsers can easily feed the unwrapped content to an XML parser and use the tree that results, without having to graft the text back into the original XML document for parsing.
+
+<h2>Envelope format</h2>
+
+Rather than inventing a new envelope to mark up what algorithms were used to generate the signature, I suggest using the standard <a href="http://www.ietf.org/rfc/rfc4880.txt">OpenPGP packet format from RFC4880</a>.  This standard is well-deployed for use in Email and other cryptosystems, and there are implementations, or partial implementations, in many languages, <a href="http://github.com/bendiken/openpgp-php">including PHP</a>.
+
+<h2>Inclusion in an XML node</h2>
+
+An opaquely signed XML fragment is just an alternative representation of the node it wraps.  This relationship is well modelled by the ATOM <code>link</code> element (namespace http://www.w3.org/2005/Atom) with the <code>rel</code> attribute set to <code>alternate</code>.
+
+<a href="http://www.ietf.org/rfc/rfc3156.txt">RFC3156</a> defines an Internet media type for encrypted and/or signed OpenPGP data as <code>application/pgp-encrypted</code>.  This makes an appropriate content for the <code>type</code> attribute.
+
+<h2>Text-safe encoding of octets</h2>
+
+Protocols may wish to include the OpenPGP packet directly in the XML document, instead of linking to an external resource.  In fact, this is probably the normal case.  <a href="http://www.ietf.org/rfc/rfc2397.txt">RFC2397</a> defines a useful mechanism for encoding arbitrary octet streams (such as those used in the OpenPGP binary packet format) as URIs for use anywhere a URI is expected, such as the <code>link</code> element's <code>href</code> attribute.  The media type included in the data URI should be <code>application/pgp-encrypted</code>.
+
+<h2>Example</h2>
+
+Below is an ATOM fragment demonstrating this recommendation:
+<code style="display:block;overflow:auto;">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;feed xmlns="http://www.w3.org/2005/Atom"&gt;
+&lt;title&gt;Test Feed&lt;/title&gt;
+&lt;entry&gt;
+&lt;title&gt;Test Entry&lt;/title&gt;
+&lt;link rel="alternate" type="text/html" href="http://example.com/item1" /&gt;
+&lt;published&gt;2010-03-26T06:47:47+03:00&lt;/published&gt;
+&lt;link rel="alternate" type="application/pgp-encrypted" href="data:application/pgp-encrypted;base64,owGbwMvMwMF4UUZT8FzgnHuMa/4msZUY6VXk5nhvuC9pYw9kKJSlFhVn5ufZKhnqGSgppOYl56dk5qXbKoWGuOlaKNnbcdmk5pUUVSoA1eYV2ypllJQUWOnrl5eX65Ub6+UXpesbGRiY6juW5OcqAdWWZJbkpNqFpBaXKLiCtNnoQ0S4bHIy87IVilJzbJUSc0pSi/ISS1KVFEoqC1JtlUpSK0r0M0pyc5QUMopS0+CWpFYk5hbkpOol5+fqZ5ak5hoqKegDTSooTcrJLM5ITbEzMjA00DUw1jUyCzEwszIxByJtA2MrAwMbfYQiLht9sA/suDqZZFgYGDkY2FiZQP5n4OIUgAXN+W/8v5h/vXu4cBXbrfUVT0yXTKsI+h1Qw2/zdYZ9h/yJ+/r5L7U1xc/sWMTh4Du1MXjKWsMHP2KZ0ooy7ZVFz0ps011ZaZDUl78y5JbdCbeMNcEcjb0tS1yEu7hfZX6Wsi+qeMDRZO1/1+Lt8c1fqloOLHSqe6YyX8dsp9HmtZlXkxdZVT/67Jcnxig59Rj/Gv0Nr0RPdSg68a/r3vKvV3tavvvyXP6wtWu3NHJrFR25euzI/VdnVMzjuDYt47gjxnm956jU72cvfXj7Dk79+yqfkyPCxfyo/ZFdTJtfK1ncYgur6Dqp47r4EcfZ2pDNwk4n5vYwOfjuWM09Ye6ij+nnbi2Zn2ld/zhx4o+Z2XoF6Twucayxa80urHWeMF0nw/mq2fLFhuv1PWaXRtoHHr9qMc9e+tjdD5KhxQV3Jr49d2YZ2+WjD49UfqtLYVxfxzy3iiG4YWvZHfl2g/yPtx3M+rqVuVbM2Vpzq9q76OytfQsjm769Ely2PGDTmg8ak2frnfL9/49VPKPU8vj0Y0diN213uNkrfeH15TbjM09el/2rCF5v/Uryd3XXB8OfbedesyRJH1s7dWPB04JFvA9Zp6y7IfI2VDo8VHiHVpmqR+aERRt/7Dy1NtmV+48KH8/l7ebCr4KNb7v3SSqfdWDey7lkQ+Nzwdfb1vOlTzXU1zyx0kVX3v2t9h+f1T1px+KuX7rw8gOb17St+69/kvkKAA" /&gt;
+&lt;/entry&gt;
+&lt;/feed&gt;
+</code>

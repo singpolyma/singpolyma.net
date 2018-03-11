@@ -1,0 +1,9 @@
+---
+title: Give Raw Pages a Lift
+date: 2008-08-29 04:18:43 Z
+tags: ["Tech"]
+wordpress_path: /actionstream/give-raw-pages-a-lift
+---
+We've all seen it: the harsh white background, serif fonts, and window-border hugging indicitive of unstyle (or very lightly styled) (X)HTML.  Today I discovered something: it takes very little CSS to take a basic HTML page and give it some flavour (and make it less painful on the eyes).  Just <a href="http://www.pastie.org/262228">eight lines of CSS</a>.
+
+Not all pages have such CSS, however, and sometimes it might be nice to just hit a button and get some style.  So I created a bookmarklet.  <a href="javascript:(function(){var%20st%20=%20document.createElement('style');%20st.type%20=%20'text/css';%20st.innerHTML%20=%20'html,%20body%20{%20%20background-color:%20#eed;%20%20font-family:%20Arial,%20sans-serif;%20}%20body%20{%20margin-left:%205%;%20margin-right:%205%;%20}';%20document.getElementsByTagName('head')[0].appendChild(st);})();">Drag it to your bookmark bar</a>, and next time you see an unstyled page, hit it.  Basic styles will be added instantly.

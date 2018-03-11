@@ -1,0 +1,25 @@
+---
+title: Distributed Comment UI
+date: 2011-07-17 02:15:07 Z
+tags: ["Tech","XRDS","OAuth","XRDS-Simple","Salmon","webfinger","ostatus","indieweb"]
+wordpress_path: /actionstream/distributed-comment-ui
+---
+I've been thinking today about distributed commenting.  Better known as @replies.  This is the idea where the comment author can have the option to own their comments on a blog post by having them syndicated through a provider of their choosing.  They may show up on the target site as well, but the comment author owns the permalink.
+
+Of course, we've deployed the technology to solve this.  Salmon.  I haven't quite got this blog enabled yet (any day now), but when I do you'll be able to comment here from your own site or a StatusNet or RStatus instance.  It'll show up here, and I'll be notified, but you own the permalink.
+
+This was possible before Salmon, using Trackbacks, but Salmon is much more robust and delivers the full content of the comment to the target site so that it can be properly syndicated.
+
+You may not want all your comments on other sites showing up in your "main stream", depending on the services you use and how they're configured.  That's fine.  That's a UI problem on your provider's end, and there are many ways to solve it (allowing a post to be marked "do not publish to main stream" seems the easiest).
+
+Now for the hard part: UI.  You don't want to flip over to another site or app to comment.  So unless you're using one of the super aggregators that does not yet exist with built-in Salmon magic, what do you do?  The site author needs some way to let you comment with UI here, but authenticated as yourself and with content owned by your provider.
+
+Thankfully, we have OAuth, AtomPub, and discovery protocols.  They're a bit of a mess (everything that evolves over time is), but it's slowly stabalizing and I can already reccomend some best practices.  Ask the user for their WebFinger ID (use a nicer way of asking, ofc :) ) -- this could be singpolyma@identi.ca, or http://identi.ca/singpolyma, for example.  If WebFinger discovery fails and you can interpret the ID as a URL (you probably can), then hit that.  If it succeeds, check for a type="application/atomsvc+xml" link.  That's your AtomPub endpoint.  OAuth does not yet have a WebFinger-compatible discovery mechanism, so attempt OAuth discovery on the URL you have, the AtomPub endpoint, and the rel=http://webfinger.net/rel/profile-page link in the WebFinger result.
+
+You now have an AtomPub endpoint and an associated OAuth endpoint.  Unfortunately you may need to be set up to do OAuth with this particular provider, so we may be stuck (though you can always try a blank consumer token/secret pair, since more and more sites are supporting that).  If you can get authorization, then you're done.
+
+While this seems complicated on a technical level, the UI is all very simple.  You ask them where they blog, they tell you, you find out if they are set up to handle this and if so, you send them through an OAuth loop.  You store the OAuth result in a cookie (maybe only if they checked "remember me") so that you don't have to do it a lot.  When they post a comment using your comment forms, instead of saving the data you send it off to their site via AtomPub with an in-reply-to value set as your post.  Poof.
+
+<h2>A Small Extension</h2>
+
+Assuming you followed all that, there's one more thing you might want to do.  You as a publisher might want to host all your comment data on some other site (say, identi.ca).  With the above setup you can (just set in-reply-to correctly and you can do anything), but what about users who don't have their own blog/microblog somewhere?  For these users it should be fairly simple to set up a dummy/anonymous Salmon service, that gives OAuth automatically to anyone who asks and then sends Salmon slaps of content it receives over AtomPub.  An AtomPub-to-Salmon proxy, if you will.  Users who comment and don't have an ID just have their content pumped through there, and you don't even have to host anything!  Awesome!

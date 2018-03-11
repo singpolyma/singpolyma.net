@@ -1,0 +1,15 @@
+---
+title: 'BitBrawl: Cleanup and Multiplayer'
+date: 2012-07-14 16:38:48 Z
+tags: ["Tech","LPC","Game","BitBrawl"]
+wordpress_path: /actionstream/bitbrawl-cleanup-and-multiplayer
+---
+I've pushed some stuff up to <a href="https://github.com/singpolyma/BitBrawl">the BitBrawl repo</a>.  It's really starting to come together!
+
+First off: the art/data is in the repo now.  I'm using the grass from the base assets for the background for now.  I've also built a custom character from some of the art by Johannes Sjölund, and put the credits in my COPYING file.  This sprite sheet has more animations than just "walk", which will be very useful when I start work on combat.
+
+I have also done some simple obvious things: players can no longer walk off the edge of the screen.  The control configuration start screen now gives useful names for the keys, instead of internal names.  Art and data are searched for in system folders, with a fallback to the current directory, instead of hardcoded paths.
+
+<a href="https://singpolyma.net/wordpress/wp-content/uploads/2012/07/bitbrawl2.png"><img src="https://singpolyma.net/wordpress/wp-content/uploads/2012/07/bitbrawl2-300x225.png" alt="BitBrawl with 2 players" /></a>
+
+I've also upgraded the drawing/physics code to actually draw and control all the N players who join the game!  So, while all they can do for now is walk around, you can actually add as many players as you want!  (There's a small bug in that if you add more players that can be shown across the screen, the menu will draw some of them off-screen.  I'm not sure yet how I want to handle that.)

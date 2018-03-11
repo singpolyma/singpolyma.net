@@ -1,0 +1,39 @@
+---
+title: Heterogenous Collections in Haskell
+date: 2012-08-09 21:33:46 Z
+tags: ["Tech","Haskell"]
+wordpress_path: /actionstream/heterogenous-collections-in-haskell
+---
+One of the things statically typed languages like Haskell and C often don't have great support for, is collections that contain elements that are not all of the same type.  In a dynamically typed language one can store any element of any type in a collection, because the type is finally determined later when the value is used at runtime.  With a statically typed language, the compiler wants to determine all the types at compile time, and so it often wants to force every element to be of the same time (homogeneous collections).
+
+Normally when this problem arises, I find that I can rethink the problem in a way such that the solution does not require heterogeneous collections, but recently I've been working with one that, while I can solve it another way, the most natural solution seems to call for this.
+
+The <a href="http://www.haskell.org/haskellwiki/Heterogenous_collections">Haskell Wiki</a> has a couple of suggestions for doing this.  The easiest one, is just to use Data.Dynamic to do dynamic typing from inside Haskell.  The problem with this is that it is both slower (the types of all values in the collection have to be checked at runtime) and less safe (if a bad value gets put in the data structure, it can cause the application to crash).
+
+Another solution suggested there is exitstentially qualified datatypes.  These solve the problem in a way that is safe (as long as you only need to perform operations from some typeclass on the data) and efficient, and is analogous to an upcast in a statically-typed Object-Oriented language.  However, it can be a bit complex, and is a <a href="/2012/08/on-language-extensions-in-haskell-and-elsewhere/">language extension</a>.
+
+A solution that will work in Haskell98 and give most of the benefits of exitstentially qualified datatypes (with less power) is to package up operations to be performed with the datatype, instead of the data itself.  Any functions that you will want to call (such as those which are members of the typeclass you're interested in) can be partially applied to the data, resulting in a function that is the exact same type as an equivalent function partially applied to some other instance of the same typeclass.  You can thus put records full of these functions into a list or other collection, and it will work because they are all the same datatype.  Then instead of calling (func x otherparams) you can just call (func otherparams) and get exactly the same result.
+
+An example:
+
+<pre>
+class SomeClass a where
+	somefun :: a -&gt; Int -&gt; Bool
+
+instance SomeClass Int where
+	somefun = (&gt;)
+
+instance SomeClass [a] where
+	somefun = (&gt;) . length
+
+data SomeFunAble = SomeFunAble {
+		somefun_ :: (Int -&gt; Bool)
+	}
+
+someFunAble :: (SomeClass a) =&gt; a -&gt; SomeFunAble
+someFunAble v = SomeFunAble (somefun v)
+
+somelist = [someFunAble "hello", someFunAble (12::Int)]
+
+otherlist = map (`somefun_` 12) somelist
+</pre>

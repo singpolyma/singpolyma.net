@@ -1,0 +1,17 @@
+---
+title: Windows Media Streams on Ubuntu
+date: 2006-09-07 16:33:00 Z
+tags: ["Tech","Windows","Ubuntu","Media"]
+wordpress_path: /actionstream/windows-media-streams-on-ubuntu
+---
+Since I did all the research on this yesterday to get it working, I figured I'd share it with the world in case someone else is having problems with it too!  These instructions assume Ubuntu, but should work on pretty much any Linux system with minor modifications.
+
+1) You must have a GStreamer player installed.  Totem (the defaul GNOME movie player/media player) is what I used because it was already installed.
+2) Install gstreamer0.10-plugins-bad with Synaptic
+3) Go to <a href="http://www.mplayerhq.hu/design7/dload.html">MPlayer</a> and download the binary codecs for Linux.  Unpack the file into either the /usr/lib/win32/ directory or the /usr/lib/codecs directory (depending on your system, I put it in both to be safe).
+5) Install gstreamer0.10-pitfdll with Synaptic (if available) or get it from <a href="http://packages.ubuntu.com/dapper/libs/gstreamer0.10-pitfdll">a mirror</a>.
+4) Install gstreamer0.10-plugins-ugly with Synaptic
+
+That should be it!  You should now be able to listen to Internet radio stations in the Windows Media format.
+
+<div class="tags">Tags:<ul><li><a href="http://del.icio.us/singpolyma.techblog/linux" rel="tag">linux</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/ubuntu" rel="tag">ubuntu</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/windows" rel="tag">windows</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/media" rel="tag">media</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/streaming" rel="tag">streaming</a></li> </ul></div>

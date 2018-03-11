@@ -1,0 +1,28 @@
+---
+title: feed2json
+date: 2006-03-17 06:53:00 Z
+tags: ["Tech"]
+wordpress_path: /actionstream/feed2json
+---
+I have been doing some work recently with the <a href="http://xoxotools.ning.com/outlineconvert.php">Outline Converter</a>, upgrading its code and adding more input and output formats.  One of the benefits of this is that it can now act as a feed2json converter.  Since it is hosted on Ning it doesn't suffer from the bandwidth restrictions so many other feed2json scripts do.  To use it as a feed2json use the following URL format:
+
+http://xoxotools.ning.com/outlineconvert.php?output=json&amp;classes=items&amp;url=<span style="color: rgb(255, 0, 0);">FEED URL</span>&amp;callback=<span style="color: rgb(255, 0, 0);">CALLBACK</span>
+
+I have already upgraded <a href="http://singpolyma-tech.blogspot.com/2006/02/freshtags-singpolyma.html">my version of FreshTags</a> to use this instead of the other feed2json script so that I no longer have to worry about the bandwidth restrictions.  Here is the code for the function I am using to convert the JSON data to the Delicious.posts format:
+
+<div style="font-family:monospace;">function feedjson2deljson(json_data) {
+   var rtrn = [];
+   for(var i=0; i&lt;json_data.items.length; i++) {
+      obj = {};
+      obj.d = json_data.items[i].title;
+      obj.u = json_data.items[i].link;
+      obj.n = '';
+      if(json_data.items[i].description)
+         obj.n = json_data.items[i].description;
+      if(json_data.items[i].content)
+         obj.n = json_data.items[i].content;
+      rtrn.push(obj);
+   }//end for
+   return rtrn;
+}//end feedjson2deljson</div>
+<div class="tags">Tags:<ul><li><a href="http://del.icio.us/singpolyma.techblog/json" rel="tag">json</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/jsonp" rel="tag">jsonp</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/syndication" rel="tag">syndication</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/rss" rel="tag">rss</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/atom" rel="tag">atom</a></li> </ul></div>

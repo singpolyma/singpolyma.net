@@ -1,0 +1,17 @@
+---
+title: Videntity Bookmarklet
+date: 2007-04-21 15:32:40 Z
+tags: ["Tech","Videntity","Bookmarklet"]
+wordpress_path: /actionstream/videntity-bookmarklet
+---
+If you haven't heard of <a href="http://videntity.org/">Videntity</a>, you may recognize it as the major force behind my landing page.  If you don't have an <a href="http://openid.net/">OpenID</a>, you can get one from Videntity.  If you have one already (like me) you can log in using it.
+
+Then, you can associate a profile with your OpenID.  Yes, you've done this a million times before.  Videntity is different -- you can actually import your existing profile from elsewhere if it is done using <a href="http://microformats.org/wiki/hcard">hCard</a>.
+
+You can also add friends to your profile on Videntity.  Here again, the service is different.  You are not bound to adding people who have ever used Videntity -- anyone with a URL can be added.  Full <a href="http://microformats.org/wiki/xfn">XFN</a> vocabulary is supported.  This powers the primary friends list on my home page.
+
+Enter the bookmarklet.  I have written a bookmarklet that works cross-browser.  Click it, and it detects hCards and Facebook links on the current page.  It presents you with a list of these people it has detected and lets you either click over to their profile (useful in itself) or add them to your Videntity profile as friends.
+
+So, drag the following to your bookmark bar and watch the magic!
+
+<a href="javascript:(function(){var js = document.createElement('script'); js.type = 'text/javascript'; js.src = 'http://singpolyma.googlepages.com/videntity-bookmarklet.js'; document.body.appendChild(js);})();">Videntity Bookmarklet</a>

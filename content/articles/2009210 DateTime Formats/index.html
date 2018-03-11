@@ -1,0 +1,49 @@
+---
+title: DateTime Formats
+date: 2009-07-29 00:08:11 Z
+tags: ["Tech","Personal"]
+wordpress_path: /actionstream/datetime-formats
+---
+I have been interested in calendar and time reform for some time.  Each proposal has its own advantages and disadvantages.  One of the largest disadvantages is that breaking compatibility with established systems and norms is <em>hard</em>.
+
+So, any system should do as much as it can to improve matters, while still keeping existing norms where possible.  Of course, to find out what norms are important, one must ask people.
+
+In all my discussions with people about time, something has become apparent: people like days.  They like going to bed at the same time every day, waking up every morning, and generally having a measurable system that follows the rotational cycle.
+
+Conclusion: days should form the basis for any system of time.
+
+People are way less attached to months.  Months are icky, of non-uniform length, and are the focus of most attempts at calendar reform.
+
+Instead of proposing a new sort of month (many have done that before me, and there are some good proposals out there) I propose something much less radical.  Something that has sat well with the handful of people I've run this by privately so far (some geeks, some not).  I propose we stop including months in our datestamp expressions.
+
+What format will we use, then?  Thankfully, ISO8601 (from whence we get the YYYY-MM-DD format) defines a nice format for use to use: <a href="http://en.wikipedia.org/wiki/ISO_8601#Ordinal_dates" title="Ordinal Dates">YYYY-DDD</a>.  All major software libraries support this format (for example: the strftime string for it is %Y-%j).
+
+<h3 id="time">Getting a bit more radical</h3>
+
+What about time?  Hours and minutes really suck.  They really do.  24 in a day?  What kind of "halfway" is 12?  or 30?
+
+Since I've already established that days should be the basis for time, why not just keep using them?  What is time trying to convey?  It is trying to convey how far one is into the day.
+
+Right now I am 70.7% through my day.  How do I know that?  I just read it off my clock!  My clock looks like this:
+
+2009-209.708
+
+That . is not just a separator: the whole bit after the - is a real number!  (Some locales may prefer , as their decimal separator).
+
+Halfway through your day becomes ".5" or ".500" instead of "12" or "1200".  That just makes sense!
+
+Other benefits:
+<ul><li>Math.  209.710 + .40 = 210.110  Simple!</li>
+<li>If you take just up to millidays (three digits of time) and express in UTC+1 you get Swatch Internet Time</li></ul>
+
+You'll note that I am using this format on blog posts on this site.
+
+<h3>Timezones</h3>
+
+I would just like to also advocate a minimalist expression of <a href="http://en.wikipedia.org/wiki/ISO_8601#Time_zone_designators">timezones</a>.  UTC timestamps should end in 'Z'.  Other zones can use their offset in hours (which is really a name, so keeping it in hours for compatibility is fine).
+
+YYYY-DDD.TTTZ
+or
+YYYY-DDD.TTT+00
+
+Internet activities, publications of international interest, etc, should be expressed in UTC with the 'Z' terminator.

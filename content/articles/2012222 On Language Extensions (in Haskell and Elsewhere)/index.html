@@ -1,0 +1,31 @@
+---
+title: On Language Extensions (in Haskell and Elsewhere)
+date: 2012-08-09 14:25:16 Z
+tags: ["Tech","Standards","Haskell"]
+wordpress_path: /actionstream/on-language-extensions-in-haskell-and-elsewhere
+---
+This was originally an email to the <a href="http://www.haskell.org/pipermail/web-devel/2012/002525.html">Haskell web-devel list</a> and was also <a href="http://www.reddit.com/r/haskell/comments/xx46d/a_code_generator_for_web_routing_without_template/c5qilru">posted on Reddit</a>.
+
+Somebody claiming to be yi huang wrote:
+<blockquote>
+Why prefer code generation over template Haskell? Isn't them essentially the same thing, and template haskell is performed automatically.
+</blockquote>
+
+Also, from Reddit (nicolast):
+<blockquote>
+I never understood why someone would want to avoid using language extensions which have been in GHC for at least some time. The only reason  I can think of is: compatibility with other compilers. But is anyone ever going to compile/run a yesod-routes based application using something other than GHC?!
+</blockquote>
+
+First off, yes, Template Haskell is very similar to code generation.  There are a few reasons I would like to avoid it.
+
+It's a language extension.  I try to avoid those in general, in every stanardized language I code in (C89, R5RS, Haskell98) for several reasons.
+
+As nicolast said, compatibility with other compilers is a big one.  When I get a piece of code from someone who assumed that "what MSVC does" or "what Racket does" is the same as "anyone can run this", it makes it quite difficult to use my favourite implementations of those languages.  I don't want to make assumptions about other people's environments, or what will be useful in the future.  Maybe someone writes a Haskell interpreter that makes use in some context I haven't even imagined much nicer.  Who knows.
+
+Additionally, any other static analysis/code processing tools (like, say, hlint) *also* needs to support whatever syntax extensions you're using (semantics extensions may or may not apply here, depending on the nature of the tool).  Requiring that every tool author support all my favourite extensions limits my tool options, and makes life harder for tool authors (since they cannot just look in one place for the spec and write to that anymore if they need to look up compilers' extensions as well).
+
+Will anyone ever compile/run/analyze a yesod-routes based application using something other than GHC/hlint?  (Actually, does hlint support TH?  It might.)  What specifically about yesod-routes makes this less likely?  What drew me to Yesod.Routes.Dispatch was its relative purity in terms of extensions/dependencies, etc.
+
+Additionally, I find Template Haskell specifically (and some other language extensions, like Overlapping Instances) can make code harder to read (for me) and possibly harder to reason about.  A code generator makes a file that I can read for comprehension, edit if I want to, etc.
+
+Ok, that's a bit of a long answer to a short question, but it sort of sums up my motivation vis extensions in general and TH in particular.

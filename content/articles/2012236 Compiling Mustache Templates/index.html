@@ -1,0 +1,21 @@
+---
+title: Compiling Mustache Templates
+date: 2012-08-23 05:55:26 Z
+tags: ["Tech","Templates","Haskell"]
+wordpress_path: /actionstream/compiling-mustache-templates
+---
+<span class="vcard"><a class="fn url" rel="friend" href="http://psycoti.ca/0/">Christopher Vollick</a></span> and I were recently discussing ways to get more compile-time guarentees out of our web templates.  We both love <a href="http://mustache.github.com/">Mustache</a> for its simplicity and its thin-view philosophy, so that was a natural place to start.
+
+I decided to try writing a tool to convert Mustache templates to Haskell code, <a href="http://hackage.haskell.org/package/mustache2hs">which I have done</a>.
+
+This allows the compiler to check a number of things for us including: ensuring we do not use any keys in the templates that are not defined in the model, ensuring that we do not use keys in the template in ways that are inconsistent with the datatype in the model, and ensuring that our partials and sections expect the context they will end up getting passed due to the structure of the templates.
+
+It also gives us a speed boost.  Comparing to the <a href="http://hackage.haskell.org/package/hastache">other popular Haskell Mustache implementation</a> my current benchmarks <a href="https://github.com/singpolyma/mustache2hs/blob/master/benchmark/RESULTS">show a significant speedup</a>.  This is to be expected, since GHC can perform optimisations that a runtime interpolator just can't.  Also, in order to be able to use arbitrary Haskell Records as context, runtime implementations have to perform runtime checks using a union type or the Typeable class.  My implementation can do all these checks at compile time.
+
+People familiar with Mustache may be wondering how I handle recursive partials, since this is a feature Mustache touts as being possible because the templates <em>are not</em> compiled.  I make a compromise in my code: partials are rendered out as toplevel functions, just like any other file, and as such they only inherit the context directly above them, instead of inheriting the enitre scope all the way to the top.  I rarely use values from higher scopes in my partials anyway, so I don't think this is a very severe limitation.
+
+Values that are displayed in the template must have an instance of Pretty from <a href="http://hackage.haskell.org/package/wl-pprint">wl-pprint</a> and values that are used in sections or inverse sections must either be lists of records (which get used as the context for the section body) or any Monoid instance.  If the value (==mempty), it is considered falsey.  Note that if you need values to be able to be optional, but want the natural mempty of your datatype to be truthy, you can acheive this by wrapping in a Maybe.
+
+The requirement to be a Monoid is relaxed for Bool and a large list of numeric types, which get wrapped in the Any and Sum newtype wrappers by the code generator when they are detected in a record.  This allows False and 0 to be treated as falsy for the majority of types where this would be interesting without needing to define orphan Monoid instances or wrap everything up in newtypes yourself.
+
+There is <a href="https://github.com/singpolyma/mustache2hs/tree/master/example">example code on GitHub</a>.  Check it out, play with it, and let me know what you think!

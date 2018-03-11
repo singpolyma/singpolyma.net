@@ -1,0 +1,23 @@
+---
+title: BlogID in Blogger BETA
+date: 2006-10-17 22:50:00 Z
+tags: ["Tech"]
+wordpress_path: /actionstream/blogid-in-blogger-beta
+---
+<a href="http://beta.blogger.com/">Blogger BETA</a> seems to have no template tag (or equivalent) any more for the BlogID, which is sometimes a very useful value to have.  I have hacked together the following JavaScript function which should return the BlogID of any Blogger BETA blog it is run on:
+<code>
+   function getBlogID() {
+      var links = document.getElementsByTagName('link');
+      var href = '';
+      for(var i=0; i&lt;links.length; i++) {
+         if(links[i].rel == 'EditURI') {
+            href = links[i].href;
+            break;
+         }//end if rel == EditURI
+      }//end for i&lt;links.length
+      href = href.match(/blogID=([\d]+)/);
+      return href[1];
+   }//end function getBlogID
+</code>
+
+<div class="tags">Tags:<ul><li><a href="http://del.icio.us/singpolyma.techblog/blogger" rel="tag">blogger</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/beta" rel="tag">beta</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/hack" rel="tag">hack</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/hacks" rel="tag">hacks</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/javascript" rel="tag">javascript</a></li> </ul></div>

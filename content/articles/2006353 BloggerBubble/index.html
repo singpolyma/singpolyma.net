@@ -1,0 +1,19 @@
+---
+title: BloggerBubble
+date: 2006-12-19 16:52:00 Z
+tags: ["Tech","Blogger","Hack"]
+wordpress_path: /actionstream/bloggerbubble
+---
+<a href="http://andufo.com/">Andrés Santos</a> wrote <a href="http://andufo.com/proyectos/bloggerbubble">a nice hack for Blogger</a> that used <a href="http://www.websnapr.com/">Websnapr</a> to display pop-up thumbnails of links in your blog posts.  Just install one line of code and you're good to go.
+
+Problem : It didn't work with my Blogger template.
+
+And so I did what I often do -- hacked his hack!  If his code won't work for you, insert this code just before the &lt;/head&gt; tag in your template instead:
+<code>
+&lt;script src="http://jscripts.ning.com/get.php?xn_auth=no&amp;amp;id=2654582" type="text/javascript"&gt;&lt;/script&gt;
+</code>
+This should work with most Blogger templates (write me if it won't with yours and I'll update it).  Also, it will work with any <a href="http://microformats.org/wiki/hatom">hAtom</a>-based template.
+
+<a href="http://jscripts.ning.com/view.php?id=2654582">JScripts Entry</a>
+
+<div class="tags">Tags:<ul><li><a href="http://del.icio.us/singpolyma.techblog/blogger" rel="tag">blogger</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/hack" rel="tag">hack</a></li> </ul></div>

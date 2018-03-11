@@ -1,0 +1,129 @@
+---
+title: Awesome Voicemail for Android
+date: 2017-06-21 12:43:42 Z
+tags: ["Tech","Jabber","XMPP","Freedom","android","freesoftware"]
+wordpress_path: /actionstream/awesome-voicemail-for-android
+---
+Most phone carriers these days have pretty poor voicemail capabilities.  You have to call in to "check" your voicemail, your voicemail box can fill up, and voicemails just play in order without any good way to see what you want.
+
+There have been some advancements in so-called "visual voicemail", but they are not available to all of us.  In this post I will show you how to set up an amazing voicemail for your Android-powered device that only requires your carrier support call forwarding (a pretty standard feature, these days).  You will be able to get your voicemails instantly (or, if you don't have cell data, whenever you have wifi), see immediately who they are from and keep them sorted by the sender, and also read a text approximation of the content so that you don't always have to listen to it!
+
+All services and technologies referenced in this post are <a href="https://en.wikipedia.org/wiki/Free_software">Free Software</a> or <a href="https://en.wikipedia.org/wiki/Open_standard">Open standards</a>.
+
+<h1>You'll need a Jabber (also called XMPP) account</h1>
+
+If you already know you have one, and know what your Jabber ID is, you can skip to the Movim login below.  For everyone else, I suggest you <a href="https://api.movim.eu/accounts/register">register with Movim</a>.  Do this part from your computer (not from your phone or tablet).  If you click that link, you'll see a screen like this:
+
+<a href="https://api.movim.eu/accounts/register"><img src="movim-register.png" alt="Register with Movim" /></a>
+
+Fill it in.  Your Jabber ID will be whatever username you choose, plus "@movim.eu".  Don't forget your Jabber ID or password!  Push "Create" and you'll see a page like this:
+
+<img src="movim-register-after.png" alt="After Registering with Movim" />
+
+Click the link that I have circled in red to be taken to the Movim login page, which looks like this:
+
+<a href="https://fr.movim.eu/"><img src="movim-login.png" alt="Movim Login" /></a>
+
+Enter your full Jabber ID (username you selected followed by "@movim.eu") and password.  Congratulations, you are a part of the Jabber network!
+
+Leave the logged-in Movim tab open while you do the next part.
+
+<h1>Get a phone number with the voicemail service</h1>
+
+The way this voicemail is going to work, you're going to set call forwarding to another number.  So you'll get a number with the voicemail service that is in your local area so that the forwarding is a "local call".  The numbers cost $2.99 USD/month right now, but the first 30 days is free so you can try it without risk or handing over your credit card or anything like that.
+
+Head to <a href="https://cheogram.com">cheogram.com</a> and you'll see something like this:
+
+<a href="https://cheogram.com"><img src="cheogram.png" alt="Cheogram" /></a>
+
+If one of the displayed phone numbers is in your local area, you can click that.  Otherwise click the "..." and you can search by area code for a local number.  <strong>Write down the number you select, you will need it later.</strong> Once you have selected a number, you will see a screen like this:
+
+<img src="jmp-register1.png" alt="JMP Register: fill out JID" />
+
+Fill in your Jabber ID as shown and click "Submit" to continue.  The registration process will send you a verification code as a message.  So head back to your logged-in Movim tab.
+
+<a href="https://fr.movim.eu/?chat"><img src="movim-chat1.png" alt="Movim Chats Screen" /></a>
+
+If necessary, click the icon I've circled in red to go to the "Chats" screen.  Then, select the conversation I've circled in blue to get your verification code.  It will look like this:
+
+<a href="https://fr.movim.eu/?chat/%2B14169938000%40cheogram.com"><img src="movim-chat2.png" alt="Movim chat showing JMP verification code" /></a>
+
+That part I've circled in red is your verification code.  Cut-and-paste that back into the registration process in the other tab, like so:
+
+<img src="jmp-register2.png" alt="Entering the verification code for JMP registration" />
+
+Press submit, and scroll all the way to the bottom of the next page.  Here you will fill out and verify your real phone number (the one people use to call your cell phone already).  We will use this later to record your voicemail greeting.  The filled in page should look like this:
+
+<img src="jmp-register3.png" alt="Set JMP forwarding number" />
+
+When you press "Submit" you will receive a phone call at the phone number you entered.  A voice will read you a verification code, which you must type into the form that will look like this:
+
+<img src="jmp-register4.png" alt="JMP verification code from phone call" />
+
+Press submit, and you're done this part!
+
+<h1>Set up the voicemail</h1>
+
+Head back to your logged-in Movim tab:
+
+<a href="https://fr.movim.eu/?contact"><img src="movim-cheogram-wants-to-talk.png" alt="Back in Movim, Cheogram wants to talk" /></a>
+
+If necessary, click the icon I've circled in red to go to your "Contacts" screen, then click the green checkmark I've circled in blue to allow cheogram.com to talk to you.
+
+<a href="https://fr.movim.eu/?contact/cheogram.com"><img src="movim-contacts-after-cheogram-added.png" alt="Click the cheogram contact" /></a>
+
+Then, click your newly-added Cheogram contact, which I have circled in red.
+
+<a href="https://fr.movim.eu/?contact/cheogram.com"><img src="movim-adhoc-configure-calls.png" alt="Select the &quot;configure calls&quot; action" /></a>
+
+Now we want to configure the call behaviour of your new number to always go to voicemail.  So select the "Configure Calls" action, which I have circled above in red.
+
+<img src="movim-0-seconds-to-voicemail.png" alt="Set it to go to voicemail after 0 seconds" />
+
+We want it to go to voicemail right away, so set it to 0 seconds and press "Submit".
+
+<img src="movim-config-saved.png" alt="Message showing configuration has been saved" />
+
+You should see a message indicating the configuration has been saved, as above.  You can just click "Close" on this message.
+
+<img src="movim-adhoc-record-voicemail-greeting.png" alt="Select the &quot;record voicemail greeting&quot; action" />
+
+Your voicemail is working now, but the greeting on the mailbox will be a robot voice.  Probably you want to record a greeting in your own voice, so click the "Record Voicemail Greeting" action, which I've circled in red above.  You will receive a call on your phone, and a message will tell you to say your desired greeting at the beep.  When you are done with your greeting, hang up, and it will be set automatically.
+
+<img src="movim-record-voicemail.png" alt="You can just close this one" />
+
+Once you've recorded a greeting, just press "Close" to get rid of the notice on your screen.  If you want to change your greeting at any time, just select the action again.
+
+<h1>Setting up call forwarding</h1>
+
+Of course, you need to actually set up your phone so that your carrier will forward calls you don't answer to the voicemail service.  Every Android version is slightly different, but I'll walk you through a generic process and it should be fairly similar on your device.
+
+<img src="android-call-settings1.png" alt="Go to Android call settings" />
+
+Go to your dialler app, tap the three-dots menu in the top right, and select "Settings".  This may also be under "Call Settings" in your global device settings menu.
+
+<img src="android-call-settings2.png" alt="Android dialler settings screen" />
+
+If necessary, tap "Calls" to go into call settings.
+
+<img src="android-call-settings3.png" alt="Tap &quot;Call forwarding&quot;" />
+
+Tap "Call forwarding" to go to forwarding-specific settings.
+
+<img src="android-call-settings4.png" alt="Call forwarding settings" />
+
+There are often various call forwarding settings available, set everything (except for "Always forward", you don't want that) to the phone number you selected from the voicemail service, which you wrote down earlier.
+
+<h1>Getting Voicemails on the Go</h1>
+
+Your voicemail is all set up and working now!  But, probably you want to be notified of new voicemails on your cell phone, and not through the Movim web interface on your computer.  So you'll need a Jabber app for your phone.  I suggest getting <a href="https://conversations.im/">Conversations</a> which you can get for a couple bucks from <a href="https://play.google.com/store/apps/details?id=eu.siacs.conversations">Google Play</a>, <a href="http://www.amazon.com/dp/B00WD35AAC/">Amazon Apps</a>, or <a href="https://f-droid.org/repository/browse/?fdid=eu.siacs.conversations">F-Droid</a>.
+
+<img src="conversations1.png" alt="Conversations first launch screen" />
+
+When you first start Conversations, it may ask if you want to create a new account.  You already have an account, so choose "Use my own provider" which I have circled in red.
+
+<img src="conversations2.png" alt="Convensations Login" />
+
+You will then see a login screen, very similar to the Movim login screen.  Enter your full Jabber ID (remember: your username plus "@movim.eu") and password, then tap "Next".
+
+That's it!  You're all set up to receive your amazing new voicemails directly to your Android phone!

@@ -1,0 +1,59 @@
+---
+title: Anonymous SFTP on Ubuntu
+date: 2009-11-07 23:45:53 Z
+tags: ["Tech","Ubuntu"]
+wordpress_path: /actionstream/anonymous-sftp-on-ubuntu
+---
+I spent some time today getting anonymous SFTP setup on my home server.  Why would I want to do that, you ask?  Well, for file shares.  I have an HTTP server and anonymous FTP server set up to make it easier for people to get at the public shares on the system, but really I'm a big fan of consolidating the protocols in this space.  FTP is old and clunky, SFTP has solved many of the issues and is widely deployed.  In fact, all my PCs are running an SFTP server, only one currently runs an FTP server.
+
+This how-to uses the command line.  It's really not that hard, just type exactly what I tell you to.
+
+First, make sure you have the SSH server installed:
+
+<kbd>sudo apt-get install openssh-server</kbd>
+
+Next, create a new user:
+
+<kbd>sudo adduser --disabled-password anonymous</kbd>
+
+Then, edit the /etc/shadow file to make the password actually empty:
+
+<kbd>sudo ${EDITOR=gedit} /etc/shadow</kbd>
+
+Go to the last line and change the <tt>anonymous:*:</tt> to <tt>anonymous::</tt>
+
+Edit /etc/passwd to make the empty password allowed and the login shell is set to /usr/lib/sftp-server
+
+<kbd>sudo ${EDITOR=gedit} /etc/passwd</kbd>
+
+Go to the last line and change <tt>anonymous:x:</tt> to <tt>anonymous::</tt> and also change the value on the end of the line (it will either be <tt>/bin/bash</tt> or <tt>/bin/sh</tt>) to /usr/lib/sftp-server.
+
+Next, you need to allow sftp-server as a valid shell.
+
+<kbd>sudo su
+echo /usr/lib/sftp-server &gt;&gt; /etc/shells
+exit</kbd>
+
+You also need to allow PAM to accept blank passwords for SSH sessions, so:
+
+<kbd>sudo ${EDITOR=gedit} /etc/pam.d/sshd</kbd>
+
+Change the line that reads <tt>@include common-auth</tt> and replace it with:
+
+<code>auth  [success=1 default=ignore] pam_unix.so nullok
+auth  requisite         pam_deny.so
+auth  required       pam_permit.so</code>
+
+Finally, you need to set the SSH server to allow blank passwords.
+
+<kbd>sudo ${EDITOR=gedit} /etc/ssh/sshd_config</kbd>
+
+Find the line that reads <tt>PermitEmptyPasswords no</tt> and change the <tt>no</tt> to a <tt>yes</tt>.
+
+Restart sshd with:
+
+<kbd>sudo /etc/init.d/ssh restart</kbd>
+
+And you're done!
+
+<strong>Warning:</strong> make sure the anonymous user does not have access to files you do not want it anyone to have access to!  Ubuntu by default makes way too many things world-readable.  This how-to is not about file permissions, but make sure your private files are set so that only your user can read them!

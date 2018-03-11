@@ -1,0 +1,17 @@
+---
+title: Researching GUI Patterns
+date: 2009-06-16 16:54:01 Z
+tags: ["Tech","Research","GUI"]
+wordpress_path: /actionstream/researching-gui-patterns
+---
+I've been complaining about the state of GUI toolkits and standards, etc, for some time now.  Even (and especially) in the FLOSS world we have so many incompatible ways to do GUIs, it's crazy.  No one can bother to write a GUI in every possible toolkit (or usually even in more than one!) so we end up with multiple projects all working on the same thing, but "in X toolkit/style".
+
+I was looking at the output of the Qt Designer (GUI drag-n-drop tool for the Qt toolkit) a couple weeks ago and realised something: the output is <em>very</em> hackable!  In fact, many of the GUI designer tools out there have text or XML files that can be processed.   To convert between them, all it would take is mapping the classes, properties, and events between the different toolkits.
+
+Of course, that got me thinking.  Mapping Qt to Gtk and Tk etc al, then mapping Gtk to Qt and Tk et al would be a rediculous proposition.  Each toolkit or format would add an increasing number of bidirectional mapping requirements to any software.
+
+The solution was pretty obvious.  Create an intermediate data model that can represent GUIs from any toolkit and just write input/output filters.  The strategy has a side-benefit too: such a data model could form the basis for discussion between different toolkits and formats on their similarities and where they could be brought closer together.  Ideally, very simple GUI programs could be source-compatible between, say, Qt and Gtk.
+
+So, how to determine the best way to model this data?  Research and <a href="http://editthis.info/gui">a wiki</a> of course!  Document existing toolkits and formats and what widgets/properties/events/layout stragegies they have, and see what the common patterns are.
+
+So far I have at least widgets documented for Gtk, Qt, HTML forms, XForms, XUL, and wxWidgets.  I have identified <a href="http://editthis.info/gui/Widget">common widget and property patterns</a> and <a href="http://editthis.info/gui/Layout">common layout patterns</a>.  I have already started writing software to read and write GladeXML and should start on Qt Designer output soon.

@@ -1,0 +1,298 @@
+---
+title: Making A Website With Haskell
+date: 2013-09-24 15:48:14 Z
+tags: ["Tech","Web","Haskell"]
+wordpress_path: /actionstream/making-a-website-with-haskell
+---
+<p>This is a guide to building simple webapps using Haskell (modelled after <a href="http://adit.io/posts/2013-04-15-making-a-website-with-haskell.html">this article on a different framework</a>). We will use:</p>
+
+<ul>
+  <li><a href="http://hackage.haskell.org/package/wai">WAI</a> (Web Application Interface, and various utilty packages) for the backend</li>
+  <li><a href="http://hackage.haskell.org/package/mustache2hs">mustache2hs</a> for templating</li>
+  <li><a href="http://hackage.haskell.org/package/sqlite-simple">sqlite-simple</a> for database access</li>
+</ul>
+
+<h2>Getting set up</h2>
+
+<p>There is a very useful utility for building Haskell called Cabal, which will allow you to track which versions of which dependencies you are using, and will tell you if they are not properly installed, etc. Create a project.cabal config file, like so:</p>
+
+<pre><code>name:            project
+version:         0.1.0
+cabal-version:   &gt;= 1.8
+category:        Web
+copyright:       © 2013 Your Name
+author:          Your Name &lt;youremail@example.com&gt;
+maintainer:      Your Name &lt;youremail@example.com&gt;
+stability:       experimental
+synopsis:        My awesome todo-list app
+homepage:        http://github.com/yourName/repoName
+build-type:      Simple
+description:
+        A longer description of my awesome app
+
+executable Main
+        main-is: Main.hs
+
+        build-depends:
+                base == 4.*,
+                <a href="http://hackage.haskell.org/package/http-types">http-types</a>,
+                <a href="http://hackage.haskell.org/package/wai">wai</a>,
+                <a href="http://hackage.haskell.org/package/wai-util">wai-util</a>,
+                <a href="http://hackage.haskell.org/package/wai-dispatch">wai-dispatch</a>,
+                <a href="http://hackage.haskell.org/package/yesod-routes">yesod-routes</a>,
+                <a href="http://hackage.haskell.org/package/warp">warp</a>,
+                <a href="http://hackage.haskell.org/package/text">text</a>,
+                <a href="http://hackage.haskell.org/package/path-pieces">path-pieces</a>
+
+source-repository head
+        type:     git
+        location: git://github.com/yourName/repoName.git</code></pre>
+
+<p><kbd>cabal configure</kbd> will check that you have everything installed <kbd>cabal build</kbd> will build your project.</p>
+<p>You may want to set up a Makefile, like so:</p>
+<pre><code>GHCFLAGS=-Wall -fno-warn-name-shadowing -XHaskell98 -O2
+
+dist/build/project/Main: project.cabal dist/setup-config Main.hs
+    cabal build --ghc-options="$(GHCFLAGS)"
+
+dist/setup-config: project.cabal
+    cabal configure
+
+.PHONY: clean
+
+clean:
+    find -name '*.o' -o -name '*.hi' | xargs $(RM)
+    $(RM) -r dist dist-ghc</code></pre>
+
+<h2>Hello World</h2>
+<p>Save this as Main.hs:</p>
+<pre><code>module Main (main) where
+
+import Network.Wai.Handler.Warp (run)
+import Network.HTTP.Types (ok200)
+import Network.Wai.Util (string)
+
+main = run 3000 (\_ -&gt; string ok200 [] "Hello, World!")</code></pre>
+<p>Now make and run it:</p>
+<kbd>cabal build
+dist/build/bin/Main</kbd>
+<p>Go to http://localhost:3000 and you should see your Haskell site!</p>
+
+<h2>Routing</h2>
+<p>Our previous app gave the same response to every request. We will use the routeGenerator utility to create fast, compiled routes from a simple syntax:</p>
+<kbd>cabal install route-generator</kbd>
+<p>Add the following rule to your Makefile:</p>
+<pre><code>Routes.hs: routes
+    routeGenerator -r -m Application $&lt; &gt; $@</code></pre>
+<p>You will want a file named routes with your routing information in it.</p>
+<p>The router supports any possible HTTP method:</p>
+<pre><code>GET / =&gt; homePage
+POST / =&gt; postPost
+PURCHASE / =&gt; buyTheThing</code></pre>
+<p>Where the names on the right-hand side are the names of functions in your Application.hs module.</p>
+<p>You can also capture parameters:</p>
+<pre><code>GET /post/: =&gt; showPost</code></pre>
+<p>Here's an example of an Application.hs with handlers for these routes:</p>
+<pre><code>module Application where
+
+import Network.HTTP.Types (ok200, notFound404)
+import Network.Wai (Application)
+import Network.Wai.Util (string)
+
+homePage :: Application
+homePage _ = string ok200 [] "Hello, World!"
+
+postPost _ = string ok200 [] "You posted!"
+
+buyTheThing _ = string ok200 [] "Bought it!"
+
+showPost arg _ = string ok200 [] arg
+
+on404 _ = string notFound404 [] "Not found"</code></pre>
+<p>And run the whole thing, with the proper 404, like so:</p>
+<pre><code>module Main (main) where
+
+import Network.Wai.Handler.Warp (run)
+import Network.Wai.Dispatch (dispatch)
+import Application
+import Routes
+
+main = run 3000 $ dispatch on404 routes</code></pre>
+
+<h2>Headers</h2>
+<p>Get a header:</p>
+<pre><code>import Network.Wai.Util (bytestring)
+import Data.String (fromString)
+import Data.Maybe (fromMaybe)
+import Data.Monoid (mempty)
+
+homePage req = bytestring ok200 [] (fromMaybe mempty $ lookup (fromString "User-Agent") $ requestHeaders req)</code></pre>
+<p>Set a header:</p>
+<pre><code>import Network.Wai.Util (stringHeaders')
+homePage _ = string ok200 (stringHeaders' [("Content-Type", "text/calendar")]) "Not a calendar ;)"</code></pre>
+<h2>Content types</h2>
+<p>Respond with the appropriate content type:</p>
+<pre><code>import Network.Wai.Util (handleAcceptTypes, string, json)
+
+homePage = handleAcceptTypes [
+        ("text/plain", string ok200 [] "You asked for text, here it is.")
+        ("application/json", json ok200 [] ["A JSON", "array"])
+    ]</code></pre>
+
+<h2>Templates</h2>
+<p>There are many good templating systems. My favourites are <a href="http://hackage.haskell.org/package/blaze-html">blaze-html</a> and <a href="http://hackage.haskell.org/package/mustache2hs">mustache2hs</a>, because:</p>
+
+<ol>
+  <li>They give you some type-checking of your templates at compile time.</li>
+  <li>They are super fast.</li>
+</ol>
+<p>To use mustache2hs, first install it:</p>
+<kbd>cabal install mustache2hs</kbd>
+<p>You will need a module to contain the records that you will render out in your template (Records.hs):</p>
+<pre><code>module Records where
+
+data HomePageData = HomePageData {
+        title :: String,
+        username :: Maybe String
+    }</code></pre>
+<p>And an actual template to render (homePageView.mustache):</p>
+<pre><code>&lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;{{title}}&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;{{title}}&lt;/h1&gt;
+
+        {{#username}}
+            Welcome, {{username}}!
+        {{/username}}
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p>Set up your Makefile to generate the code:</p>
+<pre><code>MustacheTemplates.hs: Records.hs homePageView.mustache
+    mustache2hs -m Records.hs homePageView.mustache HomePageData &gt; $@</code></pre>
+<p>And actually render it out:</p>
+<pre><code>import Network.Wai.Util (stringHeaders', textBuilder)
+import MustacheTemplates
+
+htmlEscape :: String -&gt; String
+htmlEscape = concatMap escChar
+    where
+    escChar '&amp;' = "&amp;amp;"
+    escChar '"' = "&amp;quot;"
+    escChar '&lt;' = "&amp;lt;"
+    escChar '&gt;' = "&amp;gt;"
+    escChar c   = [c]
+
+homePage _ = textBuilder ok200
+    (stringHeaders' [("Content-Type", "text/html; charset=utf-8")])
+    (homePageView htmlEscape $ HomePageData "My Title" Nothing)</code></pre>
+
+<h2>Logging Requests</h2>
+<p>If you want to see a log of all requests on standard out, you'll need to change Main.hs to use a middleware:</p>
+<pre><code>import Network.Wai.Middleware.RequestLogger (logStdoutDev)
+
+main = run 3000 $ logStdoutDev $ dispatch on404 routes</code></pre>
+
+<h2>Serving Static Content</h2>
+<p>If you want to serve a directory of static content alongside your app, you can use a fallback mechanisms from the <a href="http://hackage.haskell.org/package/wai-app-static">wai-app-static</a> package:</p>
+<pre><code>import Network.Wai.Application.Static (staticApp, defaultWebAppSettings)
+import Filesystem (getWorkingDirectory)
+
+staticRoot = staticApp . defaultWebAppSettings
+
+main = do
+    cwd &lt;- getWorkingDirectory
+    run 3000 $ dispatch (staticRoot cwd) routes</code></pre>
+<p>Or alternately use the middleware from <a href="http://hackage.haskell.org/package/wai-middleware-static">wai-middleware-static</a>:</p>
+<pre><code>import Network.Wai.Middleware.Static (static)
+
+main = run 3000 $ static $ dispatch on404 routes</code></pre>
+<h2>Sessions</h2>
+<p>Some apps need a way to store data between requests using cookies. <a href="http://hackage.haskell.org/package/wai-session">wai-session</a> is a package that provides a generic way of doing this, and has existing backends for in-memory storage, encrypted cookies, and tokyocabinet. The <a href="http://hackage.haskell.org/package/wai-session-clientsession">wai-session-clientsession</a> package contains the backend for encrypted cookies:</p>
+<pre><code>module Main where
+
+import Data.Default (def)
+import Data.Maybe (fromMaybe)
+import Data.String (fromString)
+import qualified Data.Vault as Vault
+
+import Network.Wai
+import Network.Wai.Util (string)
+import Network.Wai.Handler.Warp (run)
+import Network.HTTP.Types (ok200)
+import Control.Monad.Trans.Resource (ResourceT)
+
+import Web.ClientSession (getDefaultKey)
+import Network.Wai.Session (withSession, Session)
+import Network.Wai.Session.ClientSession (clientsessionStore)
+
+app session env = do
+    u &lt;- sessionLookup "u"
+    sessionInsert "u" (show $ pathInfo env)
+    string ok200 [] $ fromMaybe "Nothing" u
+    where
+    Just (sessionLookup, sessionInsert) = Vault.lookup session (vault env)
+
+main = do
+    session &lt;- Vault.newKey
+    store &lt;- fmap clientsessionStore getDefaultKey
+    run 3000 $ withSession store (fromString "SESSION") def session $ app session</code></pre>
+
+<h2>Databases</h2>
+<p>For database access, use <a href="http://hackage.haskell.org/package/postgresql-simple">postgresql-simple</a> or <a href="http://hackage.haskell.org/package/sqlite-simple">sqlite-simple</a>:</p>
+<pre><code>import Database.SQLite.Simple (open, close, query, Only(..))
+import Database.SQLite.Simple.FromRow (FromRow(..))
+
+data Post = Post {
+        postTitle :: String,
+        postBody :: String
+    }
+
+instance FromRow Post where
+    fromRow = Post &lt;$&gt; field &lt;*&gt; field
+
+showPost :: Int -&gt; Application
+showPost postId _ = do
+    conn &lt;- open "./production.sqlite3"
+    [post] &lt;- query conn "SELECT * FROM posts WHERE post_id = ?" (Only postId)
+    string ok200 [] (postTitle post)
+    close conn</code></pre>
+<p>Of course, you shouldn't probably re-connect on every request. Change your Makefile to have the router pass an argument through:</p>
+<pre><code>Routes.hs: routes
+    routeGenerator -r -n 1 -m Application $&lt; &gt; $@</code></pre>
+<p>And do the connection from Main.hs:</p>
+<pre><code>import Database.SQLite.Simple (open, close)
+
+main = do
+    conn &lt;- open "./production.sqlite3"
+    run 3000 $ dispatch on404 (routes conn)
+    close conn</code></pre>
+<p>And then you can use the connection:</p>
+<pre><code>showPost :: Connection -&gt; Int -&gt; Application
+showPost conn postId _ = do
+    [post] &lt;- query conn "SELECT * FROM posts WHERE post_id = ?" (Only postId)
+    string ok200 [] (postTitle post)</code></pre>
+
+<h2>Deploying to Heroku</h2>
+<p>Deploying to Heroku is easy with the heroku buildpack.</p>
+<p>First, our hello world app needs to change slightly. Heroku tells us what port to run on with the <var>PORT</var> env variable:</p>
+<pre><code>module Main (main) where
+
+import System.Environment (getEnv)
+import Network.Wai.Handler.Warp (run)
+import Network.HTTP.Types (ok200)
+import Network.Wai.Util (string)
+
+main = do
+    port &lt;- fmap read $ getEnv "PORT"
+    run port $ string ok200 [] "Hello, World!"
+</code></pre>
+<p>Then add a Procfile in your root dir to tell Heroku how to start your app:</p>
+<pre><code>web: ./dist/build/project/Main</code></pre>
+<p>And add a Setup.hs to build your app:</p>
+<pre><code>import Distribution.Simple
+main = defaultMain</code></pre>
+<p>Then, assuming your project is a git repo:</p>
+<kbd>heroku create --stack=cedar --buildpack https://github.com/pufuwozu/heroku-buildpack-haskell.git
+git push heroku master</kbd>

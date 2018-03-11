@@ -1,0 +1,48 @@
+---
+title: Simple HTTP-based File Shares for Ubuntu
+date: 2009-11-05 20:53:05 Z
+tags: ["Tech","Ubuntu"]
+wordpress_path: /actionstream/simple-http-based-file-shares-for-ubuntu
+---
+This is a simple how-to for setting up automatic file sharing for users' ~/Public folders in Ubuntu over HTTP with minimal overhead.
+
+While this how-to is simple, it does use the command line.  I happen to believe the command line is not so scary as the GUI marketing people would have you think, even to new users.  It's much easier to say "type this" and have a user understand than it is to try to describe the GUI actions.
+
+First, install my subdirs script.  This script finds a list of directories containing some other directory, and prints out the path to the subdirectory (if you don't get that, never mind, you just need to know that you need in installed for this how-to).
+
+<kbd>sudo wget -O /usr/local/bin/subdirs http://github.com/singpolyma/singpolyma/raw/master/scripts/subdirs
+sudo chmod +X /usr/local/bin/subdirs</kbd>
+
+Then, install the webfs HTTP server.
+
+<kbd>sudo apt-get install webfs</kbd>
+
+Edit the config file a bit:
+
+<kbd>sudo ${EDITOR=gedit} /etc/webfsd.conf</kbd>
+
+Change the line starting with web_root= to say:
+
+<tt>web_root=/var/www</tt>
+
+And the line starting with web_port= to say:
+
+<tt>web_port=80</tt>
+
+Then restart the server by running:
+
+<kbd>sudo /etc/init.d/webfs restart</kbd>
+
+Finally, to symlink the shares, run:
+
+<kbd>subdirs /home Public | while read DIR; do ln -s "$DIR" /var/www/$(basename "`dirname "$DIR"`"); done</kbd>
+
+You're done!
+
+The last command will have to be re-run every time you add a new user.  Or you could add it as the second-last line in your /etc/rc.local file to make it run every time you boot.
+
+Now people can just visit your computer in their webbrowser (if they're on your local network... to get access from the Internet you have to configure your router, but you probably don't want that anyway).  The address of any Ubuntu computer in a webbrowser (on a computer than supports mDNS, such as other Ubuntu systems or Apple systems) is just <tt>hostname.local</tt>.  For example, my computer is <tt>singpolyma-mini.local</tt>.  For Windows users, they'll have to type in your IP address (unless they install Bonjour for Windows).
+
+You can find your IP address by running:
+
+<kbd>ifconfig | grep 'inet addr' | grep -v 127.0.0.1 | awk '{ print $2 }'</kbd>

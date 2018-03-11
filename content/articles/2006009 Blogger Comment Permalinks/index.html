@@ -1,0 +1,13 @@
+---
+title: Blogger Comment Permalinks
+date: 2006-01-09 12:23:00 Z
+tags: ["Tech","Comments","Blogger"]
+wordpress_path: /actionstream/blogger-comment-permalinks
+---
+Johan of <a href="http://ecmanaut.blogspot.com/">Ecmanaut</a> has pointed out on a couple occasions that Blogger's 'default' comment permalink URL was POSTURL#cCOMMENTID.  I had never found much proof of this claim, except for some default code in the blogger templates -- but some of them (like the one mine is based off of) actually have the anchor that works set to the above, and the links themselves set to #COMMENID with no 'c'... confusing that.
+
+In some recent work I did on the <a href="http://blogxoxo.blogspot.com/">XOXO Blog</a> and in the creation of the <a href="http://singpolyma-tech.blogspot.com/2006/01/commentosphere-importer-and-userscript.html">Commentosphere Userscript</a> I found out something very disturbing -- this discrepancy extends beyond the template codes!  Johan's claim stems from the fact that the anchors on comment pages (those ugly things I partly avoid by my inline comments form) use the #cCOMMENTID format, and hence his commentblogging script (and my commentosphere script) both pull in this format when passing data to del.icio.us or commentosphere, respectively.
+
+There is, however, a Blogger template tag (&lt;$BlogCommentPermalinkURL$&gt;) that is meant to output the entire permalink of a comment (including posturl), something I've been looking for for awhile to alleiviate the need for the ugly JavaScript hackery I have in my blog template to facilitate the same.  This template tag, however, outputs using the #COMENTID format!  If this isn't confusing I don't know what is -- which one is standard, Blogger?
+
+For now, I would reccomend using both.  How?  Change your comment anchor to read something like &lt;a id="c&lt;$BlogCommentNumber$&gt;" name="&lt;$BlogCommentNumber$&gt;"&gt; &lt;/a&gt;. <div class="tags">Tags:<ul><li><a href="http://del.icio.us/singpolyma.techblog/blogger" rel="tag">blogger</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/comments" rel="tag">comments</a></li> </ul></div>

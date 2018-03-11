@@ -1,0 +1,83 @@
+---
+title: FreshTags-Singpolyma 2
+date: 2006-09-14 01:00:00 Z
+tags: ["Tech"]
+wordpress_path: /actionstream/freshtags-singpolyma-2
+---
+<a href="http://ghill.customer.netspace.net.au/freshtags/">FreshTags</a> is a context-based navigation system based on tags.  The most current 'official' version is <a href="http://blogfresh.blogspot.com/2006/01/freshtags-v-05.html">v0.5 as seen on FreshBlog</a>.  I have also run <a href="http://singpolyma-tech.blogspot.com/2006/02/freshtags-singpolyma.html">my own version</a> as a contribution to the effort.  With the advent of <a href="http://del.icio.us/jrfj44/blogger+beta">Blogger BETA</a>, the original purpose of adding categories to Blogger is gone and now the emphasis is on the tag passing, etc.  Complaints have been abundant that neither version of FreshTags would work properly on the BETA.  This milestone upgrade in my version aims to both fix that problem, as well as give FreshTags the boost it needs for future growth.
+
+The script is hosted in the same entry on <a href="http://jscripts.ning.com/">JScripts</a>, and is 100% backwards-compatible with my previous version.  To use it forwards-compatably, however, requires a considerably different setup, therefore I am re-authoring the basic instructions post here, and the old one shall be 'deprecated' (with a link here).  There are many customisation options and different ways things can be done for FreshTags, especially with the new system.  In this post I will cover some basics.  Later posts will cover more functionality, and links to those posts will be added here.
+
+<b>Basic Installation for 'Classic' FreshTags Functionality</b>
+To install this version of FreshTags so that it works about the same as the original FreshTags (as it runs on FreshBlog), you will need this code:
+<pre>
+
+&lt;!-- FreshTags0.5-Singpolyma2 --&gt;
+&lt;script type="text/javascript"&gt;
+
+   if(typeof(WidgetData) != 'object') WidgetData = {};
+   if(typeof(WidgetData['freshtags']) != 'object') WidgetData['freshtags'] = {};
+
+   //tag widget
+   WidgetData['freshtags']['freshtags_tags'] = {
+      'type':'tags',
+      'source':'del.icio.us',
+      'username':'<span style="color:red">Delicious Username</span>',
+      'anchor':'<span style="color:red">Anchor Tag (optional)</span>',
+      'format':'drop'
+   };
+
+   //posts widget
+   WidgetData['freshtags']['freshtags_posts'] = {
+      'type':'posts',
+      'tag_list':'freshtags_tags',
+      'rows':'10'
+   };
+
+&lt;/script&gt;
+&lt;script type="text/javascript" src="http://jscripts.ning.com/get.php?xn_auth=no&amp;amp;id=818185"&gt;&lt;/script&gt;
+&lt;div id="freshtags_tags"&gt;&lt;i&gt;FreshTags Loading...&lt;/i&gt;&lt;/div&gt;
+&lt;div id="freshtags_posts"&gt;&lt;/div&gt;
+&lt;a href="http://ghill.customer.netspace.net.au/freshtags/" title="Categories by FreshTags"&gt;&lt;img src=" http://ghill.customer.netspace.net.au/freshtags/freshtags-btn.png" alt="FreshTags" /&gt;&lt;/a&gt;
+&lt;!-- /FreshTags0.5-Singpolyma2 --&gt;
+</pre>
+
+Advanced users will note that this JavaScript does not have the needed commented CDATA section for XML well-formedness.  This is because of an issue with Blogger BETA.  If you are on a classic blog, feel free to add it in (as I have), but since no special characters are likely to be used in this particular piece of JavaScript code, it doesn't matter much.
+
+Replace <span style="color:red">Delicious Username</span> with your del.icio.us username and <span style="color:red">Anchor Tag (optional)</span> with your del.icio.us anchor tag (or blank for none).  The 'format':'drop' may be set to list, flat, drop, drop-add, drop-add-async, or any other legal format string from my previous version.
+
+To install this on a Blogger Classic blog, add the entire code into your blog template at the place where you want the tag list and post list to appear.
+
+To install this on a Blogger BETA blog, create a new HTML/JavaScript widget, set the title to whatever you want, and place the entire code in the body, then save.
+
+<b>'Fake Post' functionality</b>
+To install this version so that it uses a 'fake post' to display tags, as my original did, add this line to the end of the '//tag widget' section:
+<pre>
+
+WidgetData['freshtags']['freshtags_tags']['tag_url'] = '/2000/01/tags.html';
+
+//postpage widget
+WidgetData['freshtags']['freshtags_postpage'] = {
+   'type':'posts',
+   'tag_list':'freshtags_tags',
+   'format':'list-extended'
+};
+</pre>
+My original version also used the drop-add format, so if you want to mimic that behaviour exactly you must change the format line as well.
+(Note: for this to work you will have to have a post entitled Tags, dated January 1, 2000 with the code &lt;div id="freshtags_postpage"&gt;&lt;/div&gt;)
+
+<b>Labels page (BETA only)</b>
+To install this version so that it uses the Blogger BETA labels page for display, add this code to the end of the '//tag widget' section:
+<div style="font-family: monospace;">
+WidgetData['freshtags']['freshtags_tags']['tag_url'] = '/search/label/%tags%';
+WidgetData['freshtags']['freshtags_tags']['join_char'] = '/';
+</div>
+It is important to note that, except for the sidebar, the display on this page is generated by Blogger and not by FreshTags.  This breaks tag-passing a little bit.  In the next minor revision I will add code to append the ?tags=TAGS to the link URL on any links that have rel="bookmark" on them (the microformats standard for permalinks).
+
+To turn off autocapture of tags from rel=tag data on any of these, add this code to the end of the '//tag widget' section:
+<div style="font-family: monospace;">
+WidgetData['freshtags']['freshtags_tags']['no_autocapture'] = no_autocapture;
+</div>
+
+One thing you're probably wondering is if this will work with the BETA labels with no del.icio.us account.  No.  That may be coming, but I can't promise anything yet.  Does the peek-a-boo sidebar, etc still exist?  Yes, but this post is long enough, so I will write another article explaining all that soon.
+<div class="tags">Tags:<ul><li><a href="http://del.icio.us/singpolyma.techblog/freshtags" rel="tag">freshtags</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/blogger" rel="tag">blogger</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/beta" rel="tag">beta</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/hack" rel="tag">hack</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/hacks" rel="tag">hacks</a></li> </ul></div>

@@ -1,0 +1,61 @@
+---
+title: coComment JSONP
+date: 2006-02-24 10:41:00 Z
+tags: ["Tech"]
+wordpress_path: /actionstream/cocomment-jsonp
+---
+<a href="http://www.cocomment.com/">coComment</a> is a new service like <a href="http://comment.ning.com/">Commentosphere</a> that helps you tracks your comments/conversations across the web.    If you haven't heard of coComment yet check out <a href="http://ecmanaut.blogspot.com/2006/02/cocomment-new-contender-in-two-way-web.html">Johan's article</a> at Ecmanaut.
+
+One of the features missing from coComment has been JSON(P) feeds of data.  They have a 'blog box' JavaScript include, but it is limitedly customisable.  So, frustrated with the way it did work, but still wanting to display my coComment data in my sidebar like I have been doing with Commentosphere, I created a hack that generates JSONP feeds for coComment.
+
+Using the script is simple.  You pass the URL to the JavaScript for a customised blog box on coComment to the script, along with optionally the name of a callback function (using '&amp;callback').  You can tack on '&amp;raw' to make it output raw JSON data.  If no callback is specified and you do not specify raw data it will check to see if you have a coComment.callbacks objects with a comments function and call that.  The URL is:
+http://comment.ning.com/cocomment/json.php?url=URLtoBLOGBOX
+
+If you want a sidebar element, or just some example JavaScript code to work with, here is what I use.  Put this in your &lt;head&gt; section:
+<div style="font-family:monospace;">
+   &lt;script type="text/javascript"&gt;
+   //&lt;![CDATA[
+      var list_cocomment_limit = <span style="color:red;">NUMBER OF CHARACTERS</span>;
+      var list_cocomment_id = "cocomment";
+      var list_cocomment_url = "<span style="color:red;">URL TO BLOG BOX</span>";
+      function list_cocomment_callback() {
+         val = '';
+         val += '&lt;ul class="cocomment"&gt;';
+         for(var i=0; i&lt;coComment.comments.length; i++) {
+            val += '   &lt;li&gt;&lt;a href="'+coComment.comments[i].articlelink+'"&gt;'+coComment.comments[i].body.substr(0,list_cocomment_limit)+'...&lt;/a&gt;&lt;/li&gt;';
+         }//end for
+         val += '&lt;/ul&gt;';
+         val += '&lt;a href="'+coComment.url+'"&gt;More&lt;/a&gt; on &lt;a href="http://www.cocomment.com/"&gt;coComment&lt;/a&gt;';
+         item = document.getElementById(list_cocomment_id);
+         item.innerHTML = val;
+      }//end function list_cocomment_callback
+      coComment = {};
+      coComment.callbacks = {};
+      coComment.callbacks.comments = list_cocomment_callback;
+      function list_cocomment() {
+         coComment = {};
+         coComment.callbacks = {};
+         coComment.callbacks.comments = list_cocomment_callback;
+         var thescript = document.createElement("script");
+         thescript.type = "text/javascript";
+         thescript.src = 'http://comment.ning.com/cocomment/json.php?url='+encodeURIComponent(list_cocomment_url);
+         document.body.appendChild(thescript);
+      }//end function list_cocomment
+      function addLoadEvent(func) {
+         var oldonload = window.onload;
+         if (typeof window.onload != 'function') {
+            window.onload = func;
+         } else {
+            window.onload = function() {
+               oldonload();
+               func();
+            }
+         }//end if
+     }//end function addLoadEvent
+     addLoadEvent(list_cocomment);
+   //]]&gt;
+   &lt;/script&gt;
+</div>
+
+And in your sidebar put '<span style="font-family:monospace;">&lt;div id="cocomment"&gt;&lt;i&gt;Loading...&lt;/i&gt;&lt;/div&gt;</span>'.
+<div class="tags">Tags:<ul><li><a href="http://del.icio.us/singpolyma.techblog/cocomment" rel="tag">cocomment</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/json" rel="tag">json</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/jsonp" rel="tag">jsonp</a></li> </ul></div>

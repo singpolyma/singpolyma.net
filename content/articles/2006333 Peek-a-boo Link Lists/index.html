@@ -1,0 +1,86 @@
+---
+title: Peek-a-boo Link Lists
+date: 2006-11-29 20:56:00 Z
+tags: ["Tech"]
+wordpress_path: /actionstream/peek-boo-link-lists
+---
+<b title="Update 2006-12-14">I have fixed a bug that caused multiple instances of this hack to interact with each other and some other IE problems.  I have tested it in both Firefox and IE.  One extra note about installation - if you put this code into your template more than once at a time (for multiple lists) you must change the id="ALIST" (bold in the code) to id="BLIST" on the second list, etc.</b>
+
+I received the request for this hack via email, and since I thought it shouldn't be too hard and could prove very useful, I went at it.  Plus I actually had some time today to use on this kind of thing ;)  To get a link list in Blogger BETA that has a title you can click to show/hide the list, add this code to your template:
+<div style="font-family:monospace;">
+&lt;b:widget <b>id='ALIST'</b> locked='false' title='List Title' type='LinkList'&gt;
+&lt;b:includable id='main'&gt;
+&lt;script type='text/javascript'&gt;
+//&lt;![CDATA[
+if(typeof(rnd) == 'undefined') var rnd = '';
+rnd = Math.floor(Math.random()*1000);
+rnd = 'id-' + rnd;
+document.write('&lt;a href="#" onclick="tmp = document.getElementById(&amp;quot;' + rnd + '&amp;quot;); tmp.style.display = (tmp.style.display == &amp;quot;none&amp;quot;) ? &amp;quot;block&amp;quot; : &amp;quot;none&amp;quot;; return false;"&gt;');
+//]]&gt;
+&lt;/script&gt;
+      &lt;b:if cond='data:title'&gt;&lt;h2&gt;&lt;data:title/&gt;&lt;/h2&gt;&lt;/b:if&gt;
+&lt;script type='text/javascript'&gt;
+//&lt;![CDATA[
+document.write('&lt;\/a&gt;');
+//]]&gt;
+&lt;/script&gt;
+      &lt;div class='widget-content'&gt;
+&lt;script type='text/javascript'&gt;
+//&lt;![CDATA[
+document.write('&lt;div id="' + rnd + '" style="display:none;"&gt;');
+//]]&gt;
+&lt;/script&gt;
+         &lt;ul&gt;
+            &lt;b:loop values='data:links' var='link'&gt;
+               &lt;li&gt;&lt;a expr:href='data:link.target'&gt;&lt;data:link.name/&gt;&lt;/a&gt;&lt;/li&gt;
+            &lt;/b:loop&gt;
+         &lt;/ul&gt;
+&lt;script type='text/javascript'&gt;
+//&lt;![CDATA[
+document.write('&lt;\/div&gt;');
+//]]&gt;
+&lt;/script&gt;
+         &lt;b:include name='quickedit'/&gt;
+      &lt;/div&gt;
+   &lt;/b:includable&gt;
+&lt;/b:widget&gt;
+</div>
+Then go to the 'Page Elements' area to customise the title and links in the widget.
+
+The following code is identical except that it leaves the title of the widget alone and adds instead a little [+/-] for show/hide functionality:
+<div style="font-family:monospace;">
+&lt;b:widget <b>id='ALIST'</b> locked='false' title='List Title' type='LinkList'&gt;
+&lt;b:includable id='main'&gt;
+&lt;script type='text/javascript'&gt;
+//&lt;![CDATA[
+if(typeof(rnd) == 'undefined') var rnd = '';
+rnd = Math.floor(Math.random()*1000);
+rnd = 'id-' + rnd;
+document.write('&lt;a href="#" onclick="tmp = document.getElementById(&amp;quot;' + rnd + '&amp;quot;); tmp.style.display = (tmp.style.display == &amp;quot;none&amp;quot;) ? &amp;quot;block&amp;quot; : &amp;quot;none&amp;quot;; return false;" style="float:left;margin-right:5px;"&gt;[+/-]&lt;\/a&gt;');
+//]]&gt;
+&lt;/script&gt;
+      &lt;b:if cond='data:title'&gt;&lt;h2&gt;&lt;data:title/&gt;&lt;/h2&gt;&lt;/b:if&gt;
+      &lt;div class='widget-content'&gt;
+&lt;script type='text/javascript'&gt;
+//&lt;![CDATA[
+document.write('&lt;div id="' + rnd + '" style="display:none;"&gt;');
+//]]&gt;
+&lt;/script&gt;
+         &lt;ul&gt;
+            &lt;b:loop values='data:links' var='link'&gt;
+               &lt;li&gt;&lt;a expr:href='data:link.target'&gt;&lt;data:link.name/&gt;&lt;/a&gt;&lt;/li&gt;
+            &lt;/b:loop&gt;
+         &lt;/ul&gt;
+&lt;script type='text/javascript'&gt;
+//&lt;![CDATA[
+document.write('&lt;\/div&gt;');
+//]]&gt;
+&lt;/script&gt;
+         &lt;b:include name='quickedit'/&gt;
+      &lt;/div&gt;
+   &lt;/b:includable&gt;
+&lt;/b:widget&gt;
+</div>
+
+Why is this not a <a href="http://singpolyma-tech.blogspot.com/2006/11/new-widget-system.html">one-click widget</a>?  Blogger does not yet allow us to define alternate widget types (such as link list) in one click.
+<div class="tags">Tags:<ul><li><a href="http://del.icio.us/singpolyma.techblog/hack" rel="tag">hack</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/hacks" rel="tag">hacks</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/blogger" rel="tag">blogger</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/beta" rel="tag">beta</a></li> </ul></div>

@@ -1,0 +1,37 @@
+---
+title: Table for Converting Blogger Classic to New Blogger
+date: 2007-01-17 20:19:00 Z
+tags: ["Tech","Blogger","Template","Templates","Code"]
+wordpress_path: /actionstream/table-for-converting-blogger-classic-to
+---
+<b title="Update 2007-01-22">I have added a lot of new tags and some corrections to the table.</b>
+
+A few people have asked for something like this.  A table of Blogger Classic template tags and their new equivalent.  This is not entirely possible because it is not a 1:1 relationship, but I will do my best.  This is a post for those who were somewhat literate in the old Blogger and want to upgrade.  Another post to check out would be <a href="http://ecmanaut.blogspot.com/2006/09/blogger-beta-templates.html">Johan's original post</a>.  Great stuff.
+
+If you have a template tag from Blogger Classic that you don't see here, post it in a comment and I'll try to add it.  This is a work in progress.
+
+<table>
+ <tr><td>&lt;$BlogPageTitle$&gt;</td><td>&lt;data:blog.pageTitle/&gt;</td></tr>  <tr><td>&lt;$BlogMetaData$&gt;</td><td>&lt;b:include data='blog' name='all-head-content'/&gt;</td></tr>  <tr><td>&lt;style type="text/css"&gt;</td><td>&lt;b:skin&gt;&lt;![CDATA[</td></tr>  <tr><td>&lt;/style&gt;</td><td>]]&gt;&lt;/b:skin&gt;</td></tr>  <tr><td>&lt;$BlogURL$&gt;</td><td>&lt;data:blog.homepageUrl/&gt;</td></tr>  <tr><td>&lt;$BlogDescription$&gt;</td><td></td></tr>  <tr><td>&lt;Blogger&gt;</td><td>&lt;b:section class='posts' id='posts' showaddelement='yes' growth='vertical'&gt;
+&lt;b:widget id='PostWidget' locked='false' title='Posts' type='Blog'&gt;
+&lt;b:includable id='main'&gt;
+&lt;b:loop values='data:posts' var='post'&gt;</td></tr>  <tr><td>&lt;/Blogger&gt;</td><td>&lt;/b:loop&gt;
+&lt;/b:includable&gt;
+&lt;/b:widget&gt;
+&lt;/b:section&gt;</td></tr>  <tr><td>&lt;$BlogItemNumber$&gt;</td><td>&lt;data:post.id/&gt;</td></tr>  <tr><td>&lt;BlogDateHeader&gt;</td><td>&lt;b:if cond='data:post.dateHeader'&gt;</td></tr>  <tr><td>&lt;/BlogDateHeader&gt;</td><td>&lt;/b:if&gt;</td></tr>  <tr><td>&lt;$BlogDateHeaderDate$&gt;</td><td>&lt;data:post.dateHeader/&gt;</td></tr>  <tr><td>&lt;$BlogItemPermalinkUrl$&gt;</td><td>&lt;data:post.url/&gt;</td></tr>  <tr><td>&lt;BlogItemTitle&gt;</td><td>&lt;b:if cond='data:post.title'&gt;</td></tr>  <tr><td>&lt;/BlogItemTitle&gt;</td><td>&lt;/b:if&gt;</td></tr>  <tr><td>&lt;$BlogItemTitle$&gt;</td><td>&lt;data:post.title/&gt;</td></tr>  <tr><td>&lt;$BlogItemBody$&gt;</td><td>&lt;data:post.body/&gt;</td></tr>  <tr><td>&lt;$BlogItemAuthorURL$&gt;</td><td>&lt;data:blog.homepageUrl/&gt;</td></tr>  <tr><td>&lt;$BlogItemAuthor$&gt;</td><td>&lt;data:post.author/&gt;</td></tr>  <tr><td>&lt;$BlogItemDateTime$&gt;</td><td>&lt;data:post.timestamp/&gt;</td></tr>  <tr><td>&lt;BlogItemCommentsEnabled&gt;</td><td>&lt;b:if cond='data:post.allowComments'&gt;</td></tr>  <tr><td>&lt;/BlogItemCommentsEnabled&gt;</td><td>&lt;/b:if&gt;</td></tr>  <tr><td>&lt;$BlogItemCommentCount$&gt;</td><td>&lt;data:post.numComments/&gt;</td></tr>  <tr><td>&lt;$BlogItemControl$&gt;</td><td>&lt;span class='control'&gt;
+&lt;b:if cond='data:post.emailPostUrl'&gt;
+&lt;span class='item-action'&gt;
+&lt;a expr:href='data:post.emailPostUrl' title='Email Post'&gt;
+&lt;span class='email-post-icon'&gt; &lt;/span&gt;
+&lt;/a&gt;
+&lt;/span&gt;
+&lt;/b:if&gt;
+&lt;b:include data='post' name='postQuickEdit'/&gt;
+&lt;/span&gt;</td></tr>  <tr><td>&lt;$BlogEncoding$&gt;</td><td>&lt;data:blog.encoding/&gt;</td></tr>  <tr><td>&lt;$BlogTitle$&gt;</td><td>&lt;data:blog.title/&gt;</td></tr>  <tr><td>&lt;$BlogItemAuthorNickname$&gt;</td><td>&lt;data:post.author/&gt;</td></tr>  <tr><td>&lt;$BlogID$&gt;</td><td></td></tr>  <tr><td>&lt;$BlogItemUrl$&gt;</td><td>&lt;data:post.link/&gt;</td></tr>  <tr><td>&lt;ItemPage&gt;</td><td>&lt;b:if cond='data:blog.pageType == "item"'&gt;</td></tr>  <tr><td>&lt;/ItemPage&gt;</td><td>&lt;/b:if&gt;</td></tr>  <tr><td>&lt;MainOrArchivePage&gt;</td><td>&lt;b:if cond='data:blog.pageType != "item"'&gt;</td></tr>  <tr><td>&lt;/MainOrArchivePage&gt;</td><td>&lt;/b:if&gt;</td></tr>  <tr><td>&lt;MainPage&gt;</td><td>&lt;b:if cond='data:blog.pageType == "main"'&gt;</td></tr>  <tr><td>&lt;/MainPage&gt;</td><td>&lt;/b:if&gt;</td></tr>  <tr><td>&lt;ArchivePage&gt;</td><td>&lt;b:if cond='data:blog.pageType == "archive"'&gt;</td></tr>  <tr><td>&lt;/ArchivePage&gt;</td><td>&lt;/b:if&gt;</td></tr>  <tr><td>&lt;$BlogItemCreate$&gt;</td><td>&lt;a expr:href='data:post.addCommentUrl'&gt;Post a Comment&lt;/a&gt;</td></tr>  <tr><td>&lt;BlogItemComments&gt;</td><td>&lt;b:loop values='data:post.comments' var='comment'&gt;</td></tr>  <tr><td>&lt;/BlogItemComments&gt;</td><td>&lt;/b:loop&gt;</td></tr>  <tr><td>&lt;$BlogCommentNumber$&gt;</td><td>&lt;data:comment.id/&gt;</td></tr>  <tr><td>&lt;$BlogCommentDateTime$&gt;</td><td>&lt;data:comment.timestamp/&gt;</td></tr>  <tr><td>&lt;$BlogCommentAuthor$&gt;</td><td>&lt;address style="display:inline;font-style:normal;" class="author vcard"&gt;
+&lt;b:if cond='data:comment.authorUrl != ""'&gt;
+&lt;a class="url fn" expr:href='data:comment.authorUrl'&gt;&lt;data:comment.author/&gt;&lt;/a&gt;
+&lt;b:else/&gt;
+&lt;span class="fn"&gt;&lt;data:comment.author/&gt;&lt;/span&gt;
+&lt;/b:if&gt;
+&lt;/address&gt;</td></tr>  <tr><td>&lt;$BlogCommentBody$&gt;</td><td>&lt;data:comment.body/&gt;</td></tr>  <tr><td>&lt;$BlogCommentDeleteIcon$&gt;</td><td>&lt;b:include data='comment' name='commentDeleteIcon'/&gt;</td></tr>  <tr><td>&lt;$BlogCommentPermalinkURL$&gt;</td><td>#c&lt;data:comment.id/&gt;</td></tr> </table>
+
+For how to use this syntax inside tag attributes, please see <a href="http://ecmanaut.blogspot.com/2006/09/blogger-beta-templates.html#expr">Johan at Ecmanaut</a>.  I would actually recommend that you read that whole post.

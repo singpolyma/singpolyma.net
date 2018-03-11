@@ -1,0 +1,21 @@
+---
+title: FreshTags for WordPress
+date: 2006-03-10 08:11:00 Z
+tags: ["Tech","Freshtags","Plugin","Wordpress"]
+wordpress_path: /actionstream/freshtags-for-wordpress
+---
+The <a href="http://ghill.customer.netspace.net.au/freshtags/">FreshTags</a> system is more than just categories for Blogger.  With the tag-passing features it adds a social aspect to blog browsing.  Not everyone runs on Blogger, and some of us are lucky enough to run on blogging systems that support categories natively.  The other FreshTags features would be and can be immensely useful to these people as well.  So, in a move to push FreshTags beyond Blogger and beyond del.icio.us I have created a FreshTags plugin for WordPress.
+
+<b title="Update 2006-03-13">Update: Version 0.11 has been released.  Some minor bugs have been fixed and loading captured tags into the search box is now optional.  To load the searchbox you must add this code to your template: <span style="font-family:monospace;">&lt;?php freshtags_load_searchbox(); ?&gt;</span></b>
+
+<b>Features</b>
+<ul><li>Detects tags passed directly via ?tags, ?tag, or ?cat</li><li>Detects tags from the referer URL, all the same formats as the original FreshTags are supported</li><li>Detects the tag of the current category page or the first tag on the current post, if applicable
+</li><li>Supports tag intersections</li><li>Displays <span style="font-style: italic;">n</span> matching posts from detected tag(s) in the sidebar</li><li>Supports either list or drop form of tags in the sidebar, highlighting selected tag(s)</li><li>Rewrites post links when tags are selected to enable tag-passing <span style="font-style: italic;">from</span> the blog</li><li>Generates JSON(P) feeds for use in peek-a-boo sidebar headlines by other blogs</li></ul>
+<b>Implementing</b>
+To implement this plugin on your WordPress blog:
+<ol><li><a href="http://www.awriterz.org/etcetc/freshtags.tar.gz">Download the plugin</a></li><li>Unpack the file and upload 'freshtags.php' to your /wp-content/plugins/ directory on your blog</li><li>Go to your WordPress dashboard and the plugins screen to activate the plugin</li><li>Edit your template and replace the code that outputs the category list in your sidebar with:
+<pre>&lt;?php echo freshtags_taglist();
+       echo freshtags_postlist(); ?&gt;</pre>To customise the display you can pass 'drop' to freshtags_taglist to get a drop-down list of tags.  You can pass two parameters to freshtags_postlist, the first is the maximum number of posts to display (default: 10), the second is a string to output as a header for the list of matching posts (replacing %tags% with the detected tags, default none).</li></ol>
+<b>Other</b>
+I have updated <a href="http://singpolyma-tech.blogspot.com/2006/02/freshtags-singpolyma.html">my version of FreshTags</a> to support getting peek-a-boo titles from blogs using this WordPress plugin.  Just call <span style="font-family:monospace;">load_otherblog_titles('wordpress','<span style="color:red;">blog url</span>','','<span style="color:red;">feed url (optional)</span>','<span style="color:red;">id of element to put results in</span>');</span> after the normal FreshTags data has loaded.
+<div class="tags">Tags:<ul><li><a href="http://del.icio.us/singpolyma.techblog/freshtags" rel="tag">freshtags</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/plugin" rel="tag">plugin</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/wordpress" rel="tag">wordpress</a></li> </ul></div>

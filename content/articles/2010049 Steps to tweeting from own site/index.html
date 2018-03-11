@@ -1,0 +1,27 @@
+---
+title: Steps to tweeting from own site
+date: 2010-02-18 15:57:41 Z
+tags: ["Tech","Wordpress","DiSo"]
+in_reply_to: http://www.google.com/buzz/singpolyma/3m9NYL3ReeV/singpolyma-I-may-be-80-of-the-way-to-%C2%B5blogging#z12tfr1oas2ujtk0k23oehbi0oftebnak04%231266506913199000
+wordpress_path: /actionstream/steps-to-tweeting-from-own-site
+---
+I am writing my own stuff, borrowing heavily from @tantek.com
+
+<ol>
+<li>Store wp-diso-actionstream content as WordPress posts (DONE, commited to SVN)</li>
+<li>Tweak theme to display actionstream items nice for single.php (DONE)</li>
+<li>Hack local WordPress core to display posts of all types when you visit the permalink (DONE, see https://singpolyma.net/2010/01/the-freeallmusic-com-non-us-landing-page-is-great-short-and-to-the-point/)</li>
+<li>Make reversible URL shortener. (DONE, http://sngpl.ma/t433)</li>
+<li>Update Picoformats (Microsyntax) plugin to support URL autolinking and generally be better (<del datetime="2010-02-22">IN PROGRESS</del> <ins datetime="2010-02-22">DONE</ins>, borrowing from @tantek.com's auto_link)</li>
+<li>Implement Twitter API for wordpress.org blogs (<del datetime="2010-02-22">IN PROGRESS</del> <ins datetime="2010-02-22">DONE</ins>)</li>
+<li>Write XMPP bot to talk to any Twitter-compatible API (<del datetime="2010-03-10">NOT STARTED</del> <ins datetime="2010-03-10"><a href="http://github.com/webcracy/computer-bot--twitter-edition">found one</a></ins>)</li>
+<li>Write plugin to push new local tweets out to Twitter-compatible APIs (NOT STARTED)</li>
+</ol>
+
+Bonus points:
+<ul>
+<li>Write plugin to pull tweets from Twitter-compatible APIs locally for viewing ("following")<ins datetime="2010-03-10">(DONE)</ins></li>
+<li>Following-type plugin based on wp-diso-actionstream (to follow arbitrary public streams)</li>
+<li>PuSH outbound for blog feeds and wp-diso-actionstream feeds (DONE, using http://wordpress.org/extend/plugins/pubsubhubbub/)</li>
+<li>PuSH inbound for wp-diso-actionstream
+</li></ul>

@@ -1,0 +1,21 @@
+---
+title: Picoformats for Wordpress
+date: 2008-05-05 23:20:23 Z
+tags: ["Tech","Plugin","Wordpress","Plugins","hashtags"]
+wordpress_path: /actionstream/picoformats-for-wordpress
+---
+This plugin is totally an experiment inspired in part by @techcrunch, and in part by how useful I have found some of this stuff to be on @Twitter, and also just to see the different ways one can use Wordpress. (Update: this plugin seem to only work on WP2.5, so I've upgraded.)
+
+If you haven't guessed already, you soon will.  Yes, I've implemented @ replies for Wordpress.  It looks in the local users (usernames and nicknames, like @singpolyma) first, then in the names and descriptions on blogroll links, the it checks if you are trying to use a URL (like @singpolyma.net) and, finally, if none of those yield a result it checks if the string is a valid Twitter username.  It produces semantic markup for an @ reply and "person tag":
+
+<code>&lt;span class="reply vcard tag"&gt;@&lt;a class="url fn" href="URL"&gt;NICKNAME&lt;/a&gt;&lt;/span&gt;</code>
+
+Then, the plugin sends trackback pings to the URLs, to let the people know you're talking about them.  The plugin also implements trackback receiving on the Wordpress main page so that users can receive these pings.
+
+Not to stop so short, the plugin also implements #hashtags.  What that does should be fairly obvious.
+
+These features work in posts *and* comments.
+
+<a href="/picoformats.php.bz2">Download the plugin</a>
+
+#Wordpress #Plugins #Plugin

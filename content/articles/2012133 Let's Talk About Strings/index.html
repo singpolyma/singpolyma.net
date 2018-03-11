@@ -1,0 +1,61 @@
+---
+title: Let's Talk About Strings
+date: 2012-05-12 18:38:49 Z
+tags: ["Tech","Ruby","Haskell","Text","Encoding"]
+wordpress_path: /actionstream/lets-talk-about-strings
+---
+A <a href="http://en.wikipedia.org/wiki/String_%28computer_science%29">string</a> is a sequence of letters and numbers.  It is text.  Or, is it just any array?  The term 'string' has been used and abused over time to mean many different things.  This has lead to confusion, bugs, and a plethora of conflicting opinions.
+
+<h2>The Two Main String Types</h2>
+
+There are two things people mainly mean when they say 'string'.  On the one hand, they may mean a data structure representing human-language text.  On the other hand, they may mean whatever data structure or type their programming environment often uses for representing human-language text.  In many cases, this data structure is also used for other sorts of data, such as raw binary data.
+
+This has lead to much confusion.
+
+In some programming environments, like C, everything is low-level enough that there cannot be expected to be One True Way to handle a high-level concept such as "human-language text".  Other environments, however, should know better.
+
+<h2>Encodings</h2>
+
+An encoding, in the context of text, is the scheme whereby text is represented in actual bytes.  I will talk about three different kinds of encodings: internal, input, and output encodings.
+
+<h3>Internal Encoding</h3>
+
+In low-level languages (and, sadly, many high-level languages) there is no native support for the high-level concept of 'text'.  The programmer is given a way to represent an array of bytes (also called a byte string) and must decide how to encode text in RAM for his/her own application.  This is true of C's char*, Ruby 1.8's strings, and many others.  Historically, ASCII was the de-facto internal encoding, but this is not generally acceptable if your application will be used for anything except a subset of English.  Different internal encodings have different trade-offs, which I'm not really interested in covering here.  As with so many other things <strong>you probably should not be making this decision</strong>.  Find a library or a programming environment that handles text and let it deal with how to actually store the data in RAM.
+
+<h3>Input Encoding</h3>
+
+Input encoding is the only encoding an application programmer should ever have to deal with.  Unfortunately, for historical reasons, there are a plethora of encodings out there.  You will have to decide a way to know how the file, network socket, or other input you are reading is encoded.  Many protocols and file formats have simple markers that will let you know.  You have to feed this information to whatever calls you use to get your high-level text representation from the input.
+
+<h3>Output Encoding</h3>
+
+This is the encoding you use in files you write, prints to stdout, bytes you send over network sockets, etc.  If you are writing some existing file format or protocol, you need to see how that format handles specifying what encoding you are using and correctly mark it.  This, however, should be the extent of what you need to do to handle output encodings.  I'm going to say something some people consider controversial, but I've given it a lot of thought, and after working with this stuff in many contexts I've come to a conclusion.
+
+<strong>There is only one acceptable output encoding, and it is UTF-8.</strong>
+
+Always.
+
+There are some people around who will bad-mouth Unicode for some of the problems it had historically (for awhile they used 16-bit-max-width encodings and could not properly handle some Asian languages), but these have been fixed for some time now.  The standard is not set in stone, so if bugs are found they can be fixed.
+
+The other thing people complain about is that UTF-8 is unfairly smaller for English text than it is for other text.  It is true that language-specific encodings will take less space than UTF-8, however the complexity and potential for bugs that comes from using a plethora of encoding mechanisms as a hobo compression mechanism is not worth it.  If you're concerned about space, then compress your content.
+
+UTF-8 is backwards-compatible with ASCII implementations, such that they will continue to work in a UTF-8 environment (at least as much as they ever worked).  This also means that your application can easily handle old ASCII data even if all you implement is UTF-8.
+
+<h2>Haskell and Ruby</h2>
+
+As a way to illustrate this topic, I will take as examples Haskell and Ruby 1.9.
+
+In Ruby 1.9, strings have an associated encoding.  They are objects with a byte string and an encoding property.  When you write them out, they are written in whatever encoding you specify.  This is a huge improvement over 1.8 (where all encoding decisions were manual), but still exposes more complexity than is necessary to the programmer.
+
+Furthermore, all I/O operations in Ruby 1.9 are done using String.  How is binary data read, then?  String has an associated encoding called 'binary'.  This is just shameful.  The programmer still has to keep track of which String are text and which are byte strings.
+
+In Haskell, the default String type is actual an alias for [Char] (a list of Char) and Char is defined to be a 32-bit Unicode code point.  It is unequivocally for text.  Binary data can be represented as [Word8] (a list of Word8, that is, a list of bytes).
+
+Because linked lists are not always the most efficient, there are also convenient array-packed-representation libraries for both of these types, intuitively named Text and ByteString.
+
+Unfortunately, because of the confusion that often comes from the shameful state of so much tooling, many Haskellers use ByteString.Char8 to store what should be Text, and handle the internal encoding themselves (often poorly).
+
+I/O in Haskell can easily be done directly with any of these types.
+
+<h2>Summary
+
+</h2><ol><li>Use a text library for text, use a raw byte string type for binary data.  Do not confuse the two.</li> <li>If you're reading an existing format, you'll have to correctly detect the input encoding and transform to the datastructure used by your text library.</li> <li>If you're writing an existing format, you'll have to correctly identify what output encoding you're using.</li> <li>You should <strong>only</strong> use UTF-8 as your output encoding.</li></ol>

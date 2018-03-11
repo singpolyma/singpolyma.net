@@ -1,0 +1,44 @@
+---
+title: How to force the default route to always use a specific interface on Ubuntu
+date: 2012-08-13 13:48:25 Z
+tags: ["Tech","Ubuntu"]
+wordpress_path: /actionstream/how-to-force-the-default-route-to-always-use-a-specific-interface-on-ubuntu
+---
+This post was written by <span class="vcard"><a class="fn url" rel="friend met" href="http://www.eskimo.com/~dj3vande/">Dave Vandervies</a> (@<a class="nickname url" rel="friend met" href="http://twitter.com/dj3vande">dj3vande</a>).
+
+
+
+I think Ubuntu inherits the things that need to be configured for this to work directly from Debian; if that's correct this information will be useful without modification for Debian systems.  It may also be possible to configure dhclient on other Linuxes (and other *nixes) according to these notes; I don't know whether the guts of dhclient-script come from Debian or from dhclient.  In any case, looking at what dhclient-script does will be a good start.
+
+So, I have a machine that's attached to two networks.
+
+Both networks have DHCP servers.  Both DHCP servers give out router configuration.  But one of those default routes is useless, so I want to force the system to always use the other network segment's router as its default route.
+
+(My use case is a virtual machine; one VM network is NATted to the outside world, and one is isolated on the host machine.  This VM gets run on different host machines, which assign different network addresses to their virtual segments, but which interface is on which type of segment is fixed by the VM configuration.  So here, unlike many multi-interface machines, it's necessary to tie the default route to a particular *interface* and not a router address.)
+
+It turns out that this isn't hard to do, but it took a lot of googling (and several rounds of "Find something interesting, search on new keywords") to find a solution that actually did what I needed; all of the obvious searches turn up information about how to set the default route to a fixed router IP, which only works when you're always on the same network.
+
+Before I get into the theory of operation, here's the solution, for
+impatient people:
+
+</span><pre>
+cat &lt;&lt; EOF &gt; /etc/dhcp/dhclient-enter-hooks.d/restrict-default-route
+## Only the DHCP server talking to eth0 is allowed to give us a default
+## route.  Other interfaces only get local-segment configuration.
+case ${interface} in
+  eth0)
+    ;;
+  *)
+    unset new_routers
+    ;;
+esac
+EOF
+</pre>
+
+So, here's how this works, since that might be useful for other complicated DHCP configuration tricks you want to do.
+
+When dhclient needs to make system configuration changes, it does it by invoking /sbin/dhclient-script.  The first nontrivial thing dhclient-script does is run the entry hooks in /etc/dhcp/dhclient-enter-hooks.d to allow local configuration rules to adjust things as necessary.
+
+These hooks are shell script fragments sourced by the main script, so you can use them to edit the variables that make dhclient-script do things if you like.  This is precisely what we want to do.  $new_routers is the default gateway the DHCP server gave us; we only want to actually use it for the DHCP server eth0 is talking to, so if we're on any other interface we unset it, to prevent dhclient-script from taking any action based on it.
+
+You can use the same trick to ignore DNS settings (new_domain_name and new_domain_name_servers) if you want to ignore one network's DNS servers; I didn't need that in my configuration because the two subnets' nameservers behave identically.  (But note that if you need something more complicated than simply ignoring one of them, you'll probably need more than just an entry hook.)

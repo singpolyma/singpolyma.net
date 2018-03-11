@@ -1,0 +1,21 @@
+---
+title: XRDS-Simple and Infinite Interoperability
+date: 2008-03-28 22:55:10 Z
+tags: ["Tech","XRDS","DiSo"]
+wordpress_path: /actionstream/xrds-simple-and-infinite-interoperability
+---
+<a href="http://www.hueniverse.com/">Eran</a> finally <a href="http://www.hueniverse.com/hueniverse/2008/03/announcing-xrds.html">released</a> the <a href="http://xrds-simple.net/core/1.0/">XRDS-Simple Draft 1</a> spec. <a href="http://factoryjoe.com/blog/2008/03/28/xrds-simple-draft-1-released/">Chris Messina has some great thoughts</a> about how this fits into DiSo, and Eran has done <a href="http://www.hueniverse.com/hueniverse/2008/03/putting-xrds-si.html">some good explanations himself</a>.  I'm just going to give some of my own thoughts.
+
+First off, forget whatever you think about related standards, like XRDS or XRI. If you dislike OASIS, can it. I'm sick of the fighting and just want the web to <strong>*work</strong>*.
+
+I'd like to talk a bit about my vision of infinite interoperability, which is facilitated somewhat by XRDSs. Little to none of this is implemented today.  I'm not expressing a pragmatic "let's build this now" but a hope for what I would love to build in time.  I'm going to use brands familiar to me - if you hate them, pretend I used different brands.
+
+Imagine this: Flickr is an OpenID consumer with OAuth as its authentication standard on all APIs.  They have moved all their content listing, posting, and editing features over to APP (yes, APP supports binary data, like images).  They are using XRDSs for discovery of the endpoints to *all* APIs.
+
+I write a website.  This website lets you easily create collages of images from free sources for use in projects (I dunno, pick a more useful project idea).  You log in with your OpenID and create a collage.  You can print it out and embed it on your site, but you want to share with friends.  You click a 'share' button and are taken to flickr where OAuth authenticates you (maybe using shortcuts since we know your OpenID already) and posts the image to your account using APP.  It knows where all the endpoints are because of XRDSs.
+
+How is this different than what can be done with the Flickr API today? Just wait.
+
+Your friend sees your collage and wants to make their own.  They also come to my site.  They also click share.  They do not use Flickr, but rather Zooomr, for their images.  Zooomr is also OpenID+OAuth+APP+XRDSs enabled.
+
+My site *does not* have to know about Zooomr.  You can simply entry into a settings box "zooomr.com" and my site with *automatically* (XRDSs) find the endpoints to authenticate (OAuth) and post (APP) and your friend can share their image.  I support four standards and get access to *every* photo sharing solution, without even knowing they exist or having to care.

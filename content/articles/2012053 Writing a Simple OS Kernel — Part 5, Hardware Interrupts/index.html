@@ -1,0 +1,175 @@
+---
+title: Writing a Simple OS Kernel — Part 5, Hardware Interrupts
+date: 2012-02-22 17:45:33 Z
+tags: ["Tech","singpolyma-kernel","define","0xDF","0xD3","0x4","0xD2"]
+wordpress_path: /actionstream/writing-a-simple-os-kernel-hardware-interrupts
+---
+<a href="/2012/02/writing-a-simple-os-kernel-multitasking/">Last time</a> we got the kernel switching back and forth between multiple tasks.  This time we're going to get a simple timer to wake up the kernel at fixed intervals.
+
+<h1>Motivation</h1>
+
+So far we've been interacting with hardware when we want to.  Writing to the serial port when we have something to print, for example.  Why would we want to let the hardware interrupt what we're doing?
+
+A few reasons:
+
+<ol><li>Currently, our user mode tasks have to call a syscall on purpose in order for any other task to be able to run.  This means one task can run forever and block anyone else from running (called starvation).  So we at minimum need some way to interrupt running tasks (called preemption).</li> <li>The hardware knows when it's ready.  It is way more efficient to let the hardware say "I'm ready now" then to keep asking it.</li>  <li>The hardware may actually stop being ready by the time we get around to talking to it again.  We want to talk to the hardware during the window when it's able to talk</li> </ol>
+
+<h1>Enabling a Simple Timer</h1>
+
+Before we get to the serial port, there is an even simpler piece of hardware we can work with first: timers.  Timers just take a value and count down to zero, sort of like an alarm clock.
+
+I could make you go look up in the user guides what all the magic numbers for our timers are, but I'm a nice guy, so here's the ones we need to add to versatilepb.h:
+
+<code>/* http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0271d/index.html */
+#define TIMER0         ((volatile unsigned int*)0x101E2000)
+#define TIMER_VALUE    0x1 /* 0x04 bytes */
+#define TIMER_CONTROL  0x2 /* 0x08 bytes */
+#define TIMER_INTCLR   0x3 /* 0x0C bytes */
+#define TIMER_MIS      0x5 /* 0x14 bytes */
+/* http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0271d/Babgabfg.html */
+#define TIMER_EN       0x80
+#define TIMER_PERIODIC 0x40
+#define TIMER_INTEN    0x20
+#define TIMER_32BIT    0x02
+#define TIMER_ONESHOT  0x01</code>
+
+Now add the following somewhere near the top of your <q class="identifier">main</q>:
+
+<code>*TIMER0 = 1000000;
+*(TIMER0 + TIMER_CONTROL) = TIMER_EN | TIMER_ONESHOT | TIMER_32BIT;</code>
+
+The timer on our QEMU system defaults to using a 1Mhz reference, which means that it ticks 1000000 times per second.  So, by setting it's value to 1000000, it will reach 0 after one second.
+
+Then, on the second line, we enable the timer, set it to "oneshot" mode (that is, it will just stop when it's done counting, we'll see another mode later), and set it to 32BIT mode (so that it can hold really big numbers).
+
+Now, somewhere in your while loop, put this:
+
+<pre><code>if(!*(TIMER0+TIMER_VALUE)) {
+   bwputs("tick\n");
+   *TIMER0 = 1000000;
+   *(TIMER0 + TIMER_CONTROL) = TIMER_EN | TIMER_ONESHOT | TIMER_32BIT;
+}</code></pre>
+
+We're just printing out "tick" if the timer has reached 0, and then resetting and re-enabling the timer.
+
+Build and run your kernel.  It should still work as before, but now it will also print out "tick" once per second.
+
+<h1>Back to the Vector Interrupt Table</h1>
+
+The CPU uses the same mechanism for hardware interrupting operation (often referred to as an "interrupt request" or IRQ) as it used know where to jump when we used <q class="identifier">svc</q>.  We need to add an entry to the right place.  Here's the new code for bootstrap.s:
+
+<code>interrupt_table:
+   ldr pc, svc_entry_address
+   nop
+   nop
+   nop
+   ldr pc, irq_entry_address
+   svc_entry_address: .word svc_entry
+   irq_entry_address: .word irq_entry
+interrupt_table_end:</code>
+
+<h1>IRQ entry point</h1>
+
+Back over in context_switch.s, <q class="identifier">irq_entry</q> is going to be very similar to <q class="identifier">svc_entry</q>, but with some changes to handle an IRQ instead of a syscall.
+
+As soon as we enter system mode, we need to push the value of <q class="identifier">r7</q> onto the task's stack (because that's what the syscall wrapper does, and we need to set things up to look the same).  The syscall puts the number identifying the syscall into r7, so we should come up with something that will identify an IRQ and put that there instead.  To make sure the number never clashes with a syscall number, lets use negative numbers:
+
+<code>push {r7} /* Just like in syscall wrapper */
+/* Load PIC status */
+ldr r7, PIC
+ldr r7, [r7]
+PIC: .word 0x10140000
+/* Most significant bit index */
+clz r7, r7
+sub r7, r7, #31</code>
+
+That value at PIC is the address of the interrupt controller status (that is, the value that can tell us which interrupts are currently firing) and then we just do some operations on that value to find out what the most significant bit set in the value is, and transform that into a negative index to use for the identifier of this IRQ.
+
+The only other weird thing is that we have to get the value of the <q class="identifier">lr</q> from IRQ mode instead of Supervisor mode, and the value is set to the instruction <em>after</em> the one we should be returning to, so we'll need to subtract 4:
+
+<code>msr CPSR_c, #0xD2 /* IRQ mode */
+mrs ip, SPSR
+sub lr, lr, #0x4 /* lr is address of next instruction */
+stmfd r0!, {ip,lr}</code>
+
+So those bits, together with what we already had from <q class="identifier">svc_entry</q> give us this complete entry point code:
+
+<pre><code>.global irq_entry
+irq_entry:
+	/* Save user state */
+	msr CPSR_c, #0xDF /* System mode */
+
+	push {r7} /* Just like in syscall wrapper */
+	/* Load PIC status */
+	ldr r7, PIC
+	ldr r7, [r7]
+	PIC: .word 0x10140000
+	/* Most significant bit index */
+	clz r7, r7
+	sub r7, r7, #31
+
+	push {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,fp,ip,lr}
+	mov r0, sp
+
+	msr CPSR_c, #0xD2 /* IRQ mode */
+	mrs ip, SPSR
+	sub lr, lr, #0x4 /* lr is address of next instruction */
+	stmfd r0!, {ip,lr}
+
+	msr CPSR_c, #0xD3 /* Supervisor mode */
+
+	/* Load kernel state */
+	pop {r4,r5,r6,r7,r8,r9,r10,fp,ip,lr}
+	mov sp, ip
+	bx lr</code></pre>
+
+<h1>A Small Problem</h1>
+
+We're pushing the value of <q class="identifier">r7</q>, but where is it going to get popped?  The syscall wrappers do both the push and the pop, but in the case of an IRQ we're pushing in the entry point, and we have no easy way to tell <q class="identifier">activate</q> that it's exiting from an IRQ instead of a syscall.  Hmm.
+
+The solution to this that I've chosen is to remove the pop instruction from the syscall wrappers, and add an identical instruction to right after the pop instruction already in <q class="identifier">activate</q>.  Now the pop always happens.
+
+<h1>More Magic Numbers</h1>
+
+We hardcoded a single magic number into our assembly, but luckily that's the only one our assembly code will need.  In fact, we should not need any more assembly!  (Unless we wanted to implement other sorts of hardware exceptions, which we may get to.)  We do need that and a few other interrupt-controller related magic numbers in our C code too, so here's the stuff for versatilepb.h:
+
+<code>/* http://infocenter.arm.com/help/topic/com.arm.doc.dui0224i/I1042232.html */
+#define PIC           ((volatile unsigned int*)0x10140000)
+#define PIC_TIMER01   0x10
+/* http://infocenter.arm.com/help/topic/com.arm.doc.ddi0181e/I1006461.html */
+#define VIC_INTENABLE 0x4 /* 0x10 bytes */</code>
+
+<h1>Enable the Interrupt</h1>
+
+We have to tell the timer to generate interrupts, and we have to tell the interrupt controller to pass those interrupts through.  So, replace your current one-shot timer code with this:
+
+<code>*(PIC + VIC_INTENABLE) = PIC_TIMER01;
+
+*TIMER0 = 1000000;
+*(TIMER0 + TIMER_CONTROL) = TIMER_EN | TIMER_PERIODIC | TIMER_32BIT | TIMER_INTEN;</code>
+
+Note that we're also using a new timer mode here.  Periodic mode will automatically cause the timer to restart from the value we set when it hits 0, which is perfect for when we're getting an interrupt instead of waiting until the value hits 0.
+
+<h1>Handle the Interrupt</h1>
+
+Now we have to add a case to our switch statement for this request:
+
+<pre><code>case -4: /* Timer 0 or 1 went off */
+	if(*(TIMER0 + TIMER_MIS)) { /* Timer0 went off */
+		*(TIMER0 + TIMER_INTCLR) = 1; /* Clear interrupt */
+		bwputs("tick\n");
+	}</code></pre>
+
+The way our hardware is set up, the interrupt is actually the same for either timer 0 or timer 1.  Now, we know that we've only set timer 0, but that's lazy.  <q class="identifier">TIMER_MIS</q> is the offset where we'll find a flag telling us if Timer0 was the one that is causing the interrupt.  After checking that, we set a value on the timer to clear the interrupt (basically to say that we've seen it so that it won't call us again unitl the next interrupt).  Finally, print out "tick".
+
+As it is, this code should operate exactly the same as the version without the interrupts.
+
+<h1>Pre-emption</h1>
+
+Up until now, we've needed the dummy <q class="identifier">syscall</q> syscall in an infinite loop at the end of every task in order to let other tasks run.  Since the timer interrupts the tasks now, we don't need them to interrupt themselves.  Remove all references to the <q class="identifier">syscall</q> syscall and try running the kernel again.  Now you'll note that the first task just stays in its infinite loop and does not let the other task keep running.  Does not, that is, until the timer goes off and you see "tick" printed for the first time, after which the tasks switch.  So the tasks are now being properly interrupted even if they do not give up control!
+
+<h1>We're done!</h1>
+
+The kernel now has all the machinery it needs to be able to handle hardware interrupts, and tasks are being pre-empted by the timer.  Next time we'll start looking at IPC.
+
+The code so far is <a href="https://github.com/singpolyma/singpolyma-kernel/tree/b391a0708aec88981d0bc47ae2ba84bd67d07140">on GitHub</a>.

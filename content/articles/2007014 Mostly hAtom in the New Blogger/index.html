@@ -1,0 +1,76 @@
+---
+title: Mostly hAtom in the New Blogger
+date: 2007-01-14 02:11:00 Z
+tags: ["XOXOBlog","Blogger","Microformats","hAtom"]
+wordpress_path: /actionstream/mostly-hatom-in-new-blogger
+---
+While <a href="http://blogxoxo.blogspot.com/2007/01/blogger-and-hatom.html">100% hAtom support under Blogger is impossible</a>, we can get close.  What is the use of that?  Well, doing this will allow you to use the <a href="http://blogxoxo.blogspot.com/2007/01/hatom-backup-tool.html">Backup Tool</a> for one thing.  Most other hAtom-related tools mentioned on this blog will also work with the results of these changes.  Plus, it's just generally an all-around good idea.  (These instructions will work with most templates on the New Blogger, but if you cannot complete any steps for some reason, just skip them and it may still mostly work.)  So, here's how:
+
+<ol> <li>Go to the 'Edit HTML' section under the 'Template' tab.</li> <li>Find the code that looks something like this:
+<code>
+&lt;b:includable id='post' var='post'&gt;
+&lt;div class='post uncustomized-post-template'&gt;
+</code>
+and replace it with this:
+<code>
+&lt;b:includable id='post' var='post'&gt;
+&lt;div class='post uncustomized-post-template hentry' expr:id='"post-" + data:post.id'&gt;
+</code>
+</li> <li>Find the code that looks something like this:
+<code>
+&lt;h3 class='post-title'&gt;
+</code>
+and replace it with this:
+<code>
+&lt;h3 class='post-title entry-title'&gt;
+</code>
+</li> <li>Find the code that looks something like this:
+<code>
+&lt;a expr:href='data:post.url'&gt;&lt;data:post.title/&gt;&lt;/a&gt;
+</code>
+and replace it with this:
+<code>
+&lt;a rel='bookmark permalink' expr:href='data:post.url'&gt;&lt;data:post.title/&gt;&lt;/a&gt;
+</code>
+</li> <li>Find the code that looks something like this:
+<code>
+&lt;div class='post-body'&gt;
+</code>
+and replace it with this:
+<code>
+&lt;div class='post-body entry-content'&gt;
+</code>
+</li> <li>Find the code that looks something like this:
+<code>
+&lt;span class='post-author'&gt;
+&lt;b:if cond='data:top.showAuthor'&gt;
+&lt;data:top.authorLabel/&gt; &lt;data:post.author/&gt;
+&lt;/b:if&gt;
+&lt;/span&gt;
+</code>
+and replace it with this:
+<code>
+&lt;span class='post-author author vcard'&gt;
+&lt;b:if cond='data:top.showAuthor'&gt;
+&lt;data:top.authorLabel/&gt; &lt;span class='fn'&gt;&lt;data:post.author/&gt;&lt;/span&gt;
+&lt;/b:if&gt;
+&lt;/span&gt;
+</code>
+</li> <li>Find the code that looks something like this:
+<code>
+&lt;a class='timestamp-link' expr:href='data:post.url' title='permanent link'&gt;&lt;data:post.timestamp/&gt;&lt;/a&gt;
+</code>
+and replace it with this:
+<code>
+&lt;a class='timestamp-link updated published' rel='bookmark permalink' expr:href='data:post.url' title='permanent link'&gt;&lt;data:post.timestamp/&gt;&lt;/a&gt;
+</code>
+</li> <li>Find the code that looks something like this:
+<code>
+&lt;a class='comment-link' expr:href='data:post.addCommentUrl' expr:onclick='data:post.addCommentOnclick'&gt;&lt;b:if cond='data:post.numComments == 1'&gt;1 &lt;data:top.commentLabel/&gt;&lt;b:else/&gt;&lt;data:post.numComments/&gt; &lt;data:top.commentLabelPlural/&gt;&lt;/b:if&gt;&lt;/a&gt;
+</code>
+and replace it with this:
+<code>
+&lt;a class='comment-link' rel="comments" expr:href='data:post.addCommentUrl' expr:onclick='data:post.addCommentOnclick'&gt;&lt;b:if cond='data:post.numComments == 1'&gt;1 &lt;data:top.commentLabel/&gt;&lt;b:else/&gt;&lt;data:post.numComments/&gt; &lt;data:top.commentLabelPlural/&gt;&lt;/b:if&gt;&lt;/a&gt;
+&lt;b:loop values='data:post.feedLinks' var='f'&gt;&lt;span style="display:none;"&gt;There is an &lt;a expr:href='data:f.url + "?alt=rss"' rel='alternate comments'&gt;RSS Feed&lt;/a&gt; for comments on this post.&lt;/span&gt;&lt;/b:loop&gt;
+</code>
+</li> <li>Save your template.</li> </ol>

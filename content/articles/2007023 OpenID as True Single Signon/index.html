@@ -1,0 +1,13 @@
+---
+title: OpenID as True Single Signon
+date: 2007-01-23 23:29:00 Z
+tags: ["Tech","Openid"]
+wordpress_path: /actionstream/openid-as-true-single-signon
+---
+<a href="http://openid.net/">OpenID</a> is meant as a distributed single signon protocol.  Unlike corporate-only systems (ie, Google Accounts) however, you have to sign on at every single site.  When I sign in to Gmail I am automatically signed in to Blogger, etc.
+
+While the inability to store 'cookies' or similar across domains makes this not 100% possible, I have a suggestion that will make it easier.
+
+Make every page on an OpenID-enabled site accept the openid_url GET parameter.  If it is there, authenticate the user using that OpenID and then redirect back to the page the GET string was passed to - minus the openid_url parameter.  Thus if I click a link from one OpenID-enabled site (where I am signed in) to another, I can be signed in automatically.
+
+A browser plugin (ie, Firefox extension, or built into the browser as may come in Firefox 3) could be used to store the last-entered value into a form with text input named openid_url (dependent on user settings of course).  This value would then be added to the GET request on any URL (or pertinent URL, depending) the browser goes to.  OpenID-less sites won't care, OpenID-enabled sites will automatically sign you in.

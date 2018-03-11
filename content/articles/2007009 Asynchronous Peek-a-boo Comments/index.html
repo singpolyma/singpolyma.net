@@ -1,0 +1,89 @@
+---
+title: Asynchronous Peek-a-boo Comments
+date: 2007-01-09 21:26:00 Z
+tags: ["Tech","Comments","Blogger","Hack","Hacks"]
+wordpress_path: /actionstream/asynchronous-peek-boo-comments
+---
+<strong title="Update 2007-05-02">I have made some minor, optional changes that just make the code cleaner.  I have removed support for my old comment photo hack from this code.  I have added support for my new comment photo hack.  Please re-install if you are going to use the new hack.</strong>
+
+<strong title="Update 2007-03-27">I have added the ability to limit the number of comments displayed (<a href="http://singpolyma.net/2007/02/error-blogger-disassemble/#comment-1005">requested by kca</a>) and fixed the <a href="http://singpolyma.net/2007/01/asynchronous-peek-boo-comments/#comment-864">Jose problem</a>.</strong>
+
+Many people have benefited from my <a href="http://singpolyma-tech.blogspot.com/2006/10/comments-on-mainarchive-page-peek-boo.html">peek-a-boo comments hack</a> for the new Blogger.  It has one serious downfall however.  Loading all that extra data inline can be slow.  This version of the hack is designed so that the comments are not loaded until after you click the link to display them.  This fixes some <a href="http://singpolyma-tech.blogspot.com/2006/10/comments-on-mainarchive-page-peek-boo.html#c116735074575460136">minor issues</a> and improves speed like no one's business.
+<ol>
+	<li>Go to the layout on your BETA blog and select 'Edit HTML'.</li>
+	<li>Check the 'Expand Widget Templates' box.</li>
+	<li>Paste the following code into the &lt;head&gt; section of the template:
+<code>
+&lt;script type='text/javascript'&gt;
+//&lt;![CDATA[
+var comment_form_template = '&lt;div class="commentelem" style="clear:both"&gt;\n'
++ '&lt;div style="float:left;margin-right:5px;clear:both;" id="commentphoto[[CID]]"&gt;&lt;/div&gt;'
++ '&lt;div class="comment-poster"&gt;[[AUTHOR]]&lt;/div&gt;\n'
++ '&lt;div class="comment-body"&gt;&lt;div class="innerCmntBody"&gt;[[BODY]]&lt;/div&gt;&lt;/div&gt;\n'
++ '&lt;div class="comment-timestamp"&gt;&lt;a href="[[PERMALINK]]" title="comment permalink"&gt;[[DATE]]&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;\n';
+//]]&gt;
+&lt;/script&gt;
+&lt;script src='http://jscripts.ning.com/get.php?xn_auth=no&amp;amp;amp;id=2941927' type='text/javascript'/&gt;
+</code></li>
+	<li>Find the code that looks something like:
+<code>
+&lt;b:includable id='comments' var='post'&gt;
+&lt;div class='comments' id='comments'&gt;
+</code>
+And replace that second line with:
+<code>
+&lt;div class='comments' expr:id='"comments" + data:post.id'&gt;
+&lt;b:if cond='data:blog.pageType != "item"'&gt;
+&lt;script type='text/javascript'&gt;
+document.getElementById('comments&lt;data:post.id/&gt;').style.display = 'none';
+&lt;/script&gt;
+&lt;/b:if&gt;
+</code></li>
+	<li>Right below this, find the code that looks like <code>&lt;dl id='comments-block'&gt;</code> and just before it, insert <code> &lt;div expr:id='"commentsul" + data:post.id'&gt; &lt;/div&gt;</code></li>
+	<li>Next, find the post-generating code.  It will look start something like this:
+<code>
+&lt;b:includable id='main' var='top'&gt;
+&lt;!-- posts --&gt;
+</code>
+In this section there will be a block of code that looks something like:
+<code>
+&lt;b:if cond='data:blog.pageType == "item"'&gt;
+&lt;b:if cond='data:post.allowComments'&gt;
+&lt;b:include data='post' name='comments'/&gt;
+&lt;/b:if&gt;
+&lt;/b:if&gt;
+</code>
+Replace it with this:
+<code>
+&lt;b:if cond='data:post.allowComments'&gt;
+&lt;b:include data='post' name='comments'/&gt;
+&lt;/b:if&gt;
+</code></li>
+	<li>Find the post template section, which starts something like this:
+<code>
+&lt;b:includable id='post' var='post'&gt;
+</code>
+And then find the link to the comments area, which looks something like:
+<code>
+&lt;b:if cond='data:post.allowComments'&gt;
+&lt;a class='comment-link' expr:href='data:post.addCommentUrl' expr:onclick='data:post.addCommentOnclick'&gt;&lt;b:if cond='data:post.numComments == 1'&gt;1 &lt;data:top.commentLabel/&gt;&lt;b:else/&gt;&lt;data:post.numComments/&gt; &lt;data:top.commentLabelPlural/&gt;&lt;/b:if&gt;&lt;/a&gt;
+&lt;/b:if&gt;
+</code>
+And replace it with:
+<code>
+&lt;b:if cond='data:blog.pageType != "item"'&gt;
+&lt;b:if cond='data:post.allowComments'&gt;
+&lt;b:loop values='data:post.feedLinks' var='f'&gt;
+&lt;a class="comments" rel="comments" expr:href='data:post.url + "#comments"' expr:onclick='"peekaboo_comments_display("" + data:f.url + "","commentsul" + data:post.id + "","","" + data:post.url + "#comments","<span style="color: red;">max comments</span>");toggleitem("comments" + data:post.id + "");return false;"'&gt;&lt;b:if cond='data:post.numComments == 1'&gt;1 &lt;data:top.commentLabel/&gt;&lt;b:else/&gt;&lt;data:post.numComments/&gt; &lt;data:top.commentLabelPlural/&gt;&lt;/b:if&gt;&lt;/a&gt;
+&lt;/b:loop&gt;
+&lt;/b:if&gt;
+&lt;b:else/&gt;
+&lt;b:if cond='data:post.allowComments'&gt;
+&lt;a class='comment-link' expr:href='data:post.url + "#comments"' expr:onclick='"toggleitem("comments" + data:post.id + "");return false;"'&gt;&lt;b:if cond='data:post.numComments == 1'&gt;1 &lt;data:top.commentLabel/&gt;&lt;b:else/&gt;&lt;data:post.numComments/&gt; &lt;data:top.commentLabelPlural/&gt;&lt;/b:if&gt;&lt;/a&gt;
+&lt;/b:if&gt;
+&lt;/b:if&gt;
+</code>
+Replace the red <code>max comments</code> with the maximum number of comments to display asynchronously (or replace with false to display all comments).</li>
+	<li>Click 'Save Template' and, if it appears, 'Confirm &amp; Save', then view your blog.</li>
+</ol>
+To make my <a href="http://singpolyma-tech.blogspot.com/2006/05/comment-photos-and-highlighting.html">comment author photos and highlighting</a> work with this you will need to make sure you have the latest version of that hack installed.

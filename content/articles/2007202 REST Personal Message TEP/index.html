@@ -1,0 +1,48 @@
+---
+title: REST Personal Message TEP
+date: 2007-07-21 00:35:41 Z
+tags: ["Tech","Standards","Social_networking","REST"]
+wordpress_path: /actionstream/rest-personal-message-tep
+---
+<b title="Update 2007-12-05"><a href="/pempeth/">I have updated this draft and released some code.</a></b>
+
+Regular readers of my blog know that I am obsessed with one thing: decentralisation.  I hate having all my eggs in one basket.  IMHO, if anyone has the ultimate power, then it's not true Web 2.0.  In my recent thinking this has extended to my view of social networks such as Facebook and MySpace.
+
+One of the much-used features of these is personal messages.  This can be public (ala Facebook wall) or private (ala Facebook message).  I here intend to provide a <a href="http://webos.singpolyma.net/TEP">TEP</a>, which I will implement, suggesting a way to do this in a decentralised and RESTful manner.
+
+<strong>Detecting the endpoint</strong>
+
+I love <a href="http://yadis.org/wiki/XRI_Resolution_2.0_specification">XRDS</a>!  This format comes to us from the OpenID world but really provides a standard way to <a href="http://yadis.org/wiki/Yadis_FAQ#Would_it_be_reasonable_to_use_Yadis_for_non-identity_service_discovery.3F">associate RESTful endpoints with a URL</a> [<a href="http://webos.singpolyma.net/XRDS">example</a>].
+
+I think it makes most sense to have one type URL for this TEP and declare a namespace for extending XRDS to (optionally) tag endpoints with a 'sub-type'.  This could look like the following:<code> </code>
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;xrds:XRDS xmlns:xrds="xri://$xrds" xmlns="xri://$xrd*($v*2.0)" xmlns:dsn="http://singpolyma.net/dsn/xmlns"&gt;
+
+&lt;XRD&gt;
+
+&lt;Service priority="50"&gt;
+
+&lt;Type&gt;http://singpolyma.net/dsn/pmt&lt;/Type&gt;
+
+&lt;URI&gt;http://example.com/msg&lt;/URI&gt;
+
+&lt;dsn:msgtype&gt;private&lt;/dsn:msgtype&gt;
+
+&lt;/Service&gt;
+
+&lt;/XRD&gt;
+
+&lt;/xrds:XRDS&gt;</pre>
+(I will create these pages in a bit.)  I would propose the following dsn:msgtype for now: private (only to you) and public (like Facebook wall).  As this is a TEP, nothing is remotely final.  I'm not sure I like msgtype as the tag name, for one thing.
+
+<strong>Sending Data to the Endpoint</strong>
+
+This part is easy.  To support maximum compatibility with existing systems, either GET or POST data is to be accepted.  <strong>All</strong> fields passed must be processed.  The simplest system will simply take <strong>all</strong> data passed via both GET <em>and</em> POST and put the field name as a header and the value under/beside it in the message body.  No data may be ignored (unless there is a particular value, such as a session ID, specific to your server which you want removed).  The following is a list of fields which make sense to use in a special way.  If you are going to do something special for one of these values you should use the name given here, but really any data can have anything done with it as long as it is included somewhere in the message.
+
+subject, from (contact of sending user), cc, url (of sending user), name (of sending user), body
+
+XHTML is allowed.  Special data (such as calendar events) should be marked up with  <a href="http://microformats.org/">microformats</a> where possible.
+
+A way to contact the user back SHOULD be supplied.  If either from or url is a URL, XRDS discovery can be performed on it in order to detect an endpoint for this TEP to use in replying.
+
+I am going to write some code to implement this both for WordPress and independently soon.  I may also create a simple service targeted at adding this capability to a blogger blog (or other locked-hosting website).

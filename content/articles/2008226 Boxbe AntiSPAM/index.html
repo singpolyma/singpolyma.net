@@ -1,0 +1,19 @@
+---
+title: Boxbe AntiSPAM
+date: 2008-08-13 22:22:21 Z
+tags: ["Tech","SPAM","Email"]
+wordpress_path: /actionstream/boxbe-antispam
+---
+Today I received an email from <a href="http://boxbe.com/">Boxbe</a> support telling me they had finally given users the option to turn off their "coutesy notification" system.  I couldn't be happier!  I thought I'd take this post to share about my SPAM problems, and my solution.
+<h3>The Problem</h3>
+GMail SPAM filtering is nice.  I may not have it forever, and don't like to count on it, but it works very well.  Unfortunately I made the choice when I registered this domain name to set up a catch-all.  At first that was fine, but after over a year *@singpolyma.net was receiving so much SPAM, so fast, that even the GMail SPAM filter couldn't keep up.  I began to receive over 40 SPAM (sometimes over 200) per day, sometimes all at once!  I didn't want to disable the catch-all though... that felt like the wrong solution.
+<h3>The Right Solution</h3>
+I decided the right solution was whitelisting.  Since most of the people I know don't use PGP (yet) there is no way to guarentee the sender of the messages, but from a cursory glance over my SPAM box I decided that trusting the From: header would work for 99% of today's SPAM.
+
+I can't set up a forwarder from a catch-all with Dreamhost, so I set it to be delivered into a mailbox.  I then created a "dummy" Gmail account to fetch this mail via POP3.  Bonus #1, Gmail filters all this mail as it comes in, catching a huge amount of the illigitimate messages (just not enough of them).  Set Gmail to forward all email to singpolyma@boxbe.com (more on that in a bit) and delete.  Using Gmail as an email pipe/filter really.
+
+Then Boxbe.  Boxbe gives you a you@boxbe.com email address that you can forward mail to, it checks it against a whitelist, and sends it on if it matches.  Previously, if it did not match, they would reply with a "challenge" email.  This is annoying, broken, and sometimes embarassing, so I am very pleased that they have now given people the option I wanted all along.  Disable all "courtesy notifications" and turn on the report of the queue, daily.  If I receive any mail from people not on my whitelist, I get an email from Boxbe once a day summarizing who tried to contact me.  I go and let through any legitimate new people.  Perfect.
+
+Boxbe uses the password anti-pattern (although they're working on fixing that, they say) to import your address book.  They have a CSV importer though.  Export from Gmail, import to Boxbe.  Set up some trusted domains (like *@uwaterloo.ca) and go.
+
+I haven't seen SPAM since, and have only once or twice had to go over and let through a message that got stopped.

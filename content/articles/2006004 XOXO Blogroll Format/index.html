@@ -1,0 +1,35 @@
+---
+title: XOXO Blogroll Format
+date: 2006-01-04 06:35:00 Z
+tags: ["Close Friends","XOXOBlog","XOXO","Format"]
+wordpress_path: /actionstream/xoxo-blogroll-format
+---
+The purpose of this format is to define a standard way of marking up blogrolls, subscription lists, etc.  This is a derivation of, and not an actual part of, the <a href="http://microformats.org/wiki/xoxo">XOXO specification</a>.  Much of the content of this format is taken directly from the specification itself.
+
+<b>Terms</b>
+<ul><li>A <b>reccomended</b> field is one that should be included in output meant to comply with this format</li><li>An <b>optional</b> field is one that does not need to be included</li><li><b>A-field</b>s are fields stored within the markup of the primary &lt;a&gt; tag in an XOXO element</li><li><b>Alternate-A field</b>s are one stored with second, third, etc &lt;a&gt; tags</li><li><b>DL-field</b>s are ones stored within the optional &lt;dl&gt; list</li></ul>Note that no fields will be marked as 'required'.  This is because, in full compliance with the XOXO specification, the only required field is 'TEXT' (the direct contents of the &lt;li&gt; or &lt;a&gt; tag).
+
+<b>Classes</b>
+In compliance with the XOXO specification, no classes are required on the main &lt;ul&gt; or &lt;ol&gt; tag.  Two classes, however, are reccomended in order to identify XOXO sections complying with this format.  The 'xoxo' class (as defined by the XOXO specification) is highly reccomended, as well as the additional class 'blogroll' (which is also part of the XOXO specification, as much of this format has been directly adapted from there).
+
+<b>Meta Data</b>
+The first element will be considered by this format to be metadata for the entire section if there is no HREF or 'contents' and there are more fields than TEXT.  The following fields are defined for metadata:
+<ul><li>title -- XOXO section title
+</li><li>ownerName -- Name of list owner
+</li><li>dateCreated -- Generation date of data
+</li></ul>
+<b>Nodes</b>
+All nodes in this format are considered to be one of two things -- structural elements or link elements.  Structural elements form the categories/hierarchy and link elements are the actual content.  For extensibility reasons, link nodes are defined as all nodes containing the HREF <i>or</i> the 'contents' field. Structural elements are all other nodes.
+
+<b>The TEXT Field</b>
+<ul><li>The TEXT field on link elements stores the title of the resource
+</li><li>The TEXT field on structural elements stores the name of the section
+</li></ul>
+<b>A-Fields (link elements only)</b>
+The primary A Field is considered to be an 'alternate' URL (ie to a feed of some kind) if it has rel=alternate, rel=rss, or rel=atom.  Otherwise it is considered to be the URL to the resource itself (ie an XHTML page).  The alternate-a fields follow the same logic -- with the exception that at the point where the URL to the resource itself is discovered, all subsequent fields are considered to be 'alternate' URLs.  <span style="font-style: italic;">Note: A and Alternate-A fields with a 'javascript:' HREF attribute are to be ignored.</span>
+<ul><li>HREF (reccomended) -- URL to resource or alternate resource</li><li>TITLE (optional) -- Extended description of resource</li><li>REL (optional) -- If link to feed this may be 'alternate', 'rss' or 'atom', depending on the type of feed
+</li></ul><b>Alternate-A Fields (optional, </b><b>link elements only</b><b>)
+</b><ul><li>HREF -- URL to resource or alternate resource</li></ul><b>DL-Fields (</b><b>link elements only</b><b>)</b>
+<ul><li>contents (optional) -- for extendability purposes only, stores the contents of a resource that is not URL-based</li><li>tags (optional) -- stores tags for the resource, in one of two formats.  It can store a space-separated list of the tags, or a list (&lt;ul&gt; or &lt;ol&gt;) of <a href="http://microformats.org/wiki/reltag">relTag</a> data.  The interpretation of this relTag data should be leniant and ignore the HREF value completely.  Anything in the list that does not have rel=tag is ignored.
+</li></ul>    
+<div class="tags">Tags:<ul><li><a href="http://del.icio.us/xoxo.blog/format" rel="tag">format</a></li> <li><a href="http://del.icio.us/xoxo.blog/blogroll" rel="tag">blogroll</a></li> <li><a href="http://del.icio.us/xoxo.blog/xoxo" rel="tag">xoxo</a></li> </ul></div>

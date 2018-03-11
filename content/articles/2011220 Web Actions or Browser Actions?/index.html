@@ -1,0 +1,15 @@
+---
+title: Web Actions or Browser Actions?
+date: 2011-08-08 14:30:09 Z
+tags: ["Tech","indieweb"]
+wordpress_path: /actionstream/web-actions-or-browser-actions
+---
+<span class="vcard"><a class="fn url" rel="contact met" href="http://tantek.com/">Tantek Çelik</a></span> recently <a rel="in-reply-to" rev="reply" href="http://tantek.com/2011/220/b1/web-actions-a-new-building-block">blogged</a> about the growing popularity of "Web Actions" or "Web Intents" or "social media action button logo things", whatever you prefer to call it.  His article is great summary of some history and the current landscape.  What interested me most, however, was when he got to listing the common action types he's discovered: later, save, props, share, follow.
+
+I got to thinking about that last one because it's been around for so long.  Follow.  How do we implement the follow button in an IndieWeb way?  Well, we've been doing it for years.  If you link to a feed, sane web browsers (or Chrome with an extension) will go "ooh, a feed!  Do you want to follow this?"  Better yet, with the right metadata you don't even need a follow button in your web UI, the browser will make one for you.  Awesome.
+
+What about the other actions?  What about save/readlater?  Oh… that's bookmarking.  We've had that in our browsers even longer than feed buttons.  Someone is going to argue that they want to save their stuff at some web service instead of in their browser, but integrating the browser's bookmark function/UI with alternate services is a practice as old as del.icio.us.  Awesome.
+
+Two left: props and share.  If you want a pretty good argument on why these should always been the same action, talk to <span class="vcard"><a class="fn url" rel="colleague contact met" href="http://igvita.com/">Ilya Grigorik</a></span>.  Browsers (at least Firefox) currently have a sort of old and weak share function: "Send Link", which sends a page by email.  Is there some sort of good solution for these actions that takes place in the UA (where it belongs, and has access to the user's preferences for UI and service) instead of in-web-page hacks?
+
+PS. you'll note that this in-UA strategy saves us from the NASCAR problem of having a seperate button for every action on every service :)

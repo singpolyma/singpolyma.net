@@ -1,0 +1,43 @@
+---
+title: GUI Toolkits
+date: 2009-04-09 01:31:40 Z
+tags: ["Tech","GUI","Desktop"]
+wordpress_path: /actionstream/gui-toolkits
+---
+They all suck.  I'm not kidding.  I've tried Qt, GTK+, Tk, even Shoes.  Shoes is the best of the lot so far, but none of them seem to get right the one thing I've come to take for granted on the web: layout.
+
+Take the following HTML snippet, for example:
+<code>
+&lt;div&gt;
+&lt;input type="checkbox" /&gt;
+&lt;span&gt;label&lt;/span&gt;
+&lt;div style="display:inline-block;margin-left:40px;margin-right:40px;"&gt;
+&lt;div&gt;name&lt;/div&gt;
+&lt;div&gt;description&lt;/div&gt;
+&lt;/div&gt;
+&lt;span&gt;HAI&lt;/span&gt;
+&lt;/div&gt;
+</code>
+You may crtisize the form of this snippet, but it's pretty clear what it does: one row with a checkbox, a label next to it, a two-line element with a name and description, and finally the text "HAI".
+
+In Shoes (the one that makes this easiest) this is <em>almost</em>:
+<code>
+stack {
+   flow {
+      check
+      stack {
+         para 'name'
+         para 'description'
+      }
+      para 'Free'
+   }
+}
+</code>
+
+Though apparently I need to know the width I want for the name/description pair up front (in pixels or percents) or it will try to take up the full window and thus wrap to a seperate line.
+
+The thing is, though, it's not really the toolkits' fault.  Layout isn't a thing they're supposed to be good at, and they're certainly not used to use fluid-layout types who care what happens when the window gets resized (with all fairness to toolbars, which handle that ok).  Most simple apps are designed to have their main window one size and not changed, which makes absolute positioning of everything possible.  Toolkits have enough to deal with drawing widgets and interacting with the desktop environment and OS to get events.
+
+The thing is, widgets are a solved problem.  Really.  If I want to throw some widgets on a window and hook up event handlers, I have umpteen choices available to me.  Yet another new toolkit is not the answer, since it too would likely get bogged down with the same details, and if it didn't have good bindings to a lot of languages might end up like shoes, which is bound to its own custom VM.
+
+I think, then, I have something that may begin to resemble a solution.  Why not use a syntax that is much better at expressing the nature of a layout?  Why not, in fact, use XForms (with some lightweight subset of CSS)?  Then we just need scripts to convert the layout descriptions into the widget and positioning code for each different toolkit.  Then the developer can wire up events using their favourite toolkit, regenerating the widget part of the code when changes are made to the UI.

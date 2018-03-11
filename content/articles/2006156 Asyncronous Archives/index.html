@@ -1,0 +1,45 @@
+---
+title: Asyncronous Archives
+date: 2006-06-05 09:31:00 Z
+tags: ["Tech","Blogger","Hack","Hacks","Archives"]
+wordpress_path: /actionstream/asyncronous-archives
+---
+This hack combines two popular archive hacks with a new functionality in the same script.  The two popular hacks included are the displaying of archive post counts in the archive list, and the re-ordering of the archive list.  These two can be applied using the script with or without the third, new, functionality with is asyncronous loading of archives into the sidebar.  If you don't know what that means, try it out in my sidebar.  Select an archive from the drop-down and notice that instead of being taken to the archive page, the posts in that archive are listed for you right in the sidebar.  The steps to implement either part of this hack follow:
+
+<ol><li>Edit your blog template and add the following code directly after the &lt;body&gt; tag:
+<div style="font-family: monospace;">
+&lt;ArchivePage&gt;
+&lt;!-- START ARCHIVE XOXO --&gt;
+&lt;ul class="xoxo posts" style="display:none;"&gt;
+&lt;Blogger&gt;&lt;li&gt;&lt;a href="&lt;$BlogItemPermalinkUrl$&gt;"&gt;&lt;BlogItemTitle&gt;&lt;$BlogItemTitle$&gt;&lt;/BlogItemTitle&gt;&lt;/a&gt;&lt;/li&gt;&lt;/Blogger&gt;
+&lt;/ul&gt;
+&lt;!-- END ARCHIVE XOXO --&gt;
+&lt;/ArchivePage&gt;
+</div>
+<i>Note: if you have your blog marked up using <a href="http://microformats.org/wiki/hatom">hAtom</a> or the <a href="http://blogxoxo.blogspot.com/2006/01/xoxo-blog-format.html">XOXO Blog Format</a> this step is unnecessary.</i>
+</li><li>Add the following code into your sidebar where you want the archive list to display:
+<div style="font-family: monospace;">
+&lt;div id="archive_list"&gt;&lt;i&gt;Loading Archives...&lt;/i&gt;&lt;/div&gt;
+&lt;div id="archive_display"&gt;&lt;/div&gt;
+&lt;noscript&gt;
+&lt;ul class="archive-list"&gt;&lt;BloggerArchives&gt;
+&lt;li&gt;&lt;a href="&lt;$BlogArchiveURL$&gt;"&gt;&lt;$BlogArchiveName$&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/BloggerArchives&gt;&lt;/ul&gt;
+&lt;/noscript&gt;
+</div>
+<i>Note to advanced users.  The noscript section <b>is necessary</b>.  You can edit it, but only if you pass two additional parameters to the function in the next step containing the code starting the list and ending the list.</i></li><li>Add the following code into your &lt;head&gt; section:
+<div style="font-family: monospace;">
+&lt;script type="text/javascript" src="http://jscripts.ning.com/get.php?xn_auth=no&amp;amp;id=1286814"&gt;&lt;/script&gt;
+&lt;script type="text/javascript"&gt;
+//&lt;![CDATA[
+addLoadEvent(function(){get_archive_list('archive_list','archive_display','<span style="color:red;">format</span>',<span style="color:red;">sort</span>);});
+//]]&gt;
+&lt;/script&gt;
+</div>
+Where <span style=";font-family:monospace;color:red;">format</span> is <b>drop</b> if you want a drop-down archive list or <b>list</b> if you want the archives displayed in an unordered list. <span style=";font-family:monospace;color:red;">sort</span> is <b>true</b> to sort the archive list oldest-to-newest and <b>false</b> to sort newest-to-oldest.
+
+If you want the archive list to link to the archive pages instead of loading in the sidebar then delete the <span style="font-family:monospace;">archive_display</span> text from the code above.</li><li>Save your template and republish your blog.
+</li></ol>
+Advanced users may be interested in the <a href="http://singpolymaplay.ning.com/bloggerarchives/">information on the scripts behind this</a>.
+
+<div class="tags">Tags:<ul><li><a href="http://del.icio.us/singpolyma.techblog/blogger" rel="tag">blogger</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/hacks" rel="tag">hacks</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/hack" rel="tag">hack</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/archives" rel="tag">archives</a></li> </ul></div>

@@ -1,0 +1,28 @@
+---
+title: 'Extending Microformats: a Return to XOXO'
+date: 2008-06-08 22:23:59 Z
+tags: ["Tech","XOXOBlog","XOXO","Rss","Microformats","hCard","Atom"]
+wordpress_path: /actionstream/extending-microformats
+---
+I haven't written about the <a href="http://microformats.org/wiki/xoxo">XOXO microformat</a> in some time, but some recent discussions caused me to <a href="/2006/02/how-can-xoxo-be-used/">dig into my archives</a> to source a new post.  Microformats tend to follow the rule of only formalizing the most common of existing publishing patterns (the 80-20), meaning that some more "edge case" data cannot be represented.  Does this mean that this data is useless?  Not at all: but it <em>is</em> outside the realm of microformats, at least for now.  So we either need to invent something new, or extend what we have.
+<h3>A Page from Recent History</h3>
+This is not a new problem.  Every formalised standard is going to face those who feel that their bit of metadata should be included.  Take, as an example, the RSS 2.0 spec.  Core essentials of news feeds are present: title, description, date, etc.  Lots of metadata is missing though: author name, comment counts, comment feed URLs, ane more.  People solved this problem in two very different ways: some extended, and some invented something new.
+
+Extending RSS (or any XML format) is easy: create a namespace, add your elements, publish.  If a particular piece of metadata is popular it gets standardised in a spec'ed extension (dc:creator, slash:comments, wfw:commentRss, etc).  The benefit of this approach is that all existing parsers can still read your content.  If a parser doesn't need your extra metadata, it can safely ignore it and present just the core content.  No new code needs to be written, and no new formats need to be learned for 80% of the applications.
+
+There was another group interested in solving this problem: the ATOM group.  They threw away all the existing formats (RSS 2.0 and RSS 1.0/RDF) and built something brand new from scratch to accomodate their data needs.  What was the result?  Feed aggregators everywhere had to write all-new code to handle this new, incompatible, and often more complicated case.  Time and effort was wasted both in code and user education (unlearn "What is RSS" learn "What is ATOM" / "What are feeds").  Once the standard hit a spec'ed form, what happened?  People began to use namespaces in ATOM as well, because for all the "better" it was, for some edge cases it just wasn't "better" enough.
+<h3>Back to XOXO</h3>
+It seems the key is to be easily extendable, not to think of everything up front.  If microformats are going to make their way into lots of APIs and not just be used for better page scraping (Ma.gnolia does a good job of this), then extensability is necessary.  Fortunately, XOXO provides an easy solution.  Check this out:
+<code>
+&lt;ul&gt;
+&lt;li class="vcard"&gt;
+&lt;dl&gt;
+&lt;dt&gt;fn&lt;/dt&gt;
+&lt;dd class="fn"&gt;Martha&lt;/dd&gt;
+&lt;dt&gt;Anniversary&lt;/dt&gt;
+&lt;dd&gt;2005-02-04&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</code>
+An hCard parser can read that.  For a normal use case, no new code is needed.  An XOXO parser can read that, and if it knows about hCard will likely know what "fn" means.  The other data is there, though.  The parser has that data.  Minimal new code, and <strong>all</strong> the data can be used.  Cool or what?

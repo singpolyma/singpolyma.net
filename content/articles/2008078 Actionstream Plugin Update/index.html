@@ -1,0 +1,45 @@
+---
+title: Actionstream Plugin Update
+date: 2008-03-18 03:37:00 Z
+tags: ["Tech","Update","Plugin","Wordpress","DiSo","Actionstream"]
+wordpress_path: /actionstream/actionstream-plugin-update
+---
+I am pleased to announce version 0.2 of my <a href="/plugins/actionstream/">Wordpress Actionstream plugin</a>!
+
+It can be downloaded <a href="/wp-diso-actionstream.tar.bz2">from the normal place</a>.
+
+<strong>New this release:</strong>
+<ol>
+	<li>Better microformats support in the output</li>
+	<li>Some architecture improvements and bug fixes</li>
+	<li>There is now a sanity check for zero items or less items than requested</li>
+	<li>Posts on the host blog are now added to the actionstream</li>
+	<li>There is a well defined way to add stream items (say, from another plugin).  Just create an array with the fields you need (be sure to specify identifier and created_on - GUID and unix time of publish, respectively) - usually includes title and url.  Then instantiate an object of class ActionStreamItem and save in like so: <code>(new ActionStreamItem($array_data, 'service', 'data_type', $user_id))-&gt;save();</code></li>
+	<li>There is now a hook for other plugins to add available services.  Example:
+<pre><code>actionstream_service_register('feed',
+
+      array(
+
+         'name' =&gt; 'Feed',
+
+         'url' =&gt; '%s'
+
+      ),
+
+      array(
+
+         'entries' =&gt; array(
+
+               'html_form' =&gt; '[_1] posted &lt;a href="[_2]" rel="bookmark" class="entry-title"&gt;[_3]&lt;/a&gt;',
+
+               'html_fields' =&gt; array('url', 'title'),
+
+               'url' =&gt; '{{ident}}',
+
+            )
+
+      ));
+
+</code></pre>
+</li>
+</ol>

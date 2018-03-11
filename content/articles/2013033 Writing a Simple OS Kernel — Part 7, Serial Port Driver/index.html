@@ -1,0 +1,240 @@
+---
+title: Writing a Simple OS Kernel — Part 7, Serial Port Driver
+date: 2013-02-02 01:04:20 Z
+tags: ["Tech","singpolyma-kernel","define","0x5"]
+wordpress_path: /actionstream/writing-a-simple-os-kernel-part-7-serial-port-driver
+---
+<a href="https://singpolyma.net/2012/08/writing-a-simple-os-kernel-part-6-inter-process-communication/">Last time</a> we got IPC working, and used it to build a simple path-resolution module.  This time we're going to write a fully-functional serial port driver.
+
+<h2>Generic Interrupts</h2>
+
+When we got interrupts working, we sort of hacked the kernel part in to support the timer, which is all we were interested in at the time.  Let's make that a bit more generic.  We're going to need one more syscall, since interrupts have to be handled by the kernel.  The simplest one we can implement just allows a process to wait for an interrupt to fire on a particular line:
+
+<pre><code>void interrupt_wait(int intr);
+
+.global interrupt_wait
+interrupt_wait:
+	push {r7}
+	mov r7, #0x5
+	svc 0
+	bx lr
+
+#define TASK_WAIT_INTR 3
+
+case 0x5: /* interrupt_wait */
+	/* Enable interrupt */
+	*(PIC + VIC_INTENABLE) = tasks[current_task][2+0];
+	/* Block task waiting for interrupt to happen */
+	tasks[current_task][-1] = TASK_WAIT_INTR;
+	break;
+</code></pre>
+
+We are already enabling the timer interrupt when the kernel starts.  Here, we enable the interrupt that the process is asking to wait on, since if it is not enabled the task will block forever, so this seems like a useful place to do it.
+
+We also want to unblock tasks when the interrupt fires.  Get rid of the -4 case that we have hardcoded for the timer and put this in:
+
+<pre><code>default: /* Catch all interrupts */
+	if((int)tasks[current_task][2+7] &lt; 0) {
+		unsigned int intr = (1 &lt; &lt; -tasks[current_task][2+7]);
+
+		if(intr == PIC_TIMER01) {
+			/* Never disable timer. We need it for pre-emption */
+			if(*(TIMER0 + TIMER_MIS)) { /* Timer0 went off */
+				*(TIMER0 + TIMER_INTCLR) = 1; /* Clear interrupt */
+			}
+		} else {
+			/* Disable interrupt, interrupt_wait re-enables */
+			*(PIC + VIC_INTENCLEAR) = intr;
+		}
+		/* Unblock any waiting tasks
+			XXX: nondeterministic unblock order
+		*/
+		for(i = 0; i &lt; task_count; i++) {
+			if(tasks[i][-1] == TASK_WAIT_INTR &amp;&amp; tasks[i][2+0] == intr) {
+				tasks[i][-1] = TASK_READY;
+			}
+		}
+	}
+</code></pre>
+
+You'll notice we also need a new magic number for versatilepb.h:
+
+<code>#define VIC_INTENCLEAR 0x5 /* 0x14 bytes */</code>
+
+Code for this section <a href="https://github.com/singpolyma/singpolyma-kernel/commit/876a9d088b3402141cc57d8348d1c6037bffce13">on Github</a>.
+
+<h2>Output Driver</h2>
+
+Let's use this new ability to implement half of our driver: output.  This will allow us to <q class="identifier">write</q> to a specific fifo for output to the serial port instead of using <q class="identifier">bwputs</q>.
+
+A refresher of serial port related magic numbers:
+
+<code>/* http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0224i/Bbabegge.html */
+#define UART0       ((volatile unsigned int*)0x101f1000)
+/* http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0183g/I18381.html */
+#define UARTFR        0x06 /* 0x18 bytes */
+#define UARTIMSC      0x0E /* 0x38 bytes */
+#define UARTFR_TXFF   0x20
+#define UARTIMSC_TXIM 0x20
+
+#define PIC_UART0     0x1000
+</code>
+
+Let's make a generic driver that accepts parameters telling it what serial port to drive:
+
+<pre><code>void serialout(volatile unsigned int* uart, unsigned int intr) {
+	int fd;
+	char c;
+</code></pre>
+
+We need to create the fifo that processes send bytes on:
+
+<pre><code>	mkfifo("/dev/tty0/out", 0);
+	fd = open("/dev/tty0/out", 0);
+</code></pre>
+
+We also need to tell the UART to trigger an interrupt when it becomes ready to send a byte:
+
+<pre><code>	*(uart + UARTIMSC) |= UARTIMSC_TXIM;
+</code></pre>
+
+And finally a loop to read bytes and send them to the UART:
+
+<pre><code>	while(1) {
+		read(fd, &amp;c, 1);
+		interrupt_wait(intr);
+		*uart = c;
+	}
+</code></pre>
+
+This seems pretty reasonable, but there is a problem.  The UART triggers an interrupt when it <em>becomes</em> ready to send a byte.  If it is already ready (such as at boot time), the interrupt will not trigger.  So we try this:
+
+<pre><code>	while(1) {
+		read(fd, &amp;c, 1);
+		*uart = c;
+		interrupt_wait(intr);
+	}
+</code></pre>
+
+This is closer, but in both of these versions there is a race condition where the UART might not actually be ready anymore by the time we process the interrupt (depending on what other tasks are doing), so let's add a check for that:
+
+<pre><code>	while(1) {
+		read(fd, &amp;c, 1);
+		if(!(*(uart + UARTFR) &amp; UARTFR_TXFF)) {
+			*uart = c;
+		}
+		interrupt_wait(intr);
+	}
+</code></pre>
+
+Now, however, if the UART is not ready, we will skip bytes.  So we only want to read a new byte if we actually wrote the current one:
+
+<pre><code>	int doread = 1;
+	while(1) {
+		if(doread) read(fd, &amp;c, 1);
+		doread = 0;
+		if(!(*(uart + UARTFR) &amp; UARTFR_TXFF)) {
+			*uart = c;
+			doread = 1;
+		}
+		interrupt_wait(intr);
+	}
+</code></pre>
+
+To test this out, let's set up a new <q class="identifier">first</q>:
+
+<pre><code>void first(void) {
+	int fd;
+
+	if(!fork()) pathserver();
+	if(!fork()) serialout(UART0, PIC_UART0);
+
+	fd = open("/dev/tty0/out", 0);
+	write(fd, "woo\n", sizeof("woo\n"));
+	write(fd, "thar\n", sizeof("thar\n"));
+	while(1);
+}
+</code></pre>
+
+Our current pre-emption speed will make this a bit of a pain to run, so you can set the clock value in <q class="identifier">main</q> to something lower.
+
+We can now print to the serial port by writing to a fifo!
+
+Code for this section <a href="https://github.com/singpolyma/singpolyma-kernel/commit/e32cd571bce206b188b464e949a55e70739db8dc">on Github</a>.
+
+<h2>Input Driver</h2>
+
+Some new magic numbers:
+
+<code>#define UARTICR       0x11 /* 0x44 bytes */
+#define UARTFR_RXFE   0x10
+#define UARTIMSC_RXIM 0x10
+#define UARTICR_RXIC  0x10
+#define UARTICR_TXIC  0x20
+</code>
+
+The input driver will be another process that waits on the same interrupt.  Unfortunately, because this one interrupt actually can signal one of several things, if two of them are true, and different processes work on processing them,  the interrupt will fire constantly and prevent any work from getting done.  We solve this by clearing the more specific interrupt in the drivers where we handle them.  For example, in <q class="identifier">serialout</q>:
+
+<code>*(uart + UARTICR) = UARTICR_TXIC;</code>
+
+Next, start with some setup:
+
+<pre><code>void serialin(volatile unsigned int* uart, unsigned int intr) {
+	int fd;
+	char c;
+	mkfifo("/dev/tty0/in", 0);
+	fd = open("/dev/tty0/in", 0);
+
+	/* enable RX interrupt on UART */
+	*(uart + UARTIMSC) |= UARTIMSC_RXIM;
+
+	while(1) {
+</code></pre>
+
+We want to wait on the interrupt, and then immidiately clear the specific interrupt we handle, just like in the output driver:
+
+<pre><code>	interrupt_wait(intr);
+	*(uart + UARTICR) = UARTICR_RXIC;
+</code></pre>
+
+And we want to make sure, not only that no race condition has changed the UART status, but that the interrupt was meant for us at all:
+
+<pre><code>	if(!(*(uart + UARTFR) &amp; UARTFR_RXFE)) {
+</code></pre>
+
+And then just read the byte and put it in our fifo:
+
+<pre><code>	c = *uart;
+	write(fd, &amp;c, 1);
+</code></pre>
+
+This input server has a bit of a bug.  If the fifo is ever full, it will block, and maybe miss input bytes from the serial port.  Our processes are likely to be way faster than any serial port, but still, in a real kernel you would want to account for this by splitting the driver into two processes: one that waits on the interrupt, and one that buffers the bytes internally.
+
+Code for this section <a href="https://github.com/singpolyma/singpolyma-kernel/commit/6aa2baea984736cf2b9fccab4b076f62dcbf5f33">on Github</a>.
+
+<h2>Echo Application</h2>
+
+To tie all this up, we write a simple application that will echo back every character you type:
+
+<pre><code>void echo(void) {
+	int fdout, fdin;
+	char c;
+	fdout = open("/dev/tty0/out", 0);
+	fdin = open("/dev/tty0/in", 0);
+
+	while(1) {
+		read(fdin, &amp;c, 1);
+		write(fdout, &amp;c, 1);
+	}
+}
+</code></pre>
+
+Code for this section <a href="https://github.com/singpolyma/singpolyma-kernel/commit/85043f536bb8c2aaf3c4a4995cc27128fa3ed781">on Github</a>.
+
+<h2>We're done!</h2>
+
+We now have a working serial port driver that respects the hardware by using interrupts instead of burning CPU time looping on flag checks.  Remember, any interactios with the UART will affect these drivers, so using <q class="identifier">bwputs</q> may have strange side effects now.
+
+To be honest, this is about as far as I expected to get when I originally started this series.  I could write a clock driver, to allow for <q class="identifier">sleep</q> calls and similar, but you should be able to see how that might work.  One big topic I have avoided thus far is enabling the MMU and doing virtual memory / memory protection.  I may try to figure out how that works on this harware, but it will require quite a bit of doing.  Suggestions for others things you would like to see in this series go in the comments!
+
+Code so far <a href="https://github.com/singpolyma/singpolyma-kernel/tree/85043f536bb8c2aaf3c4a4995cc27128fa3ed781">on Github</a>.

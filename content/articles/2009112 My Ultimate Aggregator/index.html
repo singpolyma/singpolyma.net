@@ -1,0 +1,33 @@
+---
+title: My Ultimate Aggregator
+date: 2009-04-22 23:46:42 Z
+tags: ["Tech","Software","Aggregation","Feeds","Development","DiSo","Actionstream","hashtags","Desktop"]
+wordpress_path: /actionstream/my-ultimate-aggregator
+---
+I want a feedreader that is also a mublog client and an activity stream aggregator.  That is, like Bloglines+Socialthing+Tweetdeck, as a desktop app.
+
+Content could be categorized (automatically, by source, or by metadata from the source) as "short" (like twitter/del.icio.us/notifications), "medium" (like tumblog-style stuff, or content from backtype), and "long" (blog posts etc), as well as by any actual categories/tags on the content (including hashtags on tweets, etc), and by source.
+
+The left pane could let you filter by only certain categories (select one or more sources/categories/lengths, union each kind and then intersect, ala (source1 union source2) intersect (category1 union category2) intersect (length) ).  Each kind of category would be separated by a line or something, with lengths at the top (there's just three), then sources, then categories.  Unread counts next to all of them.
+
+Right pane in river-of-news (or, more like tweetdeck) style.  Style should be smartly selected based on item.  Tweets/mublog posts should link the username, @replies and #hashtags, etc, and show the avatar.  Feeds with mediaRSS show thumbnail lieu of avatar.  Feeds with a feed image show that.  Otherwise, show favicon.  Keep all items the same size, with snippets, etc, and click/otherwise select to expand.
+
+Action links associated with each kind of data.  Comment links for feeds with a &lt;comments&gt; tag on items, "show comments" for ones with wfw:commentRSS, long-term it's be great to post a comment from the feedreader.  "favourite"/"reply", etc for the mublog, "bookmark too" for del.icio.us, etc.
+
+Allow the user to associate multiple authors together (also try to do automatically) and maybe assign an avatar if there isn't one: so that all of one person's content displays and archives in a consistent fashion.
+
+*Keep archives*!  Make it easy to search through, or browse through, read content by category/author/source.  Allow the user to file content under custom categories.
+
+Have awesome keyboard shortcuts.  j/k/space/enter/n/d... check out gmail/greader/mutt/trn for inspiration.
+
+Be modular. Don't just hardcode all the services/formats you want to support: take a hint from libpurple and others and just make *everything a plugin*.  That way I can have NNTP support and you don't have to care.
+
+Support feed:// ... I know it never took off, but supporting it isn't hard and may yet prove useful.
+
+Provide sane import/export of all data.
+
+Provide posting support.  In the plugins that implement it, of course.  This means being able to update my mublog, bookmark to del.icio.us, etc :)
+
+*Be portable*! It's really not that hard to do 80% of your work in a cross-platform manner, so just do it already!  Use a cross-platform GUI framework for your initial GUI and add native UI plugins for some platforms (looking at you, Apple fanboi's) later.
+
+Would I pay for this? Yes. I mean, it would have to be libre software (I'm not going to pay you to restrict my freedom!), but I would pay quite a bit for something like this.  I dunno, if I were to pick a number, $40?  Something like that.  If I don't figure it out and write it myself.  GUI programming is not exactly my strong suit, but I'm playing around with it.

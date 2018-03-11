@@ -1,0 +1,428 @@
+---
+title: Writing a Simple OS Kernel — Part 6, Inter-Process Communication
+date: 2012-08-16 03:58:14 Z
+tags: ["Tech","singpolyma-kernel","define","0x4","0x2","0x3"]
+wordpress_path: /actionstream/writing-a-simple-os-kernel-part-6-inter-process-communication
+---
+<a href="/2012/02/writing-a-simple-os-kernel-hardware-interrupts/">Last time</a> we got hardware interrupts working, and used them to implement preemption for our multitasking.  This time we're going to get our user space processes talking to one another.
+
+<h2>getpid</h2>
+
+We're going to need some way for replies to our messages to get sent back to a process.  We can't use whatever other mechanisms we build for registering a new communications channel for this, because without it we cannot receive communications, even about a new communications channel.  Luckily we have a piece of information that comes with every process: its ID.  In our case, the ID of a task is going to just be its index in the array of stacks in our <q class="identifier">main</q>.
+
+So the normal drill for a new syscall in the case statement in <q class="identifier">main</q>:
+
+<pre><code>case 0x2: /* getpid */
+	tasks[current_task][2+0] = current_task;
+	break;
+</code></pre>
+
+And in syscall.s:
+
+<pre><code>.global getpid
+getpid:
+	push {r7}
+	mov r7, #0x2
+	svc 0
+	bx lr
+</code></pre>
+
+And in asm.h:
+
+<code>int getpid(void);</code>
+
+<strong title="Update 2012-228">Removed the accidentally shared static variable.  Do not use statics without a virtual memory system!</strong>
+
+Code for this section <a href="https://github.com/singpolyma/singpolyma-kernel/commit/43a43fa0b212193132427eff03d518aa6c124707">on Github</a>.
+
+<h2>Putting processes to sleep</h2>
+
+Currently our scheduler just round-robins through all tasks, but if we want a task to be able to wait for a message, we need some way for it to go to sleep while it waits.  We will do this by having a new piece of metadata in our process space for "status":
+
+<pre><code>#define TASK_READY       0
+#define TASK_WAIT_READ   1
+#define TASK_WAIT_WRITE  2
+</code></pre>
+
+On coming out of a task (right after the <q class="identifier">activate</q> call in <q class="identifier">main</q>) it is definitely ready:
+
+<code>tasks[current_task][-1] = TASK_READY;</code>
+
+Then replace the two lines at the end of the <q class="identifier">while</q> loop in <q class="identifier">main</q> with a new scheduler that skips over tasks that aren't ready:
+
+<pre><code>/* Select next TASK_READY task */
+while(TASK_READY != tasks[current_task =
+	(current_task+1 &gt;= task_count ? 0 : current_task+1)][-1]);
+</code></pre>
+
+Now if any syscall sets the status to something else, the process will sleep until woken up.
+
+Code for this section <a href="https://github.com/singpolyma/singpolyma-kernel/commit/762bbd0ed64d7d7c9c349a901c8052471fef448a">on Github</a>.
+
+<h2>Ringbuffers</h2>
+
+We're going to do our communication between processes using a rudimentary implementation of UNIX-style pipes.  The pipes will be implemented using ringbuffers.  Why?  Because ringbuffers are easy to use for FIFO-style communication without needing any dynamic memory allocation.  Pipes are allowed to get "full" and luckily we can tell when a ringbuffer is full, so this fits.  We're going to want some generic ringbuffer utilities, and it won't hurt to have versions specialised to the pipe buffers:
+
+<pre><code>#define STACK_SIZE 1024 /* Size of task stacks in words */
+#define TASK_LIMIT 2   /* Max number of tasks we can handle */
+#define PIPE_BUF   512 /* Size of largest atomic pipe message */
+#define PIPE_LIMIT (TASK_LIMIT*5)
+
+struct pipe_ringbuffer {
+	int start;
+	int end;
+	char data[PIPE_BUF];
+};
+
+#define RB_PUSH(rb, size, v) do { \
+		(rb).data[(rb).end] = (v); \
+		(rb).end++; \
+		if((rb).end &gt; size) (rb).end = 0; \
+	} while(0)
+
+#define RB_POP(rb, size, v) do { \
+		(v) = (rb).data[(rb).start]; \
+		(rb).start++; \
+		if((rb).start &gt; size) (rb).start = 0; \
+	} while(0)
+
+#define RB_LEN(rb, size) (((rb).end - (rb).start) + \
+	(((rb).end &lt; (rb).start) ? size : 0))
+
+#define PIPE_PUSH(pipe, v) RB_PUSH((pipe), PIPE_BUF, (v))
+#define PIPE_POP(pipe, v)  RB_POP((pipe), PIPE_BUF, (v))
+#define PIPE_LEN(pipe)     (RB_LEN((pipe), PIPE_BUF))
+</code></pre>
+
+You'll note I've increased the stack size.  We're going to be handling more data, and with our current setup if you need more space than the stack size it's just going to cause very strange and hard-to-find bugs.  The pipe limit is expressed in terms of the number of tasks.  This makes sense since as the number of tasks increases, it is likely that the number of channels we'll need increases, especially since we're going to reserve one per task to begin with.
+
+Now we just need to allocate our pipes in <q class="identifier">main</q>:
+
+<code>struct pipe_ringbuffer pipes[PIPE_LIMIT];</code>
+
+and initialize them all:
+
+<pre><code>size_t i;
+/* Initialize all pipes */
+for(i = 0; i &lt; PIPE_LIMIT; i++) {
+	pipes[i].start = pipes[i].end = 0;
+}
+</code></pre>
+
+Code for this section <a href="https://github.com/singpolyma/singpolyma-kernel/commit/36fadfca7bc863594a1c37960f2a08d234f74223">on Github</a>.
+
+<h2>Reading and writing</h2>
+
+Now for the meaty syscalls.  Some boilerplate first:
+
+<code>int write(int fd, const void *buf, size_t count);
+int read(int fd, void *buf, size_t count);
+</code>
+
+<pre><code>.global write
+write:
+	push {r7}
+	mov r7, #0x3
+	svc 0
+	bx lr
+.global read
+read:
+	push {r7}
+	mov r7, #0x4
+	svc 0
+	bx lr
+</code></pre>
+
+<pre><code>case 0x3: /* write */
+	_write(tasks[current_task], tasks, task_count, pipes);
+	break;
+case 0x4: /* read */
+	_read(tasks[current_task], tasks, task_count, pipes);
+	break;
+</code></pre>
+
+You'll note that I've placed the bodies of these syscalls off in their own functions.  That's partly because they're going to be much bigger than what we've seen before, but also because they actually need to be able to call each other.
+
+So, definition before use:
+
+<code>void _read(unsigned int *task, unsigned int **tasks, size_t task_count, struct pipe_ringbuffer *pipes);
+void _write(unsigned int *task, unsigned int **tasks, size_t task_count, struct pipe_ringbuffer *pipes);
+</code>
+
+These are a bit long and maybe non-obvious, so one piece at a time:
+
+<pre><code>void _read(unsigned int *task, unsigned int **tasks, size_t task_count, struct pipe_ringbuffer *pipes) {
+	task[-1] = TASK_READY;
+</code></pre>
+
+In case there's an error, make sure we don't stay blocked forever.
+
+<pre><code>/* If the fd is invalid, or trying to read too much  */
+	if(task[2+0] &gt; PIPE_LIMIT || task[2+2] &gt; PIPE_BUF) {
+		task[2+0] = -1;
+</code></pre>
+
+An out-of-range pipe index is obviously an error.  And the ringbuffers can't hold more than <q class="identifier">PIPE_BUF</q> bytes, so it's impossible to read more than that at once.
+
+<pre><code>
+	} else {
+		struct pipe_ringbuffer *pipe = &amp;pipes[task[2+0]];
+		if((size_t)PIPE_LEN(*pipe) &lt; task[2+2]) {
+			/* Trying to read more than there is: block */
+			task[-1] = TASK_WAIT_READ;
+</code></pre>
+
+Ah, our first actual blocking call!  We get the ringbuffer for the pipe that is being read from, and if it has less bytes in it than the task wants to read, set the task into the <q class="identifier">TASK_WAIT_READ</q> state.
+
+<pre><code>
+		} else {
+			size_t i;
+			char *buf = (char*)task[2+1];
+			/* Copy data into buf */
+			for(i = 0; i &lt; task[2+2]; i++) {
+				PIPE_POP(*pipe,buf[i]);
+			}
+</code></pre>
+
+We have a valid pipe with enough bytes in the buffer.  Pop each byte off into the <q class="identifier">read</q> buffer until we have read as many as were requested.
+
+<pre><code>
+			/* Unblock any waiting writes
+				XXX: nondeterministic unblock order
+			*/
+			for(i = 0; i &lt; task_count; i++) {
+				if(tasks[i][-1] == TASK_WAIT_WRITE) {
+					_write(tasks[i], tasks, task_count, pipes);
+				}
+			}
+		}
+	}
+}
+</code></pre>
+
+Loop over all the tasks, and any that were waiting to write, unblock them and try the write again.  This is somewhat inefficient, since only tasks that were waiting to write to the pipe we just read from have any chance at all of being able to succeed (all the other pipes are just as full as they used to be), but it works.
+
+<pre><code>
+void _write(unsigned int *task, unsigned int **tasks, size_t task_count, struct pipe_ringbuffer *pipes) {
+	/* If the fd is invalid or the write would be non-atomic */
+	if(task[2+0] &gt; PIPE_LIMIT || task[2+2] &gt; PIPE_BUF) {
+		task[2+0] = -1;
+</code></pre>
+
+Again, an out-of-range pipe index is obviously an error.  And because of the ringbuffers, you'll never be able to write more than <q class="identifier">PIPE_BUF</q> bytes into a pipe all at once.  We want our writes to be atomic (because we have preemptive multitasking going on), so trying to write more than <q class="identifier">PIPE_BUF</q> bytes needs to be an error as well.
+
+<pre><code>
+	} else {
+		struct pipe_ringbuffer *pipe = &amp;pipes[task[2+0]];
+
+		if((size_t)PIPE_BUF - PIPE_LEN(*pipe) &lt; 
+			task[2+2]) {
+			/* Trying to write more than we have space for: block */
+			task[-1] = TASK_WAIT_WRITE;
+</code></pre>
+
+If the write would put in more bytes than the pipe currently has space for, then block waiting for a read to make room for us.
+
+<pre><code>
+		} else {
+			size_t i;
+			const char *buf = (const char*)task[2+1];
+			/* Copy data into pipe */
+			for(i = 0; i &lt; task[2+2]; i++) {
+				PIPE_PUSH(*pipe,buf[i]);
+			}
+</code></pre>
+
+We have a valid write and there is enough space in the pipe.  Push all the bytes from the <q class="identfier">write</q> buffer into the pipe.
+
+<pre><code>
+			/* Unblock any waiting reads
+				XXX: nondeterministic unblock order
+			*/
+			for(i = 0; i &lt; task_count; i++) {
+				if(tasks[i][-1] == TASK_WAIT_READ) {
+					_read(tasks[i], tasks, task_count, pipes);
+				}
+			}
+		}
+	}
+}
+</code></pre>
+
+Same as before, this is inefficient.  Only tasks waiting to read from pipes we just wrote to are really interested in waking up.  But it doesn't take too long to check, and it's easier for now.
+
+Code for this section <a href="https://github.com/singpolyma/singpolyma-kernel/commit/f874dd26281601430bb08e3bf6853cade40f4ac1">on Github</a>.
+
+<h2>Pathserver</h2>
+
+So, we have working <q class="identifier">read</q> and <q class="identifier">write</q> calls now, but in order for processes to communicate they're going to need to agree on what pipe indices to use.  A parent process can get its child's PID (from <q class="identifier">fork</q>) and write to it that way, maybe, but that's not a generic solution.
+
+We're going to solve this problem by building a nameserver.  The names in question are going to be pseudo-filesystem "paths", so let's call it a pathserver.  We'll need some string functions:
+
+<pre><code>int strcmp(const char* a, const char* b) {
+	int r = 0;
+	while(!r &amp;&amp; *a &amp;&amp; *b) r = (*a++) - (*b++);
+	return (*a) - (*b);
+}
+
+size_t strlen(const char *s) {
+	size_t r = 0;
+	while(*s++) r++;
+	return r;
+}
+</code></pre>
+
+And since everything is static sized for us, how long can a path be?
+
+<code>#define PATH_MAX   255 /* Longest absolute path */</code>
+
+Oh, and we need a way to determine what the pipe index of the pathserver itself is.  Otherwise this whole concept is a nonstarter.
+
+<code>#define PATHSERVER_FD (TASK_LIMIT+3) /* File descriptor of pipe to pathserver */</code>
+
+We said we're reserving one pipe for each task for replies, and let's also reserve 0-2, since those file descriptor numbers are usually "magic" and we don't want to have any mix-ups until we get real FD tables in place later.  The pathserver will manage all other pipes, so it can assign itself the first one.  Now we have a constant that tells us the pipe index of the pathserver.
+
+We can use this information to define a protocol and pseudo-syscall for registering a new path:
+
+<pre><code>int mkfifo(const char *pathname, int mode) {
+	size_t plen = strlen(pathname)+1;
+	char buf[4+4+PATH_MAX];
+	(void)mode;
+
+	*((unsigned int*)buf) = 0;
+	*((unsigned int*)(buf+4)) = plen;
+	memcpy(buf+4+4, pathname, plen);
+	write(PATHSERVER_FD, buf, 4+4+plen);
+
+	/* XXX: no error handling */
+	return 0;
+}
+</code></pre>
+
+Notice I said pseudo-syscall.  It may act sort of like a syscall, but in fact it is built entirely based on primitives we already have!  This is one of the huge benefits of a microkernel: once you get your basic functionality in place, most things can be built on top of what you already have, as wrappers.
+
+The protocol here is a zero, followed by the length of the path we're registering, followed by the characters of that path.  Pretty simple.  There's no way for the pathserver to signal an error to us, because we don't wait for a reply, but unless there are no more pipes this can't fail, so we'll just leave it for now.
+
+<pre><code>int open(const char *pathname, int flags) {
+	unsigned int replyfd = getpid() + 3;
+	size_t plen = strlen(pathname)+1;
+	unsigned int fd = -1;
+	char buf[4+4+PATH_MAX];
+	(void)flags;
+
+	*((unsigned int*)buf) = replyfd;
+	*((unsigned int*)(buf+4)) = plen;
+	memcpy(buf+4+4, pathname, plen);
+	write(PATHSERVER_FD, buf, 4+4+plen);
+	read(replyfd, &amp;fd, 4);
+
+	return fd;
+}
+</code></pre>
+
+The protocol here looks the same as before, only instead of 0 as the first word, we send our reserved pipe.  That's our PID, moved ahead by the three we're reserving.  Conveniently, this means no valid <q class="identifier">replyfd</q> will ever be 0, so we can differentiate between <q class="identifier">mkfifo</q> and <q class="identifier">open</q>.
+
+Now for the pathserver itself, piece by piece.
+
+<pre><code>void pathserver(void) {
+	char paths[PIPE_LIMIT - TASK_LIMIT - 3][PATH_MAX];
+	int npaths = 0;
+	int i = 0;
+	unsigned int plen = 0;
+	unsigned int replyfd = 0;
+	char path[PATH_MAX];
+
+	memcpy(paths[npaths++], "/sys/pathserver", sizeof("/sys/pathserver"));
+</code></pre>
+
+Need to store the paths of the pipes.  We'll just use an array and a linear lookup for now.  We also register the first pipe as being the pathserver.
+
+<pre><code>
+	while(1) {
+		read(PATHSERVER_FD, &amp;replyfd, 4);
+		read(PATHSERVER_FD, &amp;plen, 4);
+		read(PATHSERVER_FD, path, plen);
+</code></pre>
+
+Loop forever, reading the three pieces of data out of our pipe.  Recall that we wrote all of this data with a single <q class="identifier">write</q> call.  That's important because we need all these bytes together, so the writes must be atomic.  Once we're reading, however, the bytes are already in a deterministic order, so we can read them out in pieces.  This is especially good, because we wrote the length of the message as part of the message!  So we certainly need to be able to read one piece at a time.
+
+<pre><code>
+		if(!replyfd) { /* mkfifo */
+			memcpy(paths[npaths++], path, plen);
+</code></pre>
+
+Registering a new path is super easy.  Should probably check for out-of-bounds here, but this works for now.
+
+<pre><code>
+		} else { /* open */
+			/* Search for path */
+			for(i = 0; i &lt; npaths; i++) {
+				if(*paths[i] &amp;&amp; strcmp(path, paths[i]) == 0) {
+					i += 3; /* 0-2 are reserved */
+					i += TASK_LIMIT; /* FDs reserved for tasks */
+					write(replyfd, &amp;i, 4);
+					i = 0;
+					break;
+				}
+			}
+</code></pre>
+
+Linear search for the path.  If we find it, adjust the index by the reserved indices and write the reply.  We ignore empty paths, to allow us the possibility of pipes without names that the pathserver knows about, but you can't usefully search for.  Notice also that we set i back to zero after writing a reply, because:
+
+<pre><code>
+			if(i &gt;= npaths) {
+				i = -1; /* Error: not found */
+				write(replyfd, &amp;i, 4);
+			}
+		}
+	}
+}
+</code></pre>
+
+If we shoot off the end, then <code>i &gt;= npaths</code>, in which case we didn't find it.  Well, don't let the caller just block forever waiting for a reply that's not coming!  Send them -1.
+
+Now we'll just tie this all together with some tasks that use this new functionality:
+
+<pre><code>#define TASK_LIMIT 3
+
+void otherguy() {
+	int fd;
+	unsigned int len;
+	char buf[20];
+	mkfifo("/proc/0", 0);
+	fd = open("/proc/0", 0);
+	while(1) {
+		read(fd, &amp;len, 4);
+		read(fd, buf, len);
+		bwputs(buf);
+	}
+}
+
+void first(void) {
+	int fd;
+
+	if(!fork()) pathserver();
+	if(!fork()) otherguy();
+
+	fd = open("/proc/0", 0);
+	while(1) {
+		int len = sizeof("Ping\n");
+		char buf[sizeof("Ping\n")+4];
+		memcpy(buf, &amp;len, 4);
+		memcpy(buf+4, "Ping\n", len);
+		write(fd, buf, len+4);
+	}
+}
+</code></pre>
+
+We spin up the pathserver and the otherguy.  The otherguy just waits for incoming strings (19 characters max, but it's just a demo) and prints any that come in.  Then, our first task run in a loop forever sending Ping to the otherguy, and they get printed.
+
+We just built a rudimentary serial port driver!  It's not using interrupts properly yet, but at least strings send to the otherguy are printed atomically, because the otherguy "owns" the serial port and we don't have all the tasks preempting each other in the middle of a write.
+
+Code for this section <a href="https://github.com/singpolyma/singpolyma-kernel/commit/c76d4dbec0a0ec448a126a9c9032cebbeceb985e">on Github</a>.
+
+<h2>We're done!</h2>
+
+We now have all the machinery we need in order to send messages between processes.  Next time, we'll look at using all of this to build a more fully-functional serial port driver.
+
+The code so far is <a href="https://github.com/singpolyma/singpolyma-kernel/tree/c76d4dbec0a0ec448a126a9c9032cebbeceb985e">on Github</a>.

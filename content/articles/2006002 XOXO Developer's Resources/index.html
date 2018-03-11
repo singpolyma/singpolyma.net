@@ -1,0 +1,20 @@
+---
+title: XOXO Developer's Resources
+date: 2006-01-02 09:33:00 Z
+tags: ["XOXOBlog","XOXO","Development","Apis"]
+wordpress_path: /actionstream/xoxo-developers-resources
+---
+This is a collection of code resources and APIs for developers looking to work with XOXO in their scripts/applications.  There isn't much here yet, but the list will grow over time.
+
+<b>PHP</b>
+On some of these, the comments may state that attributes of the first node are considered to be metadata for the entire outline.  This is actually up to the developer and the format of XOXO being parsed as there is nothing in the code to facilitate/enforce it.
+<ul><li><a href="http://boxtheweb.mihopa.net/code/apis/#outlineclasses">Outline Classes</a> [<a href="http://www.gnu.org/copyleft/gpl.html">GPL</a>] -- A set of PHP4 <span style="font-style: italic;">and</span> PHP5 comatible classes for both parseing and creating outline data, including XOXO, OPML, hAtom, JSON, and arbitrary XML.
+</li></ul><span style="font-weight: bold;">The following, deprecated APIs, have been replaced by the Outline Classes</span>
+<ul><li><a href="http://boxtheweb.mihopa.net/code/apis/xoxo2array.php.txt">xoxo2array</a> [<a href="http://www.gnu.org/copyleft/gpl.html">GPL</a>] -- pass in any string containing XOXO data and it will return a nested array of the results.  String indexes are considered attributes, numeric indexes are subnodes.
+</li><li><a href="http://boxtheweb.mihopa.net/code/apis/array2xoxo.php.txt">array2xoxo</a> [<a href="http://www.gnu.org/copyleft/gpl.html">GPL</a>] -- takes an array of the type returned by xoxo2array and returns an XOXO string of the data.  It will also work with simple arrays.</li><li>There are also <a href="http://www.awriterz.org/etcetc/boxtheweb/code/apis/">other APIs</a> for working with this array type (for conversion purposes, etc)</li></ul>
+
+<b>Python</b>
+<ul><li><a href="http://microformats.org/wiki/xoxo-sample-code#xoxo.py">xoxo.py</a> [<a href="http://creativecommons.org/licenses/by/2.0/">CC-by-2.0</a>, <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache 2.0</a>] -- contains functions for reading and writing XOXO data</li></ul>
+<b>Java</b>
+<ul><li><a href="http://microformats.org/wiki/xoxo-sample-code#XOXOWriter.java">XOXOWriter.java</a> [<a href="http://www.apache.org/licenses/LICENSE-2.0">Apache 2.0</a>] -- Contains two (overloaded) functions, makeXOXO and toXOXO, that create XOXO data from Lists and create XOXO documents from XOXO data, respectively</li><li><a href="http://microformats.org/wiki/xoxo-sample-code#XOXOParser.java">XOXOParser.java</a> [<a href="http://www.apache.org/licenses/LICENSE-2.0">Apache 2.0</a>] -- Contains a class definition for objects that parse XOXO data into themselves</li></ul>
+<div class="tags">Tags:<ul><li><a href="http://del.icio.us/xoxo.blog/development" rel="tag">development</a></li> <li><a href="http://del.icio.us/xoxo.blog/apis" rel="tag">apis</a></li> <li><a href="http://del.icio.us/xoxo.blog/xoxo" rel="tag">xoxo</a></li> </ul></div>

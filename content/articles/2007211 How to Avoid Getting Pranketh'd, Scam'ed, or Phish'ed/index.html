@@ -1,0 +1,70 @@
+---
+title: How to Avoid Getting Pranketh'd, Scam'ed, or Phish'ed
+date: 2007-07-30 20:43:00 Z
+tags: ["Tech","Communications","Pranketh","SPAM","Email"]
+wordpress_path: /actionstream/how-to-avoid-getting-prankethd-scamed-or-phished
+---
+This is a repost of the <a href="http://pranketh.com/avoid/">Pranketh avoid article</a>.
+<h2 id="problem">The Problem</h2>
+If Pranketh's existence proves anything, it is that email is not the safest medium around. It has always been relatively easy to send an email that says it came from someone it did not, similar to the way one can write any return address on an envelope when sending a letter.  So, now that Pranketh has made this problem very obvious, how can one determine if an email is what we call '<a href="http://en.wikipedia.org/wiki/E-mail_spoofing">spoofed</a>'?
+
+Some email providers and programs show warnings on messages that may be spoofed, but the problem is that detecting spoofing is more art than science.  A legitimate email may be spoofed (for example, if you write Pranketh and we write you back, we are actually writing you from our GMail accounts, but it will appear as though it came from Pranketh, which, in reality, it did) or a spoofed email may not be detected (because it also spoofs whatever the automatic detection system uses).
+<h2 id="headers">Message Headers</h2>
+First of all, you'll want to view what we call the 'message headers'.  Some of them (From, To, Subject) are always visible.  Depending on your program, different ones will usually be hidden.  The option to view them all may be called 'View Message Headers', 'All Message Headers', 'Original Message' or something similar.  Below are some screenshots for two popular email services (more will be added as time goes on) :
+
+<strong>View Headers in GMail</strong>
+<img src="http://pranketh.com/avoid/GMailHeaders.png" alt="GMail Screenshot [Show Original]" title="GMail Screenshot [Show Original]" />
+
+<strong>View Headers in Evolution</strong>
+<img src="http://pranketh.com/avoid/EvolutionHeaders.png" alt="Evolution Screenshot [All Message Headers]" title="Evolution Screenshot [All Message Headers]" />
+
+<strong>View Headers in Eudora</strong>
+<img src="http://pranketh.com/avoid/EudoraHeaders.png" alt="Eudora Screenshot [BlahBlahBlah]" title="Eudora Screenshot [BlahBlahBlah]" />
+
+<strong>View Headers in Outlook</strong>
+<img src="http://pranketh.com/avoid/OutlookHeaders1.png" alt="Outlook Screenshot [Options]" title="Outlook Screenshot [Options]" /> <img src="http://pranketh.com/avoid/OutlookHeaders2.png" alt="Outlook Screenshot [Headers]" title="Outlook Screenshot [Headers]" />
+
+<strong>View Headers in Outlook Express</strong>
+<img src="http://pranketh.com/avoid/OutlookExpressHeaders1.png" alt="Outlook Express Screenshot [Properties]" title="Outlook Express Screenshot [Properties]" /> <img src="http://pranketh.com/avoid/OutlookExpressHeaders2.png" alt="Outlook Express Screenshot [Headers]" title="Outlook Express Screenshot [Headers]" />
+
+Now that the headers are visible, there are a few key things to check for.  The first is a special header added by Pranketh to all emails it sends.  If this header is there, we can be sure the email was sent using Pranketh!  The line will likely be near the bottom and will look like this :
+
+<code>X-Joke: This email is not from whom it appears to be from.  It was sent from pranketh.com.</code>
+
+What if someone is spoofing you without using Pranketh?  Thankfully, there are other things you can check. You should see if there is a Return-Path header, similar to the following :
+
+<code>Return-Path: &lt;singpolyma@sunkist.dreamhost.com&gt;</code>
+
+The email-address-like part of that should be similar to who it says it is from (it does not have to be an exact match, but should be similar).  If it is not similar at all (i.e., the above is on an email that says it is from bill@microsoft.com) then the email <em>may</em> be spoofed (see the next section for more on that 'may').
+
+Another header to check for is 'mailed-by'.  For example, if an email claims to be from a GMail address it may have a header like the following :
+
+<code>mailed-by: gmail.com</code>
+
+That's pretty simple.
+
+If none of the above is present, or if it all checks out, you may want to checked the 'Received' section. It will look something like the following :
+
+<code>Received: from smarty.dreamhost.com (d06184b1.dreamhost.com [208.97.132.177])
+by spaceymail-mx3.g.dreamhost.com (Postfix) with ESMTP id 8EF98188FC7
+for &lt;feedback@pranketh.com&gt;; Wed, 16 May 2007 16:29:36 -0700 (PDT)
+Received: from sunkist.dreamhost.com (sunkist.dreamhost.com [208.97.175.14])</code>
+
+by smarty.dreamhost.com (Postfix) with ESMTP id 7E510EE2C4
+for &lt;feedback@pranketh.com&gt;; Wed, 16 May 2007 16:29:36 -0700 (PDT)
+Received: by sunkist.dreamhost.com (Postfix, from userid 1429516)
+id 81E63402A3; Wed, 16 May 2007 16:29:36 -0700 (PDT)
+
+Notice how there are many references to dreamhost.com.  That is because this email was sent from an address that lives there (actually, it was sent by Pranketh).  A GMail email will have gmail.com, google.com, or googlemail.com there instead.  A Hotmail email should have hotmail.com, etc.
+<h2 id="maybe">Maybe Spoofed</h2>
+Why in the above paragraphs did we say that if any of that was true the email 'may' be spoofed?  Well, remember, detecting spoofing is more art than science.  My email addresses all live on dreamhost.com and I send most of my email through GMail, but my email addresses are all at singpolyma.net.  So how can you tell the difference between an email that's spoofed on purpose by the person that owns it, or an email that is not from who it says it is?  The best way is to check emails that you <em>know</em> are really from them.  If they are spoofed in a similar way, then the email is likely legit.  If they do not normally spoof their emails, or if the spoofing looks a lot different than normal, be very suspicious.
+
+If you are not sure an email is really from someone, write them and ask if they sent it.  That way, you can be absolutely sure.
+<h2 id="spread">Spread the Word</h2>
+A lot of people trust email every day.  It is our responsibility as people who know how to detect spoofing to spread the word.  Link to this article, post it on your site, email it to friends, review it, translate it, anything that you think will get the word out faster!
+
+We only ask that you give us credit and link back to this page according to the terms of a
+<a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license">Creative Commons Attribution-ShareAlike license</a>.
+
+<p style="text-align: center"><!-- Creative Commons License --><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license"><img src="88x31.png" style="border-width: 0px" alt="Creative Commons License" class="cc-button" /></a>
+</p><p class="cc-info"><span><span id="work_title">How to Avoid Getting Pranketh'd, Scam'ed, or Phish'ed</span> by <a href="http://pranketh.com/avoid/" title="How to Avoid Getting Pranketh'd, Scam'ed, or Phish'ed" rel="cc:attributionURL bookmark">Pranketh</a> is licensed under a <a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license">Creative Commons Attribution-ShareAlike 3.0 License</a>. </span></p>

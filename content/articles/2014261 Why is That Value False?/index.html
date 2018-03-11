@@ -1,0 +1,148 @@
+---
+title: Why is That Value False?
+date: 2014-09-18 15:53:30 Z
+tags: ["Tech","Ruby"]
+wordpress_path: /actionstream/why-is-that-value-false
+---
+This post is a response to <a href="http://devblog.avdi.org/2014/09/17/boolean-externalities/" class="u-in-reply-to" rel="in-reply-to" rev="reply">Boolean Externalities</a>, so you should probably read that first.
+
+The core of this problem is a lack of combinators.  In order to propogate the reason why something is falsy, you need to add a lot of logic to each method, which noises up the code considerably.
+
+So we start with a pseudo-falsy base class for all our possible "reasons":
+
+<pre><code>class WhyFalsy
+	# This is so you can convert to bool with !!
+	def !@
+		true
+	end
+
+	def blank?
+		true
+	end
+end
+</code></pre>
+
+Now we can make objects that represent particular reasons, like:
+
+<code>class NoConfirmedAt &lt; WhyFalsy; end</code>
+
+And use them in conditionals with only a little syntax pain:
+
+<code>!!NoConfirmedAt.new ? "confirmed at" : "not"</code>
+
+Now that we have these objects, we can create methods that let us combine them without throwing away the information we care about:
+
+<pre><code>class WhyFalsy
+	def or
+		yield
+	end
+
+	def and
+		self
+	end
+end
+
+class Object
+	def or
+		self
+	end
+
+	def and
+		yield
+	end
+end
+
+class FalseClass
+	def or
+		yield
+	end
+
+	def and
+		self
+	end
+end
+
+class NilClass
+	def or
+		yield
+	end
+
+	def and
+		self
+	end
+end
+</code></pre>
+
+The normal <code>&amp;&amp;</code> and <code>||</code> operators cannot be overloaded, so we define our own very similar methods, which allow us to write code like this:
+
+<pre><code>def fully_authenticated?
+	authenticated_accounts?.and { verified_email? }
+end
+</code></pre>
+
+Where any pseudo-falsy reason value we bubble up will be treated the same as the actual false or nil, and any other value will be treated truthily, same as before.
+
+What if we want to wrap the result of some existing API (or DB column) in a reason?  That's a pretty easy smart constructor:
+
+<pre><code>class WhyFalsy
+	def self.wrap(x)
+		# The !! makes fake-falsy values (like us) work
+		!!x ? x : self.new
+	end
+end
+</code></pre>
+
+Now we can easily wrap any existing API:
+
+<code>NotFree.wrap(free?)</code>
+
+Developers are lazy, and especially if they're just using this in debugging they just want to use English text, like so:
+
+<pre><code>class WhyFalsy
+	attr_reader :msg
+
+	def initialize(msg=nil)
+		@msg = msg
+	end
+end
+</code></pre>
+
+And while all these ways to know why something is falsy are nice, it would be even nicer if we could know *where* the falsy value came from:
+
+<pre><code>class WhyFalsy
+	attr_reader :msg, :backtrace
+
+	def initialize(msg=nil)
+		@msg = msg
+
+		# Hack to get a backtrace
+		begin
+			raise
+		rescue Exception
+			@backtrace = $!.backtrace
+			@backtrace.shift # Remove the reference to initialize
+		end
+	end
+end
+</code></pre>
+
+And there you have it, a complete, workable solution for propogating the information we care about all the way up to our call site.
+
+Haskellers might recognize that this is basically a very-Rubyified encoding of the following:
+
+<pre><code>import Control.Applicative
+import Data.Monoid
+
+instance (Monoid r) =&gt; (Either r) where
+	empty = Left empty
+	Left _  x = x
+	     x  _  = x
+
+wrap True _    = Right ()
+wrap False msg = Left msg
+
+fully_authenticated = authenticated_accounts *&gt; verified_email
+available_to_user = free  (current_subscriber user)
+|&gt;|&gt;|&gt;</code></pre>
+
+<a href="https://gist.github.com/singpolyma/1bf25a1a995d000c1270">The full code from this post is available as a gist.</a>

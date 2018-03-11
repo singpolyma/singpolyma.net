@@ -1,0 +1,15 @@
+---
+title: Comment Aggregation
+date: 2006-01-20 12:46:00 Z
+tags: ["Tech","Comments","Aggregation"]
+wordpress_path: /actionstream/comment-aggregation
+---
+There has been <a href="http://blogfresh.blogspot.com/2005/12/tracking-whole-conversation.html">much discussion</a> recently about comment syndication.  I have made some of my own contributions to this, including <a href="http://comment.ning.com/">Commentosphere</a> and <a href="http://bloggercomments.ning.com/">Blogger Recent Comments</a>. While all of this is good and useful in its own way, syndication is useless without aggregation.
+
+Currently, to track comments for interesting discussion / replies to your own you must subscribe to many comments feeds from different blogs and posts.  This will quickly clutter your feedreader even if you only subscribe to the ones that are most important.  Something that can help this, at least a little, is combining the feeds together into one megafeed, using something like <a href="http://feedshake.com/">feedshake</a> or the Commentosphere Aggregator (see <a href="http://comment.ning.com/aggregate.php?user=singpolyma">my aggregator</a> for an example).  While this works to some degree, it is ultimately unsatisfactory.
+
+So here's the idea -- have feed readers aggregate comments alongside the post.  A post then appears unread if it has unread comments as well as if it is itself unread.  The new comments are highlighted on viewing the feed and marked unread.  Another possibility would be to have a little 'comments' icon next to the post title that shows if there are no comments, new comments, or all read comments on a post.  Clicking the icon would bring up the comments for that post (likely within the aggragator, not just a link to the #comments or anything like that).
+
+This whole idea does, of course, assume that the aggregator can get to the comments somehow.  There needs to be some way to take the link URL (usually to the post page) and get the comments feed URL for that post.  (Assuming there is one.  If there isn't, that's in the realm of syndication, not aggregation.)  To facilitate this, I am proposing a simple piece of standard markup.  Most blogs that have comments feeds for every post have a link to that feed somewhere on the post page.  If we made it standard protocol to set rel="alternate comments" (obviously, just like with relTag, you can have other things in the rel-list as well, but require both of these) for these links, the aggregators could pull them out of the page and get the appropriate URL.  The aggregator could then get the comments feeds and use them to produce the features outlined above. 
+
+<div class="tags">Tags:<ul><li><a href="http://del.icio.us/singpolyma.techblog/comments" rel="tag">comments</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/aggregation" rel="tag">aggregation</a></li> </ul></div>

@@ -1,0 +1,21 @@
+---
+title: Delegating to Multiple OpenIDs
+date: 2009-03-21 16:41:24 Z
+tags: ["Tech","Openid"]
+wordpress_path: /actionstream/delegating-to-multiple-openids
+---
+The current OpenID delegation model is great.  One adds some simple discovery code to one's homepage and <strong>poof!</strong> you have an easy to remember OpenID that remains the same even if one changes providers.  That's all great, and I've been using it almost since OpenID came out.
+
+<strong>But I think we can do even better.</strong>
+
+When I'm at home on my own computer I like to use myopenid.com.  Among other things, it lets me sign in with a client-side TLS certificate, which is much more secure than a password.
+
+When I'm at school in the labs, I don't want to install a certificate there. Nor do I want to use a password by itself.  Myopenid.com no longer provides the best featureset for what I would like to do, but rather the OpenID-Jabber bridge at http://myid.asemantics.com is likely much closer.
+
+So one solution is to add both OpenIDs to services I use, and then I can use the URL for the one I want, when I want.  The problem with this solution is (1) the abstraction is horrible, and all the benefits of delegation go away (2) not all services I use let me associate multiple OpenIDs (I'm looking at you, <a href="http://postrank.com">PostRank</a>).
+
+<strong>So how do we solve this?</strong>
+
+I would love to add the delegation discovery information for <strong>both</strong> providers to my homepage.  Then, when logging in, the RP gets the list of providers I use, and presents me with a menu asking which one I prefer.  Providers not yet upgraded to have this new functionality would just keep using the first one they found, so it degrades quite gracefully.
+
+I'm very interested to see feedback from the community on this idea.  Post comments below, or tweet @singpolyma :)

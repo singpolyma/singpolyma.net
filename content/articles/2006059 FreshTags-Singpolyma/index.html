@@ -1,0 +1,66 @@
+---
+title: FreshTags-Singpolyma
+date: 2006-02-28 11:46:00 Z
+tags: ["Tech","Blogger","Hack","Hacks","Freshtags"]
+wordpress_path: /actionstream/freshtags-singpolyma
+---
+<b title="Updated 2006-09-14">This post has been 'deprecated'.  Please see <a href="http://singpolyma-tech.blogspot.com/2006/09/freshtags-singpolyma-2.html">FreshTags-Singpolyma 2</a></b>
+
+I have for some time had <a href="http://singpolyma-tech.blogspot.com/2005/11/in-blog-tag-viewing.html">my own version</a> of the <a href="http://ghill.customer.netspace.net.au/freshtags/index.html">FreshTags</a> system.  In the past, all upgrades to this version have been seamless to the user, but this time the changes were too radical to allow that to work.  I have rewritten the entire hack based off of the <a href="http://blogfresh.blogspot.com/2006/01/freshtags-v-05.html">FreshTags v0.5</a> code.  The major changes from FreshTags 0.5 are:
+<ul><li>Hidden post page is used for displaying tags, instead of reloading the current page and displaying in the sidebar (the primary purpose of the original modifications)</li><li>Completely asynchronous data load -- FreshTags no longer loads before the page content, but rather loads afterwards, resulting in a faster page load time</li><li>If no tag is selected one can be automatically pulled from relTag data on the page</li><li>Full support for peek-a-boo headlines in blogrolls</li></ul>Please Note : If you are upgrading from my previous hack, you will need to remove all of its code from your template before upgrading.  You will also have to edit the Tags post.
+
+<b>Basic Installation Instructions</b>
+<ol><li>Create a new post on the blog you would like to implement this hack on with the title 'Tags' and click the 'Edit Html' tab for the post body, pasting the exact code '&lt;div id="freshtags_postpage"&gt;&lt;i&gt;Loading...&lt;/i&gt;&lt;/div&gt;' into the post body. Turn comments off for the post and set the post date to January 1, 2000. The time doesn't matter. Post this post.  (If you are upgrading from the previous version, just edit the post to contain the new code.)</li><li>Edit the template for your blog and insert this code into the &lt;head&gt; section:
+<div style="font-family: monospace;">
+&lt;script type="text/javascript"&gt;
+//&lt;![CDATA[
+var del_user = "<span style="color: rgb(255, 0, 0);">delicious username</span>";
+var anchor = "<span style="color: rgb(255, 0, 0);">anchor tag</span>";
+var defs = "";
+var maxposts = 10;
+var freshtags_tags_id = "freshtags_tags";
+var freshtags_posts_id = "freshtags_posts";
+var freshtags_postpage_id = "freshtags_postpage";
+//]]&gt;
+&lt;/script&gt;
+&lt;script type="text/javascript" src="http://jscripts.ning.com/get.php?xn_auth=no&amp;amp;id=818185"&gt;&lt;/script&gt;
+</div>Where 'delicious username' is the del.icio.us username you store your blog data in and 'anchor tag' is the anchor tag you use (if you use one).  If you don't use an anchor tag, just replace the words 'anchor tag' with nothing.
+</li><li>Insert this code where you would like the tags drop-down to go:
+<div style="font-family: monospace;">
+&lt;div id="freshtags_tags"&gt;&lt;i&gt;Loading...&lt;/i&gt;&lt;/div&gt;
+&lt;div id="freshtags_posts"&gt;&lt;/div&gt;<span style="font-family:Georgia,serif;"></span></div></li><li><span style="font-family:Georgia,serif;">Save your template and republish your blog</span></li></ol>
+
+<b>Customisation Options</b>
+<ul><li>no_autocapture -- setting this variable to true will keep the script from attempting to grab relTag data from the page.  For example, to keep a Blogger blog using this script from grabbing relTag data when on the main page use <span style="font-family:monospace;">&lt;MainPage&gt;&lt;script type="text/javascript"&gt;var no_autocapture = true;&lt;/script&gt;&lt;/MainPage&gt;</span></li><li>defs -- setting this variable sets what tag(s) will be selected be default if the user has not selected any.  This will do nothing if no_autocapture is not set to true unless the autocapture failes.</li><li>maxposts -- the maximum number of posts to display in the sidebar</li><li>freshtags_tags_id -- the ID of the block to put the tags dropdown in</li><li>freshtags_posts_id -- the ID of the block to put the posts list</li><li>freshtags_postpage_id -- the ID of the block in the Tags post</li><li><b title="Update 2006-06-06">freshtags_tag_format -- the format for the tags list (default is 'drop-add').  For example, to use asynchronous post loading add this code to your template: &lt;script type="text/javascript"&gt;var freshtags_tag_format = "drop-add-async";&lt;/script&gt;</b>
+</li></ul>
+
+<b>Peek-A-Boo Blogroll Headlines</b>
+To add peek-a-boo headlines to your blogrolls follow the following steps:
+<ol><li>Add this code to the &lt;head&gt; section of your blog to facilitate the actual show/hide:
+<div style="font-family: monospace;">
+&lt;script type="text/javascript"&gt;
+//&lt;![CDATA[
+function toggleitem(postid,linkid,newtxt,displaytype) {
+if(!displaytype) {displaytype = 'block';}
+var whichpost = document.getElementById(postid);
+if (whichpost.style.display != "none") {
+whichpost.style.display = "none";
+} else {
+whichpost.style.display = displaytype;
+}
+if(linkid) {
+   var lnk = document.getElementById(linkid);
+   lnk.href = "javascript:toggleitem('"+postid+"','"+linkid+"','"+lnk.innerHTML+"');";
+   lnk.innerHTML = newtxt;
+}
+}
+//]]&gt;
+&lt;/script&gt;</div>
+</li><li>Add this code just after the blogroll link you want to add peek-a-boo headlines for (it's invisible defaultly, just the container for the headlines) '<span style="font-family:monospace;">&lt;div id="<span style="color:red;">blogname</span>headlines" style="display:none;"&gt;&lt;i&gt;Loading...&lt;/i&gt;&lt;/div&gt;</span>'</li> <li>If this blog stores post data in del.icio.us (they don't have to use FreshTags necessarily) add this code just before the blogroll link (it's the +/- link for showing/hiding the headlines):
+
+<span style="font-family:monospace;">&lt;a id="<span style="color:red;">blogname</span>link" href="javascript:toggleitem('<span style="color:red;">blogname</span>headlines','<span style="color:red;">blogname</span>link','-'); load_otherblog_titles('del.icio.us','<span style="color:red;">other blog's del.icio.us account username</span>','<span style="color:red;">other blog's anchor tag (if they use one)</span>','<span style="color:red;">URL to other blog's feed (optional)</span>','<span style="color:red;">blogname</span>headlines');"&gt;+&lt;/a&gt;</span>
+
+Otherwise add this code to use just their feed:
+
+<span style="font-family:monospace;">&lt;a id="<span style="color:red;">blogname</span>link" href="javascript:toggleitem('<span style="color:red;">blogname</span>headlines','<span style="color:red;">blogname</span>link','-'); load_otherblog_titles('feed','','','<span style="color:red;">URL to other blog's feed</span>','<span style="color:red;">blogname</span>headlines');"&gt;+&lt;/a&gt;</span></li></ol> 
+<div class="tags">Tags:<ul><li><a href="http://del.icio.us/singpolyma.techblog/freshtags" rel="tag">freshtags</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/blogger" rel="tag">blogger</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/hacks" rel="tag">hacks</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/hack" rel="tag">hack</a></li> </ul></div>

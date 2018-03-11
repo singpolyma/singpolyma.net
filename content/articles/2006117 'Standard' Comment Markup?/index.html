@@ -1,0 +1,133 @@
+---
+title: "'Standard' Comment Markup?"
+date: 2006-04-27 07:38:00 Z
+tags: ["Tech"]
+wordpress_path: /actionstream/standard-comment-markup
+---
+What would be the benefits of standardising our comment markup?  Well, that all depends on who you are.  With the advent of comment crawling services a standard markup would really help them do their job.  If your blogging platform offers no syndication options a standard comment markup could allow you to generate comment feeds yourself (using <a href="http://bloggercomments.ning.com/">Blogger Recent Comments</a> or similar).  A standard markup about which we can make certain assuptions would also help the less technically inclined with implementing comment-centric hacks.
+
+So, the natural first place to look is <a href="http://microformats.org">microformats.org</a>.  Nada, yet.  Falling back to my own <a href="http://blogxoxo.blogspot.com/">work with XOXO</a> I have encapsulated comments as part of the <a href="http://blogxoxo.blogspot.com/2006/01/xoxo-blog-format.html">XOXO Blog Format</a>.  Testing that with <a href="http://co.mments.com/">a comment crawler</a> I find that it recognises the data 'as is' just fine.  If you mix it with <a href="http://microformats.org/wiki/hatom">hAtom</a> it is recognised by Blogger Recent Comments (more on this in a later post).  It also provides many of the things we hackers like in comment hacks -- an item surrounding the whole comment and the comment text, and a way of identifying some of the meta-type links.
+
+Thus this proposed 'standard' is both based on microformats (<a href="http://microformats.org/wiki/xoxo">XOXO</a>) and fits the three major reasons we would even want any sort of structure to our comment markup.  The markup should be on the main page for crawlers et al, but need not be visible.  Now to how to add it to your blog.  Advanced users can probably figure it out from teh XOXO Blog Format, for others here are simple instructions for both Blogger and WordPress:
+
+<b>Blogger</b>
+Go to your blog template and find the section that begins with &lt;BlogItemComments&gt; and ends with &lt;/BlogItemComments&gt;.  Replace it with this code:
+<div style="font-family: monospace;">
+&lt;script type="text/javascript"&gt;
+//&lt;![CDATA[
+   posturl = "&lt;$BlogItemPermalinkUrl$&gt;";
+//]]&gt;
+&lt;/script&gt;
+
+      &lt;ul class="xoxo comments"&gt; 
+&lt;BlogItemComments&gt;
+         &lt;li id="c&lt;$BlogCommentNumber$&gt;" class="commentelem"&gt;Comment at &lt;a href="#c&lt;$BlogCommentNumber$&gt;" title="&lt;$BlogCommentNumber$&gt;0"&gt;&lt;$BlogCommentDateTime$&gt;&lt;/a&gt; by
+            &lt;$BlogCommentAuthor$&gt;
+&lt;a name="&lt;$BlogCommentNumber$&gt;"&gt; &lt;/a&gt;
+&lt;!-- JS HERE --&gt;
+            &lt;dl&gt;
+               &lt;dt class="body"&gt;body&lt;/dt&gt;
+                  &lt;dd class="body"&gt;&lt;$BlogCommentBody$&gt;&lt;/dd&gt;
+            &lt;/dl&gt;
+&lt;$BlogCommentDeleteIcon$&gt;
+&lt;br /&gt;
+         &lt;/li&gt;
+&lt;/BlogItemComments&gt;
+      &lt;/ul&gt;
+</div>
+If you are going to be visibly displaying comments on your main page it is reccomended you replace the &lt;!-- JS HERE --&gt;  in the above with:
+<div style="font-family: monospace;">
+&lt;script type="text/javascript"&gt;
+//&lt;![CDATA[
+  commentlink = xget('//li[@id="c&lt;$BlogCommentNumber$&gt;"]//a');
+  if(commentlink) {
+   fragment = commentlink.href.split('#')[1];
+   commentlink.href = posturl+'#'+fragment;
+  }//end if commentlink
+//]]&gt;
+&lt;/script&gt;
+</div>
+And add the following to your &lt;head&gt; section:
+<div style="font-family: monospace;">
+&lt;script type="text/javascript"&gt;
+//&lt;![CDATA[
+function xget(xpathSelector) {
+  var it = document.evaluate( xpathSelector, document, null,
+         XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
+  if(it.snapshotLength)
+    return it.snapshotItem(0);
+  return '';
+}//end function xget
+//]]&gt;
+&lt;/script&gt;
+</div>
+Now to style this to look like we are used to having comments look.  Skip past WordPress to Styling.
+
+<b>WordPress</b>
+To use this code on WordPress blogs, edit your theme and go to the 'comments.php' file.  Find the section that starts &lt;ol&gt; and ends &lt;/ol&gt;.  Replace it with:
+<div style="font-family: monospace;">
+   &lt;ol class="xoxo comments commentlist"&gt;
+
+   &lt;?php foreach ($comments as $comment) : ?&gt;
+
+      &lt;li class="commentelem &lt;?php echo $oddcomment; ?&gt;" id="comment-&lt;?php comment_ID() ?&gt;"&gt;
+         &lt;?php if ($comment-&gt;comment_approved == '0') : ?&gt;
+         &lt;em&gt;Your comment is awaiting moderation.&lt;/em&gt;
+         &lt;?php endif; ?&gt;
+         Comment at &lt;a href="&lt;?php the_permalink() ?&gt;#comment-&lt;?php comment_ID() ?&gt;" title="&lt;?php echo strtotime(get_comment_date().' '.get_comment_time()); ?&gt;"&gt;&lt;?php comment_date('F jS, Y') ?&gt;  &lt;?php comment_time() ?&gt;&lt;/a&gt;
+by &lt;?php comment_author_link() ?&gt;
+ &lt;br /&gt;&lt;?php edit_comment_link('e','',''); ?&gt;
+
+                        &lt;dl&gt;
+                           &lt;dt class="body"&gt;body&lt;/dt&gt;
+                              &lt;dd class="body"&gt;&lt;?php comment_text() ?&gt;&lt;/dd&gt;
+                        &lt;/dl&gt;
+
+      &lt;/li&gt;
+
+   &lt;?php /* Changes every other comment to a different class */ 
+      if ('alt' == $oddcomment) $oddcomment = '';
+      else $oddcomment = 'alt';
+   ?&gt;
+
+   &lt;?php endforeach; /* end for each comment */ ?&gt;
+
+   &lt;/ol&gt;
+</div>
+This code seems to work with the most common themes.  Now to styling so that we get back our old look:
+
+<b>Styling</b>
+Add this code to your &lt;head&gt; section:
+<div style="font-family: monospace;">
+&lt;style type="text/css"&gt;
+   .comments {
+      list-style-type: none;
+      margin-left: 0px;
+      margin-top: 0.5em;
+   }
+   .comments li {
+      display: block;
+      margin-left: 0px;
+      margin-bottom: 1em;
+   }
+   .comments dl {
+      display: inline;
+   }
+   .comments dd {
+      margin-left: 0px;
+   }
+   .comments dt {
+      display: none;
+   }
+   .comments dd.author {
+      display: inline;
+      font-size: 1em;
+   }
+   .comments dd.body {
+      display: block;
+      margin-top: 0.5em;
+   }
+&lt;/style&gt;
+</div>
+
+<div class="tags">Tags:<ul><li><a href="http://del.icio.us/singpolyma.techblog/comments" rel="tag">comments</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/aggregation" rel="tag">aggregation</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/markup" rel="tag">markup</a></li> </ul></div>

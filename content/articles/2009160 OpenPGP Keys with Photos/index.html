@@ -1,0 +1,21 @@
+---
+title: OpenPGP Keys with Photos
+date: 2009-06-09 20:27:52 Z
+tags: ["Tech","PGP","OpenPGP"]
+wordpress_path: /actionstream/openpgp-keys-with-photos
+---
+So, one of the things I decided to do with the <a href="http://singpolyma.net/RSAkeyAnnouncement">transition to my new PGP key</a> was add a small JPEG photo (my common avatar, which is indeed a photo of me) as a UID.  This is something OpenPGP keys have supported for some time, it doesn't add too much to the keysize (as long as you keep the photo small, which I did), it helps people to identify me, and ties the key more firmly to my IRL identity.
+
+I then discovered a problem: some old keyservers, like pgp.mit.edu, *will not* accept keys with photo UIDs.  It's not that they ignore the photo, it's that they simply refuse the key!
+
+So, with the help of <span class="vcard tag"><a class="url fn n" href="http://fifthhorseman.net/"><span class="given-name">Daniel</span> <span class="additional-name">Kahn</span> <span class="family-name">Gillmor</span></a></span>, I have discovered the strategy for uploading these keys to the old keyservers using the CLI interface to GnuPG (which is what I normally use for my OpenPGP stuff).
+
+<pre><kbd>cd /tmp/
+mkdir -m 0700 testring
+gpg --export <var>KEYID</var> | GNUPGHOME=/tmp/testring gpg --import
+GNUPGHOME=/tmp/testring gpg --edit-key <var>KEYID</var></kbd></pre>
+<p># Select the photo UID by typing it's number</p>
+<pre><kbd>deluid
+save</kbd>
+<kbd>GNUPGHOME=/tmp/testring gpg --keyserver pgp.mit.edu --send <var>KEYID</var>
+rm -rf /tmp/testring</kbd></pre>

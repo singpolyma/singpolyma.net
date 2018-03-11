@@ -1,0 +1,17 @@
+---
+title: FreshRolls (Wrinks)
+date: 2006-09-09 15:54:00 Z
+tags: ["Tech","Ning","Freshtags"]
+wordpress_path: /actionstream/freshrolls-wrinks
+---
+I have added a new feature to my <a href="http://wrinks.ning.com/">Wrinks</a> app.  In the spirit of <a href="http://ghill.customer.netspace.net.au/freshtags/">FreshTags</a> we have <a href="http://wrinks.ning.com/about.php#freshroll">FreshRolls</a>.
+
+If you go to a wrink page (for example, the <a href="http://wrinks.ning.com/wrink.php?id=1790699">Blogger Hacks Wrink</a>), you will note a third code option.  FreshRolls are currently only available in JavaScript (no PHP yet).  You can select what blog to exclude (or none), just as on the normal roll output, and whether this code is to be used in conjuction with ring code or not (more on that in a bit).  The code is then a simple JavaScript include, as with standard rolls, that you place where you want the FreshRoll to appear.
+
+FreshRolls attempt to detect tags and 'passed tags', just like FreshTags.  If it finds some, it will display only those blogs which match the tag(s) found, otherwise it will normally display the entire roll.  If, however, you told it you would be using it with a ring, it will not display a roll title and if no tags are detected will output none of the roll.
+
+What is this 'combo-mode' useful for?  Well, if you paste standard ring code followed directly by FreshRoll code set to 'combo-mode', if tags are detected the matching blogs will be displayed following the ring, otherwise you just see the ring.  I have set it up this way in my sidebar.  You can test it by appending ?tags=blogger to this page's URL and reloading.
+
+<span style="font-weight: bold;">Blogger BETA compatible</span> : Just create a new HTML/JavaScript widget on your BETA blog and cut-n-paste in the code(s) from Wrinks.
+
+<div class="tags">Tags:<ul><li><a href="http://del.icio.us/singpolyma.techblog/wrinks" rel="tag">wrinks</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/ning" rel="tag">ning</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/freshtags" rel="tag">freshtags</a></li> </ul></div>

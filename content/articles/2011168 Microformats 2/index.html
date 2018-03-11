@@ -1,0 +1,23 @@
+---
+title: Microformats 2
+date: 2011-06-17 18:04:03 Z
+tags: ["Tech","Microformats"]
+wordpress_path: /actionstream/microformats-2
+---
+<p>This is both a summary of, and an expansion on, discussions with <span class="vcard"><a class="fn url" href="http://http://tantek.com/">Tantek Çelik</a></span> and <span class="vcard"><a class="fn url" href="http://kevinmarks.com/">Kevin Marks</a></span> at <span class="vevent"><a class="summary url" href="http://plancast.com/p/5vhq/pub-standards-lxvii">PubStandards LXVII</a></span> about <a href="http://microformats.org/wiki/microformats-2">Microformats 2</a>.</p>
+
+<h2>The Positive</h2>
+
+<ul><li>Optimizations for root-class-only when it makes sense.  Some people really want this.  I don't care much either way, but it seems fine.</li><li>Flat sets of properties are how I actually store some microformats in practice.  Some things you want to be able to have more than one (like address), but it seems the plan is to make all such cases embedded microformats objects.  Seems fine.</li></ul>
+
+<h2>The Meh</h2>
+
+<del>Changing root class of hCard from vcard to hcard.  This seems like an unnecessary complexity and just adds yet another case to look for.  Still, whatever, not a big deal.  I'm not for it, though.</del> <ins>It seems this is actually not part of the proposal at all. It's just part of the thought that leads to h-</ins>
+
+<p>Changing all root class names to have an h- prefix is in basically the same boat.   h- is no better than just h or any existing names anyway, but other than making parsing a bit more complex and authoring a bit more ugly it's not a big deal.</p>
+
+<h2>The Regressions</h2>
+
+<ins>Update: After IMing with Tantek it seems that a lot of the syntax changes are rooted in the fact that, useful or not, many people want an RDFa/microdata (XML/RDF/JSON) -like generic syntax, but all the ones they are creating are too complicated for web designers (who don't want to use any attributes they are not already using) and so we need to create a syntax to do this, since people are going to do it anyway, and that syntax needs to be designer friendly, so that designers don't hate us.</ins>
+
+<ul><li>Simple "universal parsing" (ie: prefixes on class names).  Not useful (since universal parsing just gets you an internal representation that you later have to write specific code to understand the vocabulary for anyway.  Bad because it means microformats syntax would no longer be compatible with POSH (Plain Old Semantic HTML).  This is a serious regression.  I have always been a fan of the microformats "paving the cowpaths", that is, trying as much as possible to just converge the semantic efforts authors are trying anyway so that we all use the same vocabularies.</li><li>Typed class names.  Similar problem to the first point, but I wanted to call out types specifically as a problem.  The vocabulary specifies the type so this information is redundant.</li><li>An advantage is that authors can tell which classes are "from microformats".  This is only an advantage if you think of microformats as competing with microdata and similar: that is, encoding data in the page.  I've always seen microformats as just suggestions for what semantics you ought to use in knows cases when you would otherwise be making up your own markup.</li><li>Vendor extensions are also an import from the bad world of arbitrary metadata.</li></ul>

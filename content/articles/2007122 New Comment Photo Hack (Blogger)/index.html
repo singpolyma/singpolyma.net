@@ -1,0 +1,51 @@
+---
+title: New Comment Photo Hack (Blogger)
+date: 2007-05-02 21:21:10 Z
+tags: ["Tech","Comments","Blogger","Hack","Hacks","Comment"]
+wordpress_path: /actionstream/new-comment-photo-hack-blogger
+---
+<strong title="Title Updated 2007-05-09">By demand, I have added a maxheight option to this hack as well, it works the same way as maxwidth :)</strong>
+
+Some people have really liked my <a href="/2006/05/comment-photos-and-highlighting/">comment photos and highlighting hack</a>.  Many have hated it.  Especially since the move to the new Blogger, the hack is just unstable and difficult to implement or understand.  Even my own implementation (before the move) was doing odd things.
+
+So I decided that a complete rewrite was in order.  The old scripts are still intact, but this new hack uses none of the old code.  This hack does <em>only</em> comment author photos (highlighting is <a href="http://hackosphere.blogspot.com/2006/10/author-comment-highlighting-and.html">better handled other ways</a> in the new Blogger).
+
+This hack is 100% compatible with the newest version of my asynchronous peek-a-boo comments.
+
+Without further ado, the instructions:
+<ol>
+	<li>Go to 'Edit HTML' under Template and check the 'Expand Widget Templates' box.</li>
+	<li>Find the following code:
+<code>
+&lt;dl id='comments-block'&gt;
+&lt;b:loop values='data:post.comments' var='comment'&gt;
+</code>
+and insert the following code directly after it:
+<code>
+&lt;div style="clear:both"&gt;
+&lt;dt style="float:left;margin-right:5px;clear:both;" expr:id='"commentphoto" + data:comment.id'&gt;&lt;/dt&gt;
+&lt;script type="text/javascript"&gt;if(typeof(commentPhotoIds) == 'undefined') var commentPhotoIds = []; commentPhotoIds.push({'id':'commentphoto&lt;data:comment.id/&gt;', 'url':'&lt;data:comment.authorUrl/&gt;'});&lt;/script&gt;
+</code></li>
+	<li>If you go down a very small ways from where you were in the previous step you will see a <code>&lt;/dl&gt;</code>.  Directly before it insert the code: <code>&lt;/div&gt;</code></li>
+	<li>Directly before the <code>&lt;/body&gt;</code> code in your template add this code:
+<code>
+&lt;script type='text/javascript'&gt;
+//&lt;![CDATA[
+function commentPhotoDo() {
+var tag;
+for(var i in commentPhotoIds) {
+tag = document.createElement('script');
+tag.type = 'text/javascript';
+tag.src = 'http://scrape.singpolyma.net/avatar.php?maxwidth=70&amp;url='+encodeURIComponent(commentPhotoIds[i].url)+'&amp;id='+encodeURIComponent(commentPhotoIds[i].id)+'&amp;defaultimage='+encodeURIComponent('http://img139.imageshack.us/img139/1011/defaultavatarad7.png');
+document.body.appendChild(tag);
+}//end for var i in commentPhotoIds
+}//end function commentPhotoDo
+commentPhotoDo();
+//]]&gt;
+&lt;/script&gt;
+</code></li>
+	<li>Save your template</li>
+</ol>
+My fellow hackers will not like the way I did the second-to-last step.  I should be using window.onload.  I am not simply because in the tests I did on a certain much-hacked template, this worked and the other didn't.  I am not prepared to say why the other didn't, only that it didn't and that disturbed me.  So for this hack I'm doing it like this.  It works.
+
+This hack causes direct hits to my singpolyma.net hosting server every time a page loads.  If your blog gets a significant amount of viewers (&gt;300 subscribers or thereabouts) I would ask that you contact me before installing this hack so that we can work out whether it will be a bandwidth issue or not.  Thank you for understanding.

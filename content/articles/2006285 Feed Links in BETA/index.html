@@ -1,0 +1,26 @@
+---
+title: Feed Links in BETA
+date: 2006-10-12 20:43:00 Z
+tags: ["Tech"]
+wordpress_path: /actionstream/feed-links-in-beta
+---
+<b title="Update 2006-11-16">Please see <a href="http://singpolyma-tech.blogspot.com/2006/11/feed-links-widget.html">the new, easier hack</a> for this feature.</b>
+
+I love <a href="http://beta.blogger.com/">Blogger BETA</a>, but there are just some things about it that annoy me.  Duh.  That's why I'm a hacker.  One of these is that feed links are displayed at the bottom of the page instead of in my sidebar.  No longer.  Insert this code wherever you want the feed links to display and you'll have a feed links widget you can drag and drop in your template editor!
+<div style="font-family:monospace;">
+   &lt;b:widget id='FeedsWidget' locked='false' title='Feeds' type='Blog'&gt;
+      &lt;b:includable id='main'&gt;
+         &lt;h2 class='sidebar-title'&gt;Syndication&lt;/h2&gt;
+         &lt;b:if cond='data:feedLinks'&gt;
+            &lt;ul class='xoxo'&gt;
+            &lt;b:loop values='data:feedLinks' var='f'&gt;
+               &lt;li&gt;&lt;img src='http://photos1.blogger.com/blogger/6537/1341/1600/feed-icon-12x12.jpg' alt='' /&gt; &lt;a expr:href='data:f.url + "?alt=rss"' rel='alternate'&gt;&lt;data:f.name/&gt; Feed&lt;/a&gt;&lt;/li&gt;
+            &lt;/b:loop&gt;
+            &lt;/ul&gt;
+         &lt;/b:if&gt;
+      &lt;/b:includable&gt;
+   &lt;/b:widget&gt;
+</div>
+
+Coming soon for Blogger BETA: Comments on Main and Archive pages (peek-a-boo!) and a revised Singpolyma-Template.
+<div class="tags">Tags:<ul><li><a href="http://del.icio.us/singpolyma.techblog/blogger" rel="tag">blogger</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/beta" rel="tag">beta</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/template" rel="tag">template</a></li> <li><a href="http://del.icio.us/singpolyma.techblog/templates" rel="tag">templates</a></li> </ul></div>

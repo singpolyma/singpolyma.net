@@ -1,0 +1,138 @@
+---
+title: Haskell for Rubyists
+date: 2012-03-18 19:24:58 Z
+tags: ["Tech","Haskell"]
+wordpress_path: /actionstream/haskell-for-rubyists
+---
+In the last year I've been playing with a new language: <a href="http://haskell.org">Haskell</a>.  I have found it to be a very suitable second high-level language for me as a Rubyist, and in this post I will explain (with examples!) some of why I, as a Rubyist, love Haskell, and how you can use it to do awesome things.
+
+<h1>Why Another Language?</h1>
+
+One thing I wasn't sure about for a long time was if I even needed another language.  Obviously, being able to work in any environment you have thrown at you is an essential job skill, but I mean a language I chose for myself.  I am a Rubyist, do I need to be anything else?
+
+Well, while I love Ruby, there are a few reasons I eventually chose to go in search of a second language to call my own:
+
+<ol>
+<li><h2>Performance</h2> Ruby implementations are getting faster all the time, but we all know there are faster things out there.  It's the reason some things (like the JSON gem) have versions written in C.  I felt it would be nice for some tasks to get the performance boost that comes from an optimising compiler, without having to drop all the way to C.</li>
+<li><h2>Portability</h2> Yes, Ruby is super-portable… to systems that have a ruby implementation.  It's somewhat complex to just email arbitrary users a ruby script and hope they can use it without setup help.</li>
+<li><h2>Linking with native code</h2> Ruby extensions and FFIs exist so that we can call C code from Ruby.  What about calling Ruby code from C or another language?  It can be done, but only if most of MRI is linked in to the target and the Ruby is more-or-less "eval'd".</li>
+</ol>
+
+In case you haven't guessed, basically I wanted a nice high-level environment like Ruby, but with a native code output.
+
+<h1>Isn't Haskell Hard?</h1>
+
+No.  Or at least, not harder than any other language.  It is true that the Haskell community has a higher-than-average concentration of Ivory Tower Dwellers.  Yes, some of them have been in the Tower for so long that they have forgot how to write anything but symbols from higher-order logics.  Yes, the documentation for some really nice Haskell libraries and features are dense academic papers.  Don't let them scare you off.  There are humans in the community as well, and #haskell on freenode IRC has many of them.
+
+<h1>Type Inference</h1>
+
+One of the nice features of Ruby is the type system.  If you're used to un-inferred static typing (read: C) then the ability to write code like this:
+
+<code>def fun(a, b); (a + b) * 3; end</code>
+
+is liberating.  Haskell has a static type system, which means that you'll never have a program crash in production because you're passing in different data than you though, but only in a case your tests didn't catch.  Unlike C, however, Haskell's system is <em>strong</em> (which means that data is not magically cast for you, so you get stronger guarantees, just like how in Ruby we must write <code>1.to_s + "hello"</code> not <code>1 + "hello"</code>), but more importantly it is <em>inferred</em>, so the equivalent of the above in Haskell is:
+
+<code>fun a b = (a + b) * 3</code>
+
+You can add type annotations (like in C) if you want to, which sometimes helps for clarity, but you don't need to.
+
+The only limitation here is that data structures are mostly of a single type, for example in Ruby:
+
+<code>a = [1, "hello"]</code>
+
+is perfectly fine.  This is sometimes a good thing, and sometimes causes strange bugs.  In Haskell, this would be an error, so we need to define unions explicitly:
+
+<code>data StuffInMyList = I Integer | S String
+a = [I 1, S "hello"]</code>
+
+A small pain, but I feel it's a fine trade-off.
+
+<h1>Mixins</h1>
+
+The mixin module is one of the defining characteristics of Ruby.  Haskell has something similar, called Typeclasses, which form the foundation of polymorphism in the language.  In Ruby:
+
+<code>module Equality
+def equals?(b); self == b; end
+end
+
+class Thing
+include Equality
+end</code>
+
+In Haskell:
+
+<pre><code>class (Eq a) =&gt; Equality a where
+	isEqual :: a -&gt; a -&gt; Bool
+	isEqual x y = x == y
+
+data Thing = Thing deriving (Eq)
+
+instance Equality Thing
+</code></pre>
+
+This looks a bit different.  You'll note I had to give a type signature to the isEqual function.  This is one of the few places you have to, and it has to do with making the polymorphism we get with mixins a bit safer.  My Equality mixin has to be restricted to types from the Eq typeclass (because I use == on them), which is also true in Ruby except that in Ruby every single class has == defined.
+
+<h1>Significant Whitespace</h1>
+
+Haskell has significant whitespace.  If you're a Rubyist on the run from Python this may scare you, but there are two reasons this does not bother me.  First, the Haskell whitespace is much nicer than in Python, and the way code gets written in Haskell you rarely have the "where does this huge block end?" problem.  Second, the whitespace in Haskell is optional!  Here's that typeclass again, but without the whitespace use:
+
+<code>class (Eq a) =&gt; Equality a where { isEqual :: a -&gt; a -&gt; Bool; isEqual x y = x == y; }</code>
+
+Great!
+
+<h1>Let's see a real example!</h1>
+
+You may have heard that Haskell I/O is weird, and that Haskell has no access to mutation.  While Ruby code is often non-destructive in nature itself, access to mutation is sometimes handy.  Understanding <strong>why</strong> Haskell I/O is safe and such is not terrible, but it does take learning a new concept (called Monads, with roots in those academics, but there are good simple explanations out there without too much math, like in Learn You a Haskell (for Great Good), which I recommend), but doing simple I/O is actually not complicated.
+
+<code>main = do {
+	text &lt;- readFile "somefile.txt";
+	print $ length $ lines text;
+}</code>
+
+This is the Haskell code to read a text file, split it in to lines, count the number of lines, and print out that number.  Pretty simple!
+
+What about mutation?  Well, it is true that there are no globals in Haskell, but really, who uses globals?  If you really need mutation for something, the simplest way to make a reference is:
+
+<code>import Data.IORef
+
+main = do {
+	someRef &lt;- newIORef 1;
+	val &lt;- readIORef someRef;
+	print val;
+	writeIORef someRef 12;
+	val &lt;- readIORef someRef;
+	print val;
+}</code>
+
+Of course, if you want you could make this a bit less verbose:
+
+<code>import Data.IORef
+
+x := y = writeIORef x y
+new x = newIORef x
+get x = readIORef x
+
+main = do {
+	someRef &lt;- new 1;
+	val &lt;- get someRef;
+	print val;
+	someRef := 12;
+	val &lt;- get someRef;
+	print val;
+}</code>
+
+<h1>Many Libraries</h1>
+
+Haskell has a very active community that has produced many libraries covering all sorts of cases.  The main place to look for these is <a href="http://hackage.haskell.org">Hackage</a>.
+
+<h1>REPL</h1>
+
+Another thing that drew me to Ruby initially was irb.  The ability to just fire up a shell-like environment and enter expressions, and load in my code and play with it live, is a very nice thing.  There are several such environments for Haskell, the one that I prefer is GHCI, which also has commands to set breakpoints and such (which I have never needed) and to find out what the type of some expression is (very handy).
+
+<h1>Other Useful Bits</h1>
+
+There is a very useful tool for Haskell called <a href="http://community.haskell.org/~ndm/hlint/">hlint</a>, which analyses your code and make (sometimes surprisingly insightful) suggestions.  I don't always agree with it, but it is very nice.
+
+<a href="http://www.haskell.org/ghc/docs/latest/html/libraries/base/Debug-Trace.html">Debug.Trace</a> is a very useful library for printing out arbitrary values from anywhere in your code without otherwise affecting the behaviour of the code.  Very useful for debugging.
+
+If you want to learn more, I highly recommend <a href="http://learnyouahaskell.com/">Learn You a Haskell for Great Good</a>.

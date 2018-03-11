@@ -1,0 +1,48 @@
+---
+title: XOXO Blog Format
+date: 2006-01-03 09:18:00 Z
+tags: ["XOXOBlog","XOXO","Blog","Format"]
+wordpress_path: /actionstream/xoxo-blog-format
+---
+The purpose of this format is to define a standard way of marking up blogs with XOXO.  This is a derivation of, and not an actual part of, the <a href="http://microformats.org/wiki/xoxo">XOXO specification</a>.  This format is actually a hybrid format between XOXO and <a href="http://microformats.org/wiki/hatom">hAtom</a>.
+
+<b>Terms</b>
+<ul><li>A <b>reccomended</b> field is one that should be included in output meant to comply with this format</li><li>An <b>optional</b> field is one that does not need to be included</li><li><b>A-field</b>s are fields stored within the markup of the primary &lt;a&gt; tag in an XOXO element</li><li><b>Alternate-A field</b>s are one stored with second, third, etc &lt;a&gt; tags</li><li><b>DL-field</b>s are ones stored within the optional &lt;dl&gt; list</li></ul>Note that no fields will be marked as 'required'.  This is because, in full compliance with the XOXO specification, the only required field is 'TEXT' (the direct contents of the &lt;li&gt; or &lt;a&gt; tag).
+
+<b>Classes</b>
+This is a hybrid format between <a href="http://microformats.org/wiki/xoxo">XOXO</a> and <a href="http://microformats.org/wiki/hatom">hAtom</a> and parsers are expected to be able to read either 'half' of the format.  XOXO-only versions of this format should have the classes 'xoxo' and 'posts' on their root tag.  hAtom-only (or hAtom with extensions) versions should use the hAtom 'hfeed' class.  Data complying with both 'halves' of this format should have all three classes on the root.  Neither hAtom nor XOXO actually requires any classes at all on the root, but if no data is found with any combination of the classes specified here parsers are to treat the entire document as hAtom.  Then, if still no data is found, parsers should look for XOXO data that does not have the proper classes.
+
+<b>Meta Data</b>
+The first element will is considered by this format to be metadata for the entire section if rel=home.  This part of the format <span style="font-style: italic;">is not found in hAtom</span> and is only supported in XOXO-only or hybrid versions of this format.  The following fields are defined for metadata:
+<ul><li>TEXT -- blog title</li><li>TITLE -- blog description</li><li>HREF -- URL to blog main page</li><li>CLASS -- ID of blog</li><li>Alternate-a rel=alternate<ul><li>TEXT -- immaterial, just a label</li><li>HREF -- URL to blog feed</li></ul></li></ul>
+<b>Subnodes</b>
+Subnodes, as defined by this format, encapsulate the comments on a post.  Comment encapsulation <span style="font-style: italic;">is not supported by hAtom</span> but is considered by this format to be an extension thereof.  hAtom-only documents may be extended to encapsulate comments by outputting an XOXO section with the same fields specified for subnodes in this format in each hentry where there are comments.  This XOXO element <span style="font-style: italic;">must</span> have the classes 'xoxo' and 'comments'.
+
+<b>The TEXT Field</b>
+<ul><li>The TEXT field on elements stores the title of the post encapsulated by that section.</li><li>The TEXT field on subnodes is immaterial.
+</li></ul>
+<b>A-Fields</b>
+On elements:
+<ul><li>HREF (reccomended) -- this field stores the permalink URL to the post</li><li>TITLE (optional) -- this field stores the timestamp of the post (seconds or nanoseconds since the epoch)</li><li>REL -- should be set to 'bookmark', in keeping with hAtom</li><li>CLASS -- should be set to 'entry-title', in keeping with hAtom (<span style="font-style: italic;">Note:</span> if there are no A-fields, TEXT must be encapsulated in a tag and given the class 'entry-title' to maintain hAtom compatability)
+</li></ul>On subnodes:
+<ul><li>HREF (reccomended) -- this field stores the permalink URL to the comment.  If the field contents begin with '#' the parser is expected to resolve it based on the post URL.</li><li>TITLE (optional) -- this field stores the timestamp of the comment (seconds or nanoseconds since the epoch)</li></ul>
+
+<b>Alternate-A Fields</b>
+On elements:
+<ul><li>When rel=comments (reccomended) <span style="font-style: italic;">this is not supported by hAtom is is considered by this format to be an extension thereof.  To use this field in hAtom-only documents place a rel=comments link in the appropriate hentry elements.</span>
+<ul><li>TEXT -- number of comments on post (if non-numeric, assumed unknown)</li><li>HREF -- URL to comments on post
+</li></ul></li><li>When rel=author (optional, <span style="font-style: italic;">required by hAtom</span>)
+<ul><li>TEXT -- this field stores the name of the post author</li><li>HREF -- URL to post author's profile or home page</li></ul>To be compatible with hAtom, this link should be encapsulated in an 'address' tag with the classes 'author' and 'vcard'.  The link itself should have the classes 'url' and 'fn'.
+</li><li>When rel=archive (optional) <span style="font-style: italic;">the 'updated'-classed field is required by hAtom</span>
+<ul><li>TEXT -- <a href="http://microformats.org/wiki/datetime-design-pattern">datetime-design-pattern</a> datestamp for post</li><li>CLASS -- should be set to 'published' and 'updated' for compatability with hAtom
+</li><li>HREF -- URL to the archive the post is in
+</li></ul></li><li>When rel='alternate comments' (optional) <span style="font-style: italic;">this is not supported by hAtom is is considered by this format to be an extension thereof.  To use this field in hAtom-only documents place a rel='alternate comments' link in the appropriate hentry elements.</span><ul><li>TEXT -- immaterial, just a label</li><li>HREF -- URL to feed for comments on post
+</li></ul></li><li>When rel=external (optional)<span style="font-style: italic;"> this is not supported by hAtom and is considered a mostly unnecessary piece of information.  It is not supported as an extension and should only be used in XOXO-only or hybrid versions of this format.</span><ul><li>TEXT -- immaterial, just a label</li><li>HREF -- URL to external link for post</li></ul></li></ul>On subnodes:
+<ul><li>The first alternate-a tag is assumed to be data for the comment author (reccomended)<ul><li>TEXT -- author name / nickname</li><li>HREF -- author URL</li></ul></li></ul>
+<b>DL-Fields</b>
+On elements and subnodes:
+<ul><li>body (reccomended, <span style="font-style: italic;">required by hAtom</span>) -- the post/comment body
+To maintain hAtom compatability the post body dd tag should be given the class 'entry-content'
+</li></ul>Subnodes only:
+<ul><li>Author -- Author name.  Should only be set if the author has no URL and cannot be stored in the Alternate-A field.  However, if there is an 'a' tag in the value of this field it should be parsed, the HREF used for author URL and the TEXT used for author name.
+</li></ul> <div class="tags">Tags:<ul><li><a href="http://del.icio.us/xoxo.blog/format" rel="tag">format</a></li> <li><a href="http://del.icio.us/xoxo.blog/blog" rel="tag">blog</a></li> <li><a href="http://del.icio.us/xoxo.blog/xoxo" rel="tag">xoxo</a></li> </ul></div>

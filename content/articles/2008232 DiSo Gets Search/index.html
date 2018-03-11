@@ -1,0 +1,23 @@
+---
+title: DiSo Gets Search
+date: 2008-08-19 23:04:31 Z
+tags: ["Tech","Microformats","DiSo"]
+wordpress_path: /actionstream/diso-gets-search
+---
+<strong title="Update 2008-08-28"><span class="vcard"><a class="url fn" rel="muse contact" href="http://tantek.com">Tantek Çelik</a></span> has purchased <a href="http://socialsearchme.com/">socialsearchme.com</a> for this service! Thanks!</strong>
+
+Never tweet about something you don't want to go public.  I've been annoying my followers for some time now about <a href="http://scrape.singpolyma.net/profile/">my new social search engine</a>.  Tantek then linked to it from his WordCamp SanFrancisco <a href="http://tantek.com/presentations/2008/08/wordpress-microformats/">presentation</a>.  Not that I'm upset at all.  I'm ecstatic that he thought it was worth linking to!  Still, a word to the cautious ;)
+
+So how does this search engine work? What does it do? Basically, it's an hCard search engine.  Unlike the Yahoo or Technorati Kitchen implementations, however, this search is focused on social networking and profiles.  If DiSo were Facebook, this could be the friend search functionality.  So instead of having the results be links to pages that contain matching hCards, the results are profiles with social networking data (including contacts) and names, etc.
+
+One other key thing that is different here from pure hCard search is that I am only spidering representative hCards (with some small hacks for well-known sites like Twitter).  This means I don't spider arbitrary hCard data, instead I am only indexing profile pages.  I use both XFN parsing and the <a href="http://code.google.com/apis/socialgraph/">SGAPI</a> to verify claims that two pages represent the same person, and then associate them.  Data from both pages goes into the index as if it were all on one page.  Only one page needs an hCard, since connections are made through rel=me and XFN.  This way, although my profile is on my main page and my contacts are at singpolyma.net/contacts, the search engine <a href="http://scrape.singpolyma.net/profile/person.php?id=1">indexes them both</a>.
+
+To find new pages to index, I spider along XFN (and FOAF, since I also ask the SGAPI) to find pages likely to have the sort of data I'm looking for.  Interestingly enough, this means that social networks like Twitter, Pownce, and Digg, who support hCard <strong>and</strong> XFN, get almost completely indexed.  There are over 100000 profiles in the index now, and I have only given it one manually : singpolyma.net.
+
+I'm not entirely sure how the data will be useful yet, but I'm really excited about the possibilities.  I firmly believe in making XFN lists, static though they may be, come alive with potential through layers of functionality, be in through plugins, 3rd party services, or bookmarklets.
+
+Speaking of bookmarklets, <a href="http://scrape.singpolyma.net/profile/bookmarklet.html">I have one</a>.  Go to that page, add the bookmarklet, and visit my contacts page (or any other page with lots of XFN data).  Click it and watch that boring list of links and names turn into a more functional social-networking list.
+
+The code has been released under an MIT-style license <a href="http://svn.devjavu.com/singpolyma/trunk/buddydb/">on my repository</a>.  Front-end is PHP, back-end is Ruby.
+
+DiSo : on our way to fixing your addressbook ;)
