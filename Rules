@@ -4,7 +4,8 @@ preprocess do
 			'',
 			{
 				title: "Archive for #{year}",
-				posts: ->(ctx) { ctx.send(:by_year, :all_posts)[year] }
+				key: :by_year,
+				value: year,
 			},
 			"/#{year}.html"
 		)
@@ -15,7 +16,8 @@ preprocess do
 			'',
 			{
 				title: "Archive for ##{tag}",
-				posts: ->(ctx) { ctx.send(:by_tag, :all_posts)[tag] }
+				key: :by_tag,
+				value: tag,
 			},
 			"/tags/#{tag}.html"
 		)
