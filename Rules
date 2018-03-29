@@ -22,6 +22,15 @@ preprocess do
 			"/tags/#{tag}.html"
 		)
 	end
+
+	all_posts.each do |post|
+		@items.create(
+			@items['/avatar.jpg'].raw_filename,
+			{},
+			"#{Pathname.new(post.identifier).dirname}/avatar.jpg",
+			binary: true
+		)
+	end
 end
 
 compile '/{notes,articles}/**/*.html' do
