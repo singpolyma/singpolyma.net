@@ -128,35 +128,37 @@ body > div:last-of-type {
 	display: none;
 }
 
-ol.entries .hentry {
-	margin-bottom: 1em;
-
-	> .author {
-		display: none;
-	}
-
-	> .entry-content {
-		display: inline;
-	}
-
-	> .entry-content p {
-		display: inline;
-	}
-
-	> .entry-title {
-		display: inline;
-		font-weight: normal;
-		font-size: 1em;
-	}
-
-	> footer {
-		display: inline-block;
-		font-size: 0.7em;
-		margin-left: 2em;
-	}
-}
-
 ol.entries {
 	padding: 0;
 	list-style-type: none;
+
+	.hentry {
+		margin-bottom: 1em;
+
+		> .author {
+			display: none;
+		}
+
+		> .entry-content {
+			display: inline;
+		}
+	}
+
+	&:not(.articles) .hentry {
+		> .entry-title {
+			display: inline;
+			font-weight: normal;
+			font-size: 1em;
+		}
+
+		> .entry-content p {
+			display: inline;
+		}
+
+		> footer {
+			display: inline-block;
+			font-size: 0.7em;
+			margin-left: 2em;
+		}
+	}
 }

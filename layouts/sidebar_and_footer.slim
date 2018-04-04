@@ -15,8 +15,9 @@ nav
 		h1 Archives by Date
 
 		ol
-			- by_year(:all_posts).keys.each do |year|
-				li: a href="/#{year}/" #{year}
+			- posts = @item[:posts] || :all_posts
+			- by_year(posts).keys.each do |year|
+				li: a href="#{posts == :articles ? "/blog" : ""}/#{year}/" #{year}
 
 	p.copyright: small
 		' This content is under a

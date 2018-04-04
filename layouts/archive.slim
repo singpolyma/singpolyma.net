@@ -10,8 +10,10 @@ header#profile.vcard
 section
 	h1 = @item[:title]
 
-	ol.entries
-		- send(@item[:key], :all_posts)[@item[:value]].each do |post|
-			li == render "/feed_item.slim", item: post
+	ol.entries class="#{@item[:key]} #{@item[:posts]}"
+		- articles = @item[:posts] == :articles
+		- send(@item[:key], @item[:posts])[@item[:value]].each do |post|
+			li
+				== render "/feed_item.slim", item: post, full: articles, tag_prefix: articles ? "/blog" : ""
 
 == render "/sidebar_and_footer.slim"

@@ -9,17 +9,18 @@ article.hentry
 
 	- if @item[:title]
 		h1.entry-title: a rel="bookmark" href=@item.path = @item[:title]
-	- else
-		section.entry-content == @item.compiled_content
+
+	- if !@item[:title] || @full
+		section.entry-content == @item.compiled_content(rep: :feed)
 
 	footer
 		- if post_kind(@item) == :article
 			- (@item[:tags] || []).each do |tag|
 				| #
-				a> rel="tag" href="/tags/#{u Unicode::downcase(tag)}" = tag
+				a> rel="tag" href="#{@tag_prefix}/tags/#{u Unicode::downcase(tag)}" = tag
 
 		- if @item[:title]
-			time.published datetime=@item[:date].iso8601
+			time.published> datetime=@item[:date].iso8601
 				= @item[:date].jtime
 		- else
 			a> rel="bookmark" href=@item.path

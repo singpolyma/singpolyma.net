@@ -4,10 +4,24 @@ preprocess do
 			'',
 			{
 				title: "Archive for #{year}",
+				posts: :all_posts,
 				key: :by_year,
 				value: year,
 			},
 			"/#{year}.html"
+		)
+	end
+
+	by_year(:articles).keys.each do |year|
+		@items.create(
+			'',
+			{
+				title: "Archive for Articles in #{year}",
+				posts: :articles,
+				key: :by_year,
+				value: year,
+			},
+			"/blog/#{year}.html"
 		)
 	end
 
@@ -16,12 +30,37 @@ preprocess do
 			'',
 			{
 				title: "Archive for ##{tag}",
+				posts: :all_posts,
 				key: :by_tag,
 				value: tag,
 			},
 			"/tags/#{tag}.html"
 		)
 	end
+
+	by_tag(:articles).keys.each do |tag|
+		@items.create(
+			'',
+			{
+				title: "Archive for Articles in ##{tag}",
+				posts: :articles,
+				key: :by_tag,
+				value: tag,
+			},
+			"/blog/tags/#{tag}.html"
+		)
+	end
+
+	@items.create(
+		'',
+		{
+			title: "Blog Articles",
+			posts: :articles,
+			key: :posts,
+			value: 0..10,
+		},
+		"/blog.html"
+	)
 
 	all_posts.each do |post|
 		@items.create(
@@ -33,23 +72,18 @@ preprocess do
 	end
 end
 
-compile '/{notes,articles}/**/*.html' do
-	filter :erubis
-	filter :autop
-	filter :autolink
+compile '/{notes,articles}/**/*.{html,md}' do
+	compile_post
 	layout '/post.*'
 	filter :clean_indents
 end
 
-compile '/{notes,articles}/**/*.md' do
-	filter :erubis
-	filter :kramdown, auto_ids: false
-	filter :autolink
-	layout '/post.*'
-	filter :clean_indents
+compile '/{notes,articles}/**/*.{html,md}', rep: :feed do
+	compile_post
+	filter :absolutize
 end
 
-compile /\/(?:\d{4}.html)|tags\/.+/ do
+compile /^\/blog\.html$|\/(?:\d{4}.html)|tags\/.+/ do
 	layout '/archive.*'
 	layout '/default.*'
 	filter :clean_indents

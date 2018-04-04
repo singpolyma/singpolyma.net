@@ -28,24 +28,31 @@ Nanoc::Filter.define(:clean_indents) do |content, _params|
 	content.gsub(/^\s+$/, "\n").gsub(/^(\t*)(  )+/) { |match| $~[1] + "\t" * ($~.to_a.length - 2) }
 end
 
+def compile_post
+	filter :erubis
+	filter :autop if @item.identifier =~ /\.html$/
+	filter :kramdown, auto_ids: false if @item.identifier =~ /\.md$/
+	filter :autolink
+end
+
 $posts = {}
 def posts(*kinds)
-	patterns = "{#{kinds.join(",")}}"
+	patterns = "{#{kinds.map(&:to_s).join(",")}}"
 
 	$posts[[kinds, @items.first.class]] ||= @items.find_all("/#{patterns}/*/index.*")
 		.sort { |a, b| b[:date] <=> a[:date] }
 end
 
 def articles
-	posts "articles"
+	posts :articles
 end
 
 def notes
-	posts "notes"
+	posts :notes
 end
 
 def all_posts
-	posts "articles", "notes"
+	posts :articles, :notes
 end
 
 $year_index = {}
