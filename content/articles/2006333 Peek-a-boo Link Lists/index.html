@@ -7,8 +7,7 @@ wordpress_path: /2006/11/peek-boo-link-lists
 <b title="Update 2006-12-14">I have fixed a bug that caused multiple instances of this hack to interact with each other and some other IE problems.  I have tested it in both Firefox and IE.  One extra note about installation - if you put this code into your template more than once at a time (for multiple lists) you must change the id="ALIST" (bold in the code) to id="BLIST" on the second list, etc.</b>
 
 I received the request for this hack via email, and since I thought it shouldn't be too hard and could prove very useful, I went at it.  Plus I actually had some time today to use on this kind of thing ;)  To get a link list in Blogger BETA that has a title you can click to show/hide the list, add this code to your template:
-<div style="font-family:monospace;">
-&lt;b:widget <b>id='ALIST'</b> locked='false' title='List Title' type='LinkList'&gt;
+<pre><code>&lt;b:widget <b>id='ALIST'</b> locked='false' title='List Title' type='LinkList'&gt;
 &lt;b:includable id='main'&gt;
 &lt;script type='text/javascript'&gt;
 //&lt;![CDATA[
@@ -43,13 +42,12 @@ document.write('&lt;\/div&gt;');
          &lt;b:include name='quickedit'/&gt;
       &lt;/div&gt;
    &lt;/b:includable&gt;
-&lt;/b:widget&gt;
-</div>
+&lt;/b:widget&gt;</code></pre>
+
 Then go to the 'Page Elements' area to customise the title and links in the widget.
 
 The following code is identical except that it leaves the title of the widget alone and adds instead a little [+/-] for show/hide functionality:
-<div style="font-family:monospace;">
-&lt;b:widget <b>id='ALIST'</b> locked='false' title='List Title' type='LinkList'&gt;
+<pre><code>&lt;b:widget <b>id='ALIST'</b> locked='false' title='List Title' type='LinkList'&gt;
 &lt;b:includable id='main'&gt;
 &lt;script type='text/javascript'&gt;
 //&lt;![CDATA[
@@ -79,7 +77,6 @@ document.write('&lt;\/div&gt;');
          &lt;b:include name='quickedit'/&gt;
       &lt;/div&gt;
    &lt;/b:includable&gt;
-&lt;/b:widget&gt;
-</div>
+&lt;/b:widget&gt;</code></pre>
 
 Why is this not a <a href="http://singpolyma-tech.blogspot.com/2006/11/new-widget-system.html">one-click widget</a>?  Blogger does not yet allow us to define alternate widget types (such as link list) in one click.

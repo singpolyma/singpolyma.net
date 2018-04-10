@@ -11,23 +11,17 @@ wordpress_path: /2006/06/asynchronous-comment-form
 This is a new, partly experimental, upgrade to <a href="http://singpolyma-tech.blogspot.com/2006/01/new-inline-comments-form.html">my inline comments form</a>.  Credit goes to Aditya of <a href="http://the-lastword.blogspot.com/">The Last Word</a> for inspiring this hack.  Comments are posted without ever leaving the post page and then the page is reloaded.  You never see the Blogger comment page unless there is an error.  The form is still <a href="http://cocomment.com/">coComment</a> compatible and supports posting using your Blogger account :)
 
 <ol><li>Word verification for comments must be turned off (to do this go to the 'comments' tab in your blog settings, scroll to 'Show word verification for comments?' and select 'No')</li><li>Turn comment posting by anonymous users on (to do this go to the 'comments' tab in your blog settings, scroll to 'Who Can Comment?' and select 'Anyone')</li><li>Insert the following code into the &lt;head&gt; section of your blog template :
-<div style="font-family: monospace;">
-&lt;script type="text/javascript" src="http://jscripts.ning.com/get.php?xn_auth=no&amp;amp;id=1338954"&gt;&lt;/script&gt;
+<pre><code>&lt;script type="text/javascript" src="http://jscripts.ning.com/get.php?xn_auth=no&amp;amp;id=1338954"&gt;&lt;/script&gt;
 &lt;script type="text/javascript"&gt;
 //&lt;![CDATA[
  var comment_form_template = '&lt;div class="comment-poster"&gt;[[AUTHOR]]&lt;/div&gt;\n'
           + '&lt;div class="comment-body"&gt;&lt;div class="innerCmntBody"&gt;[[BODY]]&lt;/div&gt;&lt;/div&gt;\n'
           + '&lt;div class="comment-timestamp"&gt;&lt;a href="[[PERMALINK]]" title="comment permalink"&gt;[[DATE]]&lt;/a&gt;&lt;/div&gt;\n';
 //]]&gt;
-&lt;/script&gt;
-
-</div></li><li>Insert the following code directly after your &lt;body&gt; tag:
-<div style="font-family: monospace;">
-&lt;iframe id="comment_form_target" name="comment_form_target" style="display:none;" onload="if(comment_form) {check_comment_posted();}"&gt;&lt;/iframe&gt;
-</div>
+&lt;/script&gt;</code></pre></li><li>Insert the following code directly after your &lt;body&gt; tag:
+<code>&lt;iframe id="comment_form_target" name="comment_form_target" style="display:none;" onload="if(comment_form) {check_comment_posted();}"&gt;&lt;/iframe&gt;</code>
 </li><li>Replace the &lt;$BlogItemCreate$&gt; tag with the following code:
-<div style="font-family: monospace;">
-&lt;div id="comment_form_preview&lt;$BlogItemNumber$&gt;"&gt;&lt;/div&gt;
+<pre><code>&lt;div id="comment_form_preview&lt;$BlogItemNumber$&gt;"&gt;&lt;/div&gt;
 
 &lt;ItemPage&gt;
 &lt;script type="text/javascript"&gt;
@@ -87,8 +81,6 @@ var cocomment_force = false;
          &lt;input value="Preview" type="submit" name="preview"  tabindex="3" /&gt;
       &lt;/p&gt;
    &lt;/div&gt;&lt;/form&gt;
-&lt;/div&gt;
-
-</div></li><li>Save your template and republish your blog</li></ol>
+&lt;/div&gt;</code></pre></li><li>Save your template and republish your blog</li></ol>
 
 Note to advanced users : The variable set in step 3 is the template used by the script to generate previews.  You can modify it to be closer to the code generated for comments on your blog so that users get a better preview :)  Some may also wish to <a href="http://jscripts.ning.com/get.php?xn_auth=no&amp;id=1338954">browse the JavaScript source</a>.

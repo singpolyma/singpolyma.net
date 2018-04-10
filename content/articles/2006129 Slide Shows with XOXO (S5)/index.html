@@ -13,8 +13,7 @@ S5 documents must be DOCTYPE XHTML 1.0 Strict, and there are certain &lt;meta&gt
 Meta data in S5 is encapsulated in a set of &lt;meta&gt; tags.  This means that the data will not be available to XOXO-only processors.  The page &lt;title&gt; must be the title of the presentation and the &lt;meta name="version" content="S5 1.1" /&gt; element is also required, along with the tags to include the JavaScript and basic CSS.
 
 There is also a controls/header/footer section that must be present first in the &lt;body&gt; tag before the XOXO data.  The code for this section follows:
-<div style="font-family: monospace;">
-&lt;div class="layout"&gt;
+<pre><code>&lt;div class="layout"&gt;
 &lt;div id="controls"&gt;&lt;!-- DO NOT EDIT --&gt;&lt;/div&gt;
 &lt;div id="currentSlide"&gt;&lt;!-- DO NOT EDIT --&gt;&lt;/div&gt;
 &lt;div id="header"&gt;
@@ -22,8 +21,8 @@ SLIDESHOW HEADER
 &lt;/div&gt;
 &lt;div id="footer"&gt;
 SLIDESHOW FOOTER
-&lt;/div&gt;
-</div>
+&lt;/div&gt;</code></pre>
+
 Where SLIDESHOW HEADER and SLIDESHOW FOOTER are the contents for the header and footer of the slideshow, respectively.
 
 <b>Classes</b>

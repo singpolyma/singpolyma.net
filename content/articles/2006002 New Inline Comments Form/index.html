@@ -15,8 +15,7 @@ After considerable use and some feedback from both users and implementors I have
 <b title="Update 2006-03-08">This hack is now <a href="http://www.cocomment.com/">coComment</a>-compatible.</b>
 
 <ol><li>Word verification for comments must be turned off (to do this go to the 'comments' tab in your blog settings, scroll to 'Show word verification for comments?' and select 'No')</li><li>Turn comment posting by anonymous users on (to do this go to the 'comments' tab in your blog settings, scroll to 'Who Can Comment?' and select 'Anyone')</li><li>Insert the following code into the &lt;head&gt; section of your blog template :
-<div style="font-family:monospace;">
-&lt;script type="text/javascript"&gt;
+<pre><code>&lt;script type="text/javascript"&gt;
 //&lt;![CDATA[
 
 function toggleitem(postid,linkid,newtxt,displaytype) {
@@ -35,10 +34,8 @@ function toggleitem(postid,linkid,newtxt,displaytype) {
 }
 
 //]]&gt;
-&lt;/script&gt;
-</div></li><li>Replace the &lt;$BlogItemCreate$&gt; tag with the following code:
-<div style="font-family:monospace;">
-&lt;!-- COMMENT FORM --&gt;
+&lt;/script&gt;</code></pre></li><li>Replace the &lt;$BlogItemCreate$&gt; tag with the following code:
+<pre><code>&lt;!-- COMMENT FORM --&gt;
 &lt;ItemPage&gt;
 &lt;script type="text/javascript"&gt;
 
@@ -98,5 +95,4 @@ var cocomment_force = false;
       &lt;/p&gt;
    &lt;/div&gt;&lt;/form&gt;
 &lt;/div&gt;
-&lt;!-- END COMMENT FORM --&gt;
-</div></li><li>Save your template and republish your blog</li></ol>
+&lt;!-- END COMMENT FORM --&gt;</code></pre></li><li>Save your template and republish your blog</li></ol>

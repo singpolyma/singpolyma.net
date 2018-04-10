@@ -13,35 +13,35 @@ This hack will present a drop-down list of tags in your sidebar, pulled from the
 <b title="added December 28, 2005">A 'reset' link is placed next to the drop-down box so that you can clear the tag query and switch to another tag without adding it.  My version also fixes a minor bug in the original so that when tags in a referrer URL have '%20's in them they are replaced by the del.icio.us-compatible '+'</b>
 
 <b title="Update 2006-01-17">If no tag is found in the &lt;head&gt; section, the script attempts to pull one out of your posts.  This can be disabled on your main page by inserting this code along with that in step 2:
-<span style="font-family:monospace;">&lt;MainPage&gt;&lt;script type="text/javascript"&gt;var no_autocapture = true;&lt;/script&gt;&lt;/MainPage&gt;</span></b>
+<code>&lt;MainPage&gt;&lt;script type="text/javascript"&gt;var no_autocapture = true;&lt;/script&gt;&lt;/MainPage&gt;</code></b>
 
 Now, without further boring explanation, here's how to implement the hack :
 
 <ol>   <li>Create a new post on the blog you would like to implement this hack on with the title 'Tags' and click the 'Edit Html' tab for the post body, pasting the exact code '&lt;div id="tagspostpage"&gt;&lt;/div&gt;' into the post body. Turn comments off for the post and set the post date to January 1, 2000. The time doesn't matter. Post this post.
 </li>   <li>Edit the template for your blog and insert the following code into the &lt;head&gt; section :
 
-<span style="font-family:courier new;">&lt;script type="text/javascript"&gt;</span>
-<span style="font-family:courier new;">//&lt;![CDATA[</span>
-<span style="font-family:courier new;">var del_user = "</span><span style="color: rgb(255, 0, 0);font-family:courier new;">username</span><span style="font-family:courier new;">";</span>
-<span style="font-family:courier new;">var anchor = "</span><span style="color: rgb(255, 0, 0);font-family:courier new;">anchortag</span><span style="font-family:courier new;">";</span>
-<span style="font-family:courier new;">document.write('&lt;script src="http://del.icio.us/feeds/json/tags/'+del_user+'/'+anchor+'?count=100" type="text/javascript"&gt;&lt;\/script&gt;');</span>
-<span style="font-family:courier new;">//]]&gt;</span>
-<span style="font-family:courier new;">&lt;/script&gt;</span>
-<span style="font-family:courier new;">&lt;script src="http://www.awriterz.org/etcetc/tagspostpage.js" type="text/javascript"&gt;&lt;/script&gt;</span>
+<code>&lt;script type="text/javascript"&gt;
+//&lt;![CDATA[
+var del_user = "<span style="color: rgb(255, 0, 0);">username</span>";
+var anchor = "<span style="color: rgb(255, 0, 0);">anchortag</span>";
+document.write('&lt;script src="http://del.icio.us/feeds/json/tags/'+del_user+'/'+anchor+'?count=100" type="text/javascript"&gt;&lt;\/script&gt;');
+//]]&gt;
+&lt;/script&gt;
+&lt;script src="http://www.awriterz.org/etcetc/tagspostpage.js" type="text/javascript"&gt;&lt;/script&gt;</code>
 
 Replacing 'username' with the del.icio.us username where you tag your blog posts and 'anchortag' with the anchor tag you use (if you use one). If, like me, you don't use an anchor tag, then replace 'anchortag' with nothing.</li>   <li>At the bottom of your template, right before the '&lt;/body&gt;' tag insert this code :
 
-<span style="font-family:courier new;">&lt;script type="text/javascript"&gt;</span>
-<span style="font-family:courier new;">var thediv = document.getElementById("tagspostpage");</span>
-<span style="font-family:courier new;">if(thediv)</span>
-<span style="font-family:courier new;">   thediv.innerHTML = return_tagged_posts(true);</span>
-<span style="font-family:courier new;">&lt;/script&gt;</span>
+<pre><code>&lt;script type="text/javascript"&gt;
+var thediv = document.getElementById("tagspostpage");
+if(thediv)
+   thediv.innerHTML = return_tagged_posts(true);
+&lt;/script&gt;</code></pre>
 
 </li><li>Insert this code into your template where you want the tags drop-down box and matched posts to appear (as they do in my sidebar) :
 
-<span style="font-family:courier new;">&lt;script type="text/javascript"&gt;</span>
-<span style="font-family:courier new;">list_side_tags();</span>
-<span style="font-family:courier new;">write_tagged_posts();</span>
-<span style="font-family:courier new;">&lt;/script&gt;</span>
+<code>&lt;script type="text/javascript"&gt;
+list_side_tags();
+write_tagged_posts();
+&lt;/script&gt;</code>
 
 </li>   <li>Save your template and republish your whole blog.</li> </ol>

@@ -11,8 +11,7 @@ I have for some time had <a href="http://singpolyma-tech.blogspot.com/2005/11/in
 
 <b>Basic Installation Instructions</b>
 <ol><li>Create a new post on the blog you would like to implement this hack on with the title 'Tags' and click the 'Edit Html' tab for the post body, pasting the exact code '&lt;div id="freshtags_postpage"&gt;&lt;i&gt;Loading...&lt;/i&gt;&lt;/div&gt;' into the post body. Turn comments off for the post and set the post date to January 1, 2000. The time doesn't matter. Post this post.  (If you are upgrading from the previous version, just edit the post to contain the new code.)</li><li>Edit the template for your blog and insert this code into the &lt;head&gt; section:
-<div style="font-family: monospace;">
-&lt;script type="text/javascript"&gt;
+<pre><code>&lt;script type="text/javascript"&gt;
 //&lt;![CDATA[
 var del_user = "<span style="color: rgb(255, 0, 0);">delicious username</span>";
 var anchor = "<span style="color: rgb(255, 0, 0);">anchor tag</span>";
@@ -24,21 +23,19 @@ var freshtags_postpage_id = "freshtags_postpage";
 //]]&gt;
 &lt;/script&gt;
 &lt;script type="text/javascript" src="http://jscripts.ning.com/get.php?xn_auth=no&amp;amp;id=818185"&gt;&lt;/script&gt;
-</div>Where 'delicious username' is the del.icio.us username you store your blog data in and 'anchor tag' is the anchor tag you use (if you use one).  If you don't use an anchor tag, just replace the words 'anchor tag' with nothing.
+</code></pre>Where 'delicious username' is the del.icio.us username you store your blog data in and 'anchor tag' is the anchor tag you use (if you use one).  If you don't use an anchor tag, just replace the words 'anchor tag' with nothing.
 </li><li>Insert this code where you would like the tags drop-down to go:
-<div style="font-family: monospace;">
-&lt;div id="freshtags_tags"&gt;&lt;i&gt;Loading...&lt;/i&gt;&lt;/div&gt;
-&lt;div id="freshtags_posts"&gt;&lt;/div&gt;<span style="font-family:Georgia,serif;"></span></div></li><li><span style="font-family:Georgia,serif;">Save your template and republish your blog</span></li></ol>
+<pre><code>&lt;div id="freshtags_tags"&gt;&lt;i&gt;Loading...&lt;/i&gt;&lt;/div&gt;
+&lt;div id="freshtags_posts"&gt;&lt;/div&gt;</code></pre></li><li>Save your template and republish your blog</li></ol>
 
 <b>Customisation Options</b>
-<ul><li>no_autocapture -- setting this variable to true will keep the script from attempting to grab relTag data from the page.  For example, to keep a Blogger blog using this script from grabbing relTag data when on the main page use <span style="font-family:monospace;">&lt;MainPage&gt;&lt;script type="text/javascript"&gt;var no_autocapture = true;&lt;/script&gt;&lt;/MainPage&gt;</span></li><li>defs -- setting this variable sets what tag(s) will be selected be default if the user has not selected any.  This will do nothing if no_autocapture is not set to true unless the autocapture failes.</li><li>maxposts -- the maximum number of posts to display in the sidebar</li><li>freshtags_tags_id -- the ID of the block to put the tags dropdown in</li><li>freshtags_posts_id -- the ID of the block to put the posts list</li><li>freshtags_postpage_id -- the ID of the block in the Tags post</li><li><b title="Update 2006-06-06">freshtags_tag_format -- the format for the tags list (default is 'drop-add').  For example, to use asynchronous post loading add this code to your template: &lt;script type="text/javascript"&gt;var freshtags_tag_format = "drop-add-async";&lt;/script&gt;</b>
+<ul><li>no_autocapture -- setting this variable to true will keep the script from attempting to grab relTag data from the page.  For example, to keep a Blogger blog using this script from grabbing relTag data when on the main page use <code>&lt;MainPage&gt;&lt;script type="text/javascript"&gt;var no_autocapture = true;&lt;/script&gt;&lt;/MainPage&gt;</code></li><li>defs -- setting this variable sets what tag(s) will be selected be default if the user has not selected any.  This will do nothing if no_autocapture is not set to true unless the autocapture failes.</li><li>maxposts -- the maximum number of posts to display in the sidebar</li><li>freshtags_tags_id -- the ID of the block to put the tags dropdown in</li><li>freshtags_posts_id -- the ID of the block to put the posts list</li><li>freshtags_postpage_id -- the ID of the block in the Tags post</li><li><b title="Update 2006-06-06">freshtags_tag_format -- the format for the tags list (default is 'drop-add').  For example, to use asynchronous post loading add this code to your template: &lt;script type="text/javascript"&gt;var freshtags_tag_format = "drop-add-async";&lt;/script&gt;</b>
 </li></ul>
 
 <b>Peek-A-Boo Blogroll Headlines</b>
 To add peek-a-boo headlines to your blogrolls follow the following steps:
 <ol><li>Add this code to the &lt;head&gt; section of your blog to facilitate the actual show/hide:
-<div style="font-family: monospace;">
-&lt;script type="text/javascript"&gt;
+<pre><code>&lt;script type="text/javascript"&gt;
 //&lt;![CDATA[
 function toggleitem(postid,linkid,newtxt,displaytype) {
 if(!displaytype) {displaytype = 'block';}
@@ -55,11 +52,11 @@ if(linkid) {
 }
 }
 //]]&gt;
-&lt;/script&gt;</div>
-</li><li>Add this code just after the blogroll link you want to add peek-a-boo headlines for (it's invisible defaultly, just the container for the headlines) '<span style="font-family:monospace;">&lt;div id="<span style="color:red;">blogname</span>headlines" style="display:none;"&gt;&lt;i&gt;Loading...&lt;/i&gt;&lt;/div&gt;</span>'</li> <li>If this blog stores post data in del.icio.us (they don't have to use FreshTags necessarily) add this code just before the blogroll link (it's the +/- link for showing/hiding the headlines):
+&lt;/script&gt;</code></pre>
+</li><li>Add this code just after the blogroll link you want to add peek-a-boo headlines for (it's invisible defaultly, just the container for the headlines) '<code>&lt;div id="<span style="color:red;">blogname</span>headlines" style="display:none;"&gt;&lt;i&gt;Loading...&lt;/i&gt;&lt;/div&gt;</code>'</li> <li>If this blog stores post data in del.icio.us (they don't have to use FreshTags necessarily) add this code just before the blogroll link (it's the +/- link for showing/hiding the headlines):
 
-<span style="font-family:monospace;">&lt;a id="<span style="color:red;">blogname</span>link" href="javascript:toggleitem('<span style="color:red;">blogname</span>headlines','<span style="color:red;">blogname</span>link','-'); load_otherblog_titles('del.icio.us','<span style="color:red;">other blog's del.icio.us account username</span>','<span style="color:red;">other blog's anchor tag (if they use one)</span>','<span style="color:red;">URL to other blog's feed (optional)</span>','<span style="color:red;">blogname</span>headlines');"&gt;+&lt;/a&gt;</span>
+<code>&lt;a id="<span style="color:red;">blogname</span>link" href="javascript:toggleitem('<span style="color:red;">blogname</span>headlines','<span style="color:red;">blogname</span>link','-'); load_otherblog_titles('del.icio.us','<span style="color:red;">other blog's del.icio.us account username</span>','<span style="color:red;">other blog's anchor tag (if they use one)</span>','<span style="color:red;">URL to other blog's feed (optional)</span>','<span style="color:red;">blogname</span>headlines');"&gt;+&lt;/a&gt;</code>
 
 Otherwise add this code to use just their feed:
 
-<span style="font-family:monospace;">&lt;a id="<span style="color:red;">blogname</span>link" href="javascript:toggleitem('<span style="color:red;">blogname</span>headlines','<span style="color:red;">blogname</span>link','-'); load_otherblog_titles('feed','','','<span style="color:red;">URL to other blog's feed</span>','<span style="color:red;">blogname</span>headlines');"&gt;+&lt;/a&gt;</span></li></ol>
+<code>&lt;a id="<span style="color:red;">blogname</span>link" href="javascript:toggleitem('<span style="color:red;">blogname</span>headlines','<span style="color:red;">blogname</span>link','-'); load_otherblog_titles('feed','','','<span style="color:red;">URL to other blog's feed</span>','<span style="color:red;">blogname</span>headlines');"&gt;+&lt;/a&gt;</code></li></ol>

@@ -22,7 +22,7 @@ Using this script to access del.icio.us JSON data also provides a measure of gra
 
 I am placing the PHP code I used to do this in the public domain.  Please feel free to modify, translate, or host this code yourself.  Particularly to host it, which will save bandwidth on my server.  The code is below:
 
-<div style="font-family: monospace;">&lt;?php
+<pre><code>&lt;?php
 
 
 header('Content-Type: text/javascript;');//output header for JSON
@@ -56,4 +56,4 @@ if(stristr($deldata,'Delicious.tags')) {//if it is tags JSON
    }//end if callback
 }//end if-else stristr deldata Delicious.tags
 
-?&gt;</div>
+?&gt;</code></pre>

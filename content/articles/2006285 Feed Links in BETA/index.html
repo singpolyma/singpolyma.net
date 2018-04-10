@@ -7,8 +7,7 @@ wordpress_path: /2006/10/feed-links-in-beta
 <b title="Update 2006-11-16">Please see <a href="http://singpolyma-tech.blogspot.com/2006/11/feed-links-widget.html">the new, easier hack</a> for this feature.</b>
 
 I love <a href="http://beta.blogger.com/">Blogger BETA</a>, but there are just some things about it that annoy me.  Duh.  That's why I'm a hacker.  One of these is that feed links are displayed at the bottom of the page instead of in my sidebar.  No longer.  Insert this code wherever you want the feed links to display and you'll have a feed links widget you can drag and drop in your template editor!
-<div style="font-family:monospace;">
-   &lt;b:widget id='FeedsWidget' locked='false' title='Feeds' type='Blog'&gt;
+<pre><code>   &lt;b:widget id='FeedsWidget' locked='false' title='Feeds' type='Blog'&gt;
       &lt;b:includable id='main'&gt;
          &lt;h2 class='sidebar-title'&gt;Syndication&lt;/h2&gt;
          &lt;b:if cond='data:feedLinks'&gt;
@@ -19,7 +18,6 @@ I love <a href="http://beta.blogger.com/">Blogger BETA</a>, but there are just s
             &lt;/ul&gt;
          &lt;/b:if&gt;
       &lt;/b:includable&gt;
-   &lt;/b:widget&gt;
-</div>
+   &lt;/b:widget&gt;</code></pre>
 
 Coming soon for Blogger BETA: Comments on Main and Archive pages (peek-a-boo!) and a revised Singpolyma-Template.

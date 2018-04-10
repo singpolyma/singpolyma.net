@@ -7,38 +7,31 @@ wordpress_path: /2006/10/freshtags-as-api
 The <a href="http://singpolyma-tech.blogspot.com/2006/09/freshtags-singpolyma-2.html">new FreshTags system</a> comes with many benefits, such as the <a href="http://singpolyma-tech.blogspot.com/2006/09/widgetdata.html">WidgetData system</a> and also a more flexible interaction with the code itself.
 
 Some basic example of this are the widgets one can create just using different settings.  To include a feed in your sidebar you can add this code in with the other FreshTags settings data:
-<div style="font-family:monospace;">
-//feed widget
+<pre><code>//feed widget
 WidgetData['freshtags']['freshtags_<span style="color:red;">FeedName</span>'] = {
    'type':'posts',
    'source':'feed',
    'feedurl':'<span style="color:red;">FeedURL</span>',
    'rows':10
-};
-</div>
+};</code></pre>
+
 And this code wherever you want the feed headlines to display:
-<div style="font-family:monospace;">
-&lt;div id="freshtags_<span style="color:red;">FeedName</span>"&gt;&lt;i&gt;Loading Feed...&lt;/i&gt;&lt;/div&gt;
-</div>
+<code>&lt;div id="freshtags_<span style="color:red;">FeedName</span>"&gt;&lt;i&gt;Loading Feed...&lt;/i&gt;&lt;/div&gt;</code>
 
 Similarly, a minor tweak to that code yeilds 'Generic FreshTags' behaviour as existed in the original FreshTags release:
-<div style="font-family:monospace;">
-//generic widget
+<pre><code>//generic widget
 WidgetData['freshtags']['freshtags_generic'] = {
    'type':'posts',
    'source':'feed',
    'feedurl':'http://del.icio.us/rss/tag/%tags%',
    'rows':10
-};
-</div>
+};</code></pre>
+
 And:
-<div style="font-family:monospace;">
-&lt;div id="freshtags_generic"&gt;&lt;i&gt;Loading del.icio.us...&lt;/i&gt;&lt;/div&gt;
-</div>
+<code>&lt;div id="freshtags_generic"&gt;&lt;i&gt;Loading del.icio.us...&lt;/i&gt;&lt;/div&gt;</code>
 
 Peek-a-boo headlines functionality also remains:
-<div style="font-family:monospace;">
-//Headlines Widget
+<pre><code>//Headlines Widget
 WidgetData['freshtags']['<span style="color:red;">BlogName</span>headlines'] = {
    'type':'external',
    'source':'del.icio.us',
@@ -47,17 +40,15 @@ WidgetData['freshtags']['<span style="color:red;">BlogName</span>headlines'] = {
    'feedurl':'<span style="color:red;">FeedURL for blog</span>',
    'tag_list':'freshtags_tags',
    'rows':10
-};
-</div>
+};</code></pre>
+
 And:
-<div style="font-family:monospace;">
-&lt;a id="<span style="color:red;">BlogName</span>link" href="javascript:toggleitem('<span style="color:red;">BlogName</span>headlines','<span style="color:red;">BlogName</span>link','-');freshtags_load('<span style="color:red;">BlogName</span>headlines');"&gt;+&lt;/a&gt;
+<pre><code>&lt;a id="<span style="color:red;">BlogName</span>link" href="javascript:toggleitem('<span style="color:red;">BlogName</span>headlines','<span style="color:red;">BlogName</span>link','-');freshtags_load('<span style="color:red;">BlogName</span>headlines');"&gt;+&lt;/a&gt;
 &lt;a href="<span style="color:red;">BlogURL</span>"&gt;<span style="color:red;">BlogName</span>&lt;/a&gt;
-&lt;div id="<span style="color:red;">BlogName</span>headlines" style="display:none;"&gt;&lt;i&gt;Loading...&lt;/i&gt;&lt;/div&gt;
-</div>
+&lt;div id="<span style="color:red;">BlogName</span>headlines" style="display:none;"&gt;&lt;i&gt;Loading...&lt;/i&gt;&lt;/div&gt;</code></pre>
+
 Note that the following must be included in the &lt;head&gt; section of your blog for this to work:
-<div style="font-family:monospace;">
-&lt;script type="text/javascript"&gt;
+<pre><code>&lt;script type="text/javascript"&gt;
    function toggleitem(postid,linkid,newtxt,displaytype) {
       if(!displaytype) {displaytype = 'block';}
       var whichpost = document.getElementById(postid);
@@ -72,8 +63,7 @@ Note that the following must be included in the &lt;head&gt; section of your blo
          lnk.innerHTML = newtxt;
       }
    }//end function toggleitem
-&lt;/script&gt;
-</div>
+&lt;/script&gt;</code></pre>
 
 Below is a list of easily externally accesible functions in FreshTags:
 <ul><li><b>freshtags_load</b> - called with no parameter it (re)loads all FreshTags widgets on a page.  If you pass it the ID of a widget, just that widget will be (re)loaded (and associated widgets).</li> <li><b>get_current_tags</b> - takes three optional parameters, a space-separated string of default tags to use if none are found, an object containing a complete list of all tags avaliable for use in the format {'tag':count}, and a boolean value specifying whether or not to draw rel-tag data from the page if no tags are detected from the URL/referrer.  Returns a plus-separated string of tags found or the null string ('').</li> <li><b>main_tags_loaded</b> - if you pass it false and teh ID of a FreshTags tag widget it will reload the widget (and associated widgets) without re-calling get_current_tags like freshtags_load does (thus enabling you to set the current tags to whatever you want).</li> <li><b>listTags</b> - takes the ID of a FreshTags tag widget and returns a string of the renderation to XHTML.</li> <li><b>listTitles</b> - takes the ID of a FreshTags posts (or external) widget and returns a string of the renderation to XHTML.  An optional second parameter specifies whether to hide the widget when there's no data (false, default) or </li></ul>

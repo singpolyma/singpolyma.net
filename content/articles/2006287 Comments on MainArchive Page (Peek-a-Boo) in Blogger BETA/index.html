@@ -29,8 +29,7 @@ var comment_form_template = '&lt;div class="commentelem"&gt;&lt;div class="comme
 </code>
 Advanced users will note that the first &lt;script&gt; section is taken from the <a href="http://singpolyma-tech.blogspot.com/2006/06/asynchronous-comment-form.html">asynchronous comment form</a> code, and that if that is installed (presuming I get a version working for Blogger BETA) that the code only needs to be in here once.  It can be changed to fit the code of the blog itself to improve appearance, etc.  Kudos to <a href="http://ecmanaut.blogspot.com/">Johan Sundström</a> for his help with the date code.
 </li> <li>If you want peek-a-boo functionality, you will need this code in your &lt;head&gt; section somewhere as well:
-<div style="font-family:monospace;">
-&lt;script type="text/javascript"&gt;
+<pre><code>&lt;script type="text/javascript"&gt;
    function toggleitem(postid,linkid,newtxt,displaytype) {
       if(!displaytype) {displaytype = 'block';}
       var whichpost = document.getElementById(postid);
@@ -45,67 +44,43 @@ Advanced users will note that the first &lt;script&gt; section is taken from the
             lnk.innerHTML = newtxt;
        }
    }//end function toggleitem
-&lt;/script&gt;
-</div>
-</li> <li>Find the place in your template where the comments are generated on item pages, it will probably look something like this:
-<div style="font-family:monospace;">
-&lt;b:loop values='data:post.comments' var='comment'&gt;
-  &lt;dt class='comment-author' expr:id='"comment-" + data:comment.id'&gt;
-</div>
+&lt;/script&gt;</code></pre></li> <li>Find the place in your template where the comments are generated on item pages, it will probably look something like this:
+<pre><code>&lt;b:loop values='data:post.comments' var='comment'&gt;
+  &lt;dt class='comment-author' expr:id='"comment-" + data:comment.id'&gt;</code></pre>
 And directly before that, insert this code:
-<div style="font-family:monospace;">
-&lt;b:loop values='data:post.feedLinks' var='f'&gt;
+<pre><code>&lt;b:loop values='data:post.feedLinks' var='f'&gt;
    &lt;b:if cond='data:blog.pageType != "item"'&gt;
       &lt;script expr:src='data:f.url + "?alt=json-in-script&amp;amp;amp;callback=peekaboo_comments_display"' type='text/javascript'/&gt;
    &lt;/b:if&gt;
-&lt;/b:loop&gt;
-</div>
-</li> <li>If you want to use peek-a-boo functionality put, find  the code a little bit before that which you just inserted that looks something like:
-<div style="font-family:monospace;">
-&lt;b:includable id='comments' var='post'&gt;
-  &lt;div class='comments' id='comments'&gt;
-</div>
+&lt;/b:loop&gt;</code></pre></li> <li>If you want to use peek-a-boo functionality put, find  the code a little bit before that which you just inserted that looks something like:
+<pre><code>&lt;b:includable id='comments' var='post'&gt;
+  &lt;div class='comments' id='comments'&gt;</code></pre>
 And replace that second line with:
-<div style="font-family:monospace;">
-   &lt;div class='comments' expr:id='"comments" + data:post.id'&gt;
+<pre><code>&lt;div class='comments' expr:id='"comments" + data:post.id'&gt;
 &lt;b:if cond='data:blog.pageType != "item"'&gt;
    &lt;script type='text/javascript'&gt;
       document.getElementById('comments&lt;data:post.id/&gt;').style.display = 'none';
    &lt;/script&gt;
-&lt;/b:if&gt;
-</div></li> <li>Next, find the post-generating code.  It will look start something like this:
-<div style="font-family:monospace;">
-&lt;b:includable id='main' var='top'&gt;
-  &lt;!-- posts --&gt;
-</div>
-</li> <li>In this section there will be a block of code that looks something like:
-<div style="font-family:monospace;">
-&lt;b:if cond='data:blog.pageType == "item"'&gt;
+&lt;/b:if&gt;</code></pre></li> <li>Next, find the post-generating code.  It will look start something like this:
+<pre><code>&lt;b:includable id='main' var='top'&gt;
+  &lt;!-- posts --&gt;</code></pre></li> <li>In this section there will be a block of code that looks something like:
+<pre><code>&lt;b:if cond='data:blog.pageType == "item"'&gt;
    &lt;b:if cond='data:post.allowComments'&gt;
       &lt;b:include data='post' name='comments'/&gt;
    &lt;/b:if&gt;
-&lt;/b:if&gt;
-</div>
+&lt;/b:if&gt;</code></pre>
 Replace it with this:
-<div style="font-family:monospace;">
-   &lt;b:if cond='data:post.allowComments'&gt;
+<pre><code>   &lt;b:if cond='data:post.allowComments'&gt;
       &lt;b:include data='post' name='comments'/&gt;
-   &lt;/b:if&gt;
-</div>
-</li> <li>If you want to use peek-a-boo functionality you need to find the post template section, which starts something like this:
-<div style="font-family:monospace;">
-&lt;b:includable id='post' var='post'&gt;
-</div>
+   &lt;/b:if&gt;</code></pre></li> <li>If you want to use peek-a-boo functionality you need to find the post template section, which starts something like this:
+<code>&lt;b:includable id='post' var='post'&gt;</code>
 And then find the link to the comments area, which looks something like:
-<div style="font-family:monospace;">
-&lt;b:if cond='data:post.allowComments'&gt;
+<pre><code>&lt;b:if cond='data:post.allowComments'&gt;
    &lt;a class='comment-link' expr:href='data:post.addCommentUrl' expr:onclick='data:post.addCommentOnclick'&gt;&lt;b:if cond='data:post.numComments == 1'&gt;1 &lt;data:top.commentLabel/&gt;&lt;b:else/&gt;&lt;data:post.numComments/&gt; &lt;data:top.commentLabelPlural/&gt;&lt;/b:if&gt;&lt;/a&gt;
-&lt;/b:if&gt;
-</div>
+&lt;/b:if&gt;</code></pre>
+
 And replace it with:
-<div style="font-family:monospace;">
-&lt;b:if cond='data:post.allowComments'&gt;
+<pre><code>&lt;b:if cond='data:post.allowComments'&gt;
    &lt;a class='comment-link' expr:href='data:post.url + "#comments"' expr:onclick='"toggleitem(&amp;amp;quot;comments" + data:post.id + "&amp;amp;quot;);return false;"'&gt;&lt;b:if cond='data:post.numComments == 1'&gt;1 &lt;data:top.commentLabel/&gt;&lt;b:else/&gt;&lt;data:post.numComments/&gt; &lt;data:top.commentLabelPlural/&gt;&lt;/b:if&gt;&lt;/a&gt;
-&lt;/b:if&gt;
-</div>
+&lt;/b:if&gt;</code></pre>
 </li> <li>Click 'Save Template' and, if it appears, 'Confirm &amp; Save', then view your blog.</li> </ol>

@@ -7,7 +7,7 @@ wordpress_path: /2006/01/new-backlinks-hack
 My <a href="http://singpolyma-tech.blogspot.com/2005/12/backlinks-on-main-page.html">previous backlinks hack</a> was a quick fix to allow backlinks on the main page, since I wanted to do that.  It was, however, kind of ugly, complicated, and like the 'normal' backlinks code broke XML well-formedness.  I have, therefore, come up with a new hack that does the exact same thing, but is faster, easier, and XHTML valid.  The new steps are below :
 
 <ol><li>Enable backlinks on your blog -- an obvious, but necessary, step</li><li>Put this code in the &lt;head&gt; section of your blog template:
-<div style="font-family:monospace;">&lt;script type="text/javascript"&gt;
+<pre><code>&lt;script type="text/javascript"&gt;
 //&lt;![CDATA[
 
 function toggleitem(postid,linkid,newtxt,displaytype) {
@@ -26,9 +26,9 @@ function toggleitem(postid,linkid,newtxt,displaytype) {
 }
 
 //]]&gt;
-&lt;/script&gt;</div>
+&lt;/script&gt;</code></pre>
 </li><li>Find the section in your template that starts with &lt;BlogItemBacklinksEnabled&gt; and ends with &lt;/BlogItemBacklinksEnabled&gt; and replace the entire thing (these tags included) with this code:
-<div style="font-family:monospace;">&lt;BlogItemBacklinksEnabled&gt;
+<pre><code>&lt;BlogItemBacklinksEnabled&gt;
 &lt;ItemPage&gt;&lt;div style="display:block;" id="backlinks"&gt;&lt;/ItemPage&gt;
 &lt;MainOrArchivePage&gt;&lt;div style="display:none;" id="backlinks&lt;$BlogItemNumber$&gt;"&gt;&lt;/MainOrArchivePage&gt;
 &lt;h4&gt;Backlinks:&lt;/h4&gt;
@@ -52,5 +52,5 @@ function toggleitem(postid,linkid,newtxt,displaytype) {
 &lt;/script&gt;
 &lt;p class="comment-timestamp"&gt;&lt;a class="comment-link" href="javascript:BlogThis();"&gt;Create a Link&lt;/a&gt;&lt;/p&gt;
 &lt;/div&gt;
-&lt;/BlogItemBacklinksEnabled&gt;</div>
-</li><li>Find the code for the 'links to this post' link in your post footer template code and replace it with '<span style="font-family:monospace;">&lt;a href="&lt;$BlogItemPermalinkUrl$&gt;#backlinks" onclick="toggleitem('backlinks&lt;MainOrArchivePage&gt;&lt;$BlogItemNumber$&gt;&lt;/MainOrArchivePage&gt;');return false;"&gt;links to this post&lt;/a&gt;</span>'</li><li>Save your template and republish your blog!</li></ol>
+&lt;/BlogItemBacklinksEnabled&gt;</code></pre>
+</li><li>Find the code for the 'links to this post' link in your post footer template code and replace it with '<code>&lt;a href="&lt;$BlogItemPermalinkUrl$&gt;#backlinks" onclick="toggleitem('backlinks&lt;MainOrArchivePage&gt;&lt;$BlogItemNumber$&gt;&lt;/MainOrArchivePage&gt;');return false;"&gt;links to this post&lt;/a&gt;</code>'</li><li>Save your template and republish your blog!</li></ol>

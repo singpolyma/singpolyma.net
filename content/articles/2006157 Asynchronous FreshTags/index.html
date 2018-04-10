@@ -5,14 +5,13 @@ tags: ["Tech","Blogger","Hack","Hacks","Freshtags","Update"]
 wordpress_path: /2006/06/asynchronous-freshtags
 ---
 I have updated <a href="http://singpolyma-tech.blogspot.com/2006/02/freshtags-singpolyma.html">my version of FreshTags</a> to include support for asynchronous loading of posts.  Now if you add the following code to your template:
-<div style="font-family: monospace;">
-&lt;script type="text/javascript"&gt;var freshtags_tag_format = "drop-add-async";&lt;/script&gt;
-</div>
+
+<code>&lt;script type="text/javascript"&gt;var freshtags_tag_format = "drop-add-async";&lt;/script&gt;</code>
+
 Instead of the drop-down box taking you over to the tags post page it will load the posts for the tag combination for you asynchronously in the sidebar.
 
 A nice side-benefit of this is that you may now use all the other FreshTags tag-list types (except custom), including flat, flat-multi, list, list-multi, scroll, drop, and sub.  Just put them in the above code where I have 'drop-add-async'.
 
 You will have to be using the jscripts.ning.com version of my FreshTags implementation for this to work, instead of the old one hosted on AWriterz.  The code for the new include (which you can replace the old one with to upgrade) is:
-<div style="font-family: monospace;">
-&lt;script type="text/javascript" src="http://jscripts.ning.com/get.php?xn_auth=no&amp;amp;id=818185"&gt;&lt;/script&gt;
-</div>
+
+<code>&lt;script type="text/javascript" src="http://jscripts.ning.com/get.php?xn_auth=no&amp;amp;id=818185"&gt;&lt;/script&gt;</code>

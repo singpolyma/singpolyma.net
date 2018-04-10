@@ -1,4 +1,20 @@
 preprocess do
+	all_posts.each do |post|
+		@items.create(
+			@items['/avatar.jpg'].raw_filename,
+			{},
+			"#{Pathname.new(post.identifier).dirname}/avatar.jpg",
+			binary: true
+		)
+
+		content = if post.identifier.to_s =~ /\.md/
+			Kramdown::Document.new(post.raw_content, :auto_ids => false).to_html
+		else
+			post.raw_content
+		end
+		post[:tags] = ((post[:tags] ||  []) + AutolinkFilter.new.run(content, extract_hashtags: true)).uniq
+	end
+
 	by_year(:all_posts).keys.each do |year|
 		@items.create(
 			'',
@@ -61,15 +77,6 @@ preprocess do
 		},
 		"/blog.html"
 	)
-
-	all_posts.each do |post|
-		@items.create(
-			@items['/avatar.jpg'].raw_filename,
-			{},
-			"#{Pathname.new(post.identifier).dirname}/avatar.jpg",
-			binary: true
-		)
-	end
 end
 
 compile '/{notes,articles}/**/*.{html,md}' do

@@ -7,12 +7,12 @@ wordpress_path: /2006/01/commentosphere-blogger-integration
 I have finalised the first version of a template hack for Blogger that inlines <a href="http://comment.ning.com/">Commentosphere</a> data for comments on your blog.  This allows you to make better use of the semi-threading features of Commentosphere.  Insert only the code snippets for the data you want (the first two are invisible and mandatory).
 
 <ol><li>Insert this code somewhere in the post section of your template (it is invisible, so it doesn't matter where):
-<span style="font-family:monospace;">&lt;script type="text/javascript"&gt;
+<pre><code>&lt;script type="text/javascript"&gt;
 //&lt;![CDATA[
   posturl = '&lt;$BlogItemPermalinkUrl$&gt;';
 //]]&gt;
-&lt;/script&gt;</span></li><li>Insert this code right after your &lt;BlogItemComments&gt; tag:
-<span style="font-family:monospace;">&lt;script type="text/javascript"&gt;
+&lt;/script&gt;</code></pre></li><li>Insert this code right after your &lt;BlogItemComments&gt; tag:
+<pre><code>&lt;script type="text/javascript"&gt;
 //&lt;![CDATA[
    csdata = {};
    for(var i=0; i&lt;Commentosphere.posts.length; i++) {
@@ -22,8 +22,8 @@ I have finalised the first version of a template hack for Blogger that inlines <
       }//end if url == this
    }//end for
 //]]&gt;
-&lt;/script&gt;</span></li><li>Insert this code where you want the links to parents of the comment (if there are any) to show up:
-<span style="font-family:monospace;">&lt;script type="text/javascript"&gt;
+&lt;/script&gt;</code></pre></li><li>Insert this code where you want the links to parents of the comment (if there are any) to show up:
+<pre><code>&lt;script type="text/javascript"&gt;
 //&lt;![CDATA[
    if(csdata.parents &amp;&amp; csdata.parents[0] != '') {
       document.write('(');
@@ -36,8 +36,8 @@ I have finalised the first version of a template hack for Blogger that inlines <
       document.write(')');
    }//end if
 //]]&gt;
-&lt;/script&gt;</span></li><li>Insert this code where you want the links to replies to the comment (if there are any) to show up:
-<span style="font-family:monospace;">&lt;script type="text/javascript"&gt;
+&lt;/script&gt;</code></pre></li><li>Insert this code where you want the links to replies to the comment (if there are any) to show up:
+<pre><code>&lt;script type="text/javascript"&gt;
 //&lt;![CDATA[
    if(csdata.children &amp;&amp; csdata.children[0] != '') {
       for(var i=0; i&lt;csdata.children.length; i++) {
@@ -48,8 +48,8 @@ I have finalised the first version of a template hack for Blogger that inlines <
       }//end for
    }//end if
 //]]&gt;
-&lt;/script&gt;</span></li><li>Insert this code where you want the link to the comment on Commentosphere and tags to show up:
-<span style="font-family:monospace;">&lt;script type="text/javascript"&gt;
+&lt;/script&gt;</code></pre></li><li>Insert this code where you want the link to the comment on Commentosphere and tags to show up:
+<pre><code>&lt;script type="text/javascript"&gt;
 //&lt;![CDATA[
    if(csdata.id) {
       document.write(' &lt;a href="http://comment.ning.com/index.php?id='+csdata.id+'&amp;view=detail"&gt;On Commentosphere&lt;/a&gt; ');
@@ -61,4 +61,4 @@ I have finalised the first version of a template hack for Blogger that inlines <
       }//end for
    }//end if
 //]]&gt;
-&lt;/script&gt;</span></li><li>Save your template and republish your blog</li></ol>
+&lt;/script&gt;</code></pre></li><li>Save your template and republish your blog</li></ol>

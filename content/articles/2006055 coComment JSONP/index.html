@@ -12,8 +12,7 @@ Using the script is simple.  You pass the URL to the JavaScript for a customised
 http://comment.ning.com/cocomment/json.php?url=URLtoBLOGBOX
 
 If you want a sidebar element, or just some example JavaScript code to work with, here is what I use.  Put this in your &lt;head&gt; section:
-<div style="font-family:monospace;">
-   &lt;script type="text/javascript"&gt;
+<pre><code>   &lt;script type="text/javascript"&gt;
    //&lt;![CDATA[
       var list_cocomment_limit = <span style="color:red;">NUMBER OF CHARACTERS</span>;
       var list_cocomment_id = "cocomment";
@@ -54,7 +53,6 @@ If you want a sidebar element, or just some example JavaScript code to work with
      }//end function addLoadEvent
      addLoadEvent(list_cocomment);
    //]]&gt;
-   &lt;/script&gt;
-</div>
+   &lt;/script&gt;</code></pre>
 
-And in your sidebar put '<span style="font-family:monospace;">&lt;div id="cocomment"&gt;&lt;i&gt;Loading...&lt;/i&gt;&lt;/div&gt;</span>'.
+And in your sidebar put '<code>&lt;div id="cocomment"&gt;&lt;i&gt;Loading...&lt;/i&gt;&lt;/div&gt;</code>'.

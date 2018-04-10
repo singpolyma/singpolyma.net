@@ -9,29 +9,27 @@ Aditya of <a href="http://the-lastword.blogspot.com/">The Last Word</a> has made
 Based off of a quick hack Aditya threw together I have developed some reuseable code to just this end.  I have it running asynchronously in my sidebar under the 'Previous Posts' heading.  When you first load the page (or if you have JavaScript turned off) the normal Blogger-generated 'Previous Posts' list is displayed.  After the page has loaded, if you have JavaScript on, the list will update to a list of the most recently updated posts.
 
 So, on to the code!  There are two versions of this hack : synchronous and asynchronous.  If you want it to run synchronously (that is, the page waits for the hack to finish before it continues to render) place the following code where you want the widget to appear:
-<div style="font-family: monospace;">
-&lt;script type="text/javascript" src="http://jscripts.ning.com/get.php?xn_auth=no&amp;amp;id=1317016"&gt;&lt;/script&gt;
+<pre><code>&lt;script type="text/javascript" src="http://jscripts.ning.com/get.php?xn_auth=no&amp;amp;id=1317016"&gt;&lt;/script&gt;
 &lt;script type="text/javascript"&gt;
 //&lt;![CDATA[
 do_updated_posts('&lt;$BlogURL$&gt;','',5);
 //]]&gt;
-&lt;/script&gt;
-</div>
+&lt;/script&gt;</code></pre>
+
 You can change the 5 to whatever number of posts you want in the list.  Save and republish : you're done!
 
 If you want it to run asynchronously (the page loads before the hack does), insert the following code into your &lt;head&gt; section:
-<div style="font-family: monospace;">
-&lt;script type="text/javascript" src="http://jscripts.ning.com/get.php?xn_auth=no&amp;amp;id=1317016"&gt;&lt;/script&gt;
+<pre><code>&lt;script type="text/javascript" src="http://jscripts.ning.com/get.php?xn_auth=no&amp;amp;id=1317016"&gt;&lt;/script&gt;
 &lt;script type="text/javascript"&gt;
 //&lt;![CDATA[
 addLoadEvent(function(){do_updated_posts('&lt;$BlogURL$&gt;','last_updated_posts',5);});
 //]]&gt;
-&lt;/script&gt;
-</div>
+&lt;/script&gt;</code></pre>
+
 Again, you can change the 5 to whatever number of posts you want in the list.  Then, insert the following code where you want the list to display:
-<div style="font-family: monospace;">
-&lt;div id="last_updated_posts"&gt;&lt;i&gt;Loading...&lt;/i&gt;&lt;/div&gt;
-</div>
+
+<code>&lt;div id="last_updated_posts"&gt;&lt;i&gt;Loading...&lt;/i&gt;&lt;/div&gt;</code>
+
 Save and republish.  You're done!
 
 The whole way this works may just be a bug in the rss.xml generating engine.  If it is, this hack will stop working when they fix it, since it is dependant on the order of items in rss.xml.

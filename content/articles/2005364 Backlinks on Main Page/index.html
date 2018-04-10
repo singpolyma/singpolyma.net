@@ -12,8 +12,8 @@ Getting Blogger baclinks to display on your main page is no picnic - wheather fo
 <pre>&lt;script type="text/javascript" src="http://www.blogger.com/js/backlink.js"&gt;&lt;/script&gt;</pre>To this:
 <pre>&lt;script type="text/javascript" src="http://www.awriterz.org/etcetc/backlink.js"&gt;&lt;/script&gt;</pre>Otherwise go on to 2b.
 
-<span style="font-weight: bold;">b - </span>Find this : '<span style="font-family:monospace;">&lt;$BlogMetaData$&gt;</span>', it should be somewhere near the top of your blog template.  Replace it with this:
-<pre>&lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /&gt;
+<span style="font-weight: bold;">b - </span>Find this : '<code>&lt;$BlogMetaData$&gt;</code>', it should be somewhere near the top of your blog template.  Replace it with this:
+<pre><code>&lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /&gt;
 &lt;meta name="MSSmartTagsPreventParsing" content="true" /&gt;
 &lt;meta name="generator" content="Blogger" /&gt;
 &lt;link rel="alternate" type="application/xml" title="&lt;$BlogTitle$&gt;" href="&lt;$BlogSiteFeedUrl$&gt;" /&gt;
@@ -26,8 +26,8 @@ Getting Blogger baclinks to display on your main page is no picnic - wheather fo
 &lt;script type="text/javascript" src="http://www.awriterz.org/etcetc/backlink.js"&gt;&lt;/script&gt;
 &lt;script type="text/javascript" src="http://www.blogger.com/js/backlink_control.js"&gt;&lt;/script&gt;
 &lt;script type="text/javascript"&gt;var BL_backlinkURL='http://www.blogger.com/dyn-js/backlink_count.js', BL_blogId='&lt;$BlogID$&gt;';&lt;/script&gt;
-</pre></li><li>Put this code directly after that which you just inserted:
-<pre>&lt;script type="text/javascript"&gt;
+</code></pre></li><li>Put this code directly after that which you just inserted:
+<pre><code>&lt;script type="text/javascript"&gt;
 //&lt;![CDATA[
 function toggleitem (postid,linkid,newtxt) {
 var whichpost = document.getElementById(postid);
@@ -44,8 +44,8 @@ lnk.innerHTML = newtxt;
 }
 //]]&gt;
 &lt;/script&gt;
-</pre></li><li>Find the section in your template that starts with '<span style="font-family:monospace;">&lt;BlogItemBacklinksEnabled&gt;</span>' and ends with '<span style="font-family:monospace;">&lt;/BlogItemBacklinksEnabled&gt;</span>' and replace the entire thing (these tags included) with this code:
-<pre>&lt;ItemPage&gt;&lt;div style="display:block;" id="backlinks&lt;$BlogItemNumber$&gt;"&gt;&lt;/ItemPage&gt;
+</code></pre></li><li>Find the section in your template that starts with '<code>&lt;BlogItemBacklinksEnabled&gt;</code>' and ends with '<code>&lt;/BlogItemBacklinksEnabled&gt;</code>' and replace the entire thing (these tags included) with this code:
+<pre><code>&lt;ItemPage&gt;&lt;div style="display:block;" id="backlinks&lt;$BlogItemNumber$&gt;"&gt;&lt;/ItemPage&gt;
 &lt;MainOrArchivePage&gt;&lt;div style="display:none;" id="bl&lt;$BlogItemNumber$&gt;"&gt;&lt;/MainOrArchivePage&gt;
 &lt;BlogItemBacklinksEnabled&gt;
  &lt;a name="links"&gt;&lt;/a&gt;&lt;h4&gt;Backlinks:&lt;/h4&gt;
@@ -72,5 +72,5 @@ amp;gt;" style="display:none"&gt;
  &lt;p class="comment-timestamp"&gt;&lt;$BlogItemBacklinkCreate$&gt;&lt;/p&gt;
  &lt;/BlogItemBacklinksEnabled&gt;
 &lt;/div&gt;
-</pre>
-</li><li>Find the code for the 'links to this post' link in your post footer template code and replace it with '<span style="font-family:monospace;">&lt;a href="javascript:toggleitem('backlinks&lt;$BlogItemNumber$&gt;');"&gt;links to this post&lt;/a&gt;</span>'</li><li>Save your template and republish your blog!</li></ol>
+</code></pre>
+</li><li>Find the code for the 'links to this post' link in your post footer template code and replace it with '<code>&lt;a href="javascript:toggleitem('backlinks&lt;$BlogItemNumber$&gt;');"&gt;links to this post&lt;/a&gt;</code>'</li><li>Save your template and republish your blog!</li></ol>

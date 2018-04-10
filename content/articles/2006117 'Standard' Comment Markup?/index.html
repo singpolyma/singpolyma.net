@@ -12,8 +12,7 @@ Thus this proposed 'standard' is both based on microformats (<a href="http://mic
 
 <b>Blogger</b>
 Go to your blog template and find the section that begins with &lt;BlogItemComments&gt; and ends with &lt;/BlogItemComments&gt;.  Replace it with this code:
-<div style="font-family: monospace;">
-&lt;script type="text/javascript"&gt;
+<pre><code>&lt;script type="text/javascript"&gt;
 //&lt;![CDATA[
    posturl = "&lt;$BlogItemPermalinkUrl$&gt;";
 //]]&gt;
@@ -33,11 +32,10 @@ Go to your blog template and find the section that begins with &lt;BlogItemComme
 &lt;br /&gt;
          &lt;/li&gt;
 &lt;/BlogItemComments&gt;
-      &lt;/ul&gt;
-</div>
+      &lt;/ul&gt;</code></pre>
+
 If you are going to be visibly displaying comments on your main page it is reccomended you replace the &lt;!-- JS HERE --&gt;  in the above with:
-<div style="font-family: monospace;">
-&lt;script type="text/javascript"&gt;
+<pre><code>&lt;script type="text/javascript"&gt;
 //&lt;![CDATA[
   commentlink = xget('//li[@id="c&lt;$BlogCommentNumber$&gt;"]//a');
   if(commentlink) {
@@ -45,11 +43,10 @@ If you are going to be visibly displaying comments on your main page it is recco
    commentlink.href = posturl+'#'+fragment;
   }//end if commentlink
 //]]&gt;
-&lt;/script&gt;
-</div>
+&lt;/script&gt;</code></pre>
+
 And add the following to your &lt;head&gt; section:
-<div style="font-family: monospace;">
-&lt;script type="text/javascript"&gt;
+<pre><code>&lt;script type="text/javascript"&gt;
 //&lt;![CDATA[
 function xget(xpathSelector) {
   var it = document.evaluate( xpathSelector, document, null,
@@ -59,14 +56,13 @@ function xget(xpathSelector) {
   return '';
 }//end function xget
 //]]&gt;
-&lt;/script&gt;
-</div>
+&lt;/script&gt;</code></pre>
+
 Now to style this to look like we are used to having comments look.  Skip past WordPress to Styling.
 
 <b>WordPress</b>
 To use this code on WordPress blogs, edit your theme and go to the 'comments.php' file.  Find the section that starts &lt;ol&gt; and ends &lt;/ol&gt;.  Replace it with:
-<div style="font-family: monospace;">
-   &lt;ol class="xoxo comments commentlist"&gt;
+<pre><code>   &lt;ol class="xoxo comments commentlist"&gt;
 
    &lt;?php foreach ($comments as $comment) : ?&gt;
 
@@ -93,13 +89,13 @@ by &lt;?php comment_author_link() ?&gt;
    &lt;?php endforeach; /* end for each comment */ ?&gt;
 
    &lt;/ol&gt;
-</div>
+</code></pre>
+
 This code seems to work with the most common themes.  Now to styling so that we get back our old look:
 
 <b>Styling</b>
 Add this code to your &lt;head&gt; section:
-<div style="font-family: monospace;">
-&lt;style type="text/css"&gt;
+<pre><code>&lt;style type="text/css"&gt;
    .comments {
       list-style-type: none;
       margin-left: 0px;
@@ -128,4 +124,4 @@ Add this code to your &lt;head&gt; section:
       margin-top: 0.5em;
    }
 &lt;/style&gt;
-</div>
+</code></pre>

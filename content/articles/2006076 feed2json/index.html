@@ -10,7 +10,7 @@ http://xoxotools.ning.com/outlineconvert.php?output=json&amp;classes=items&amp;u
 
 I have already upgraded <a href="http://singpolyma-tech.blogspot.com/2006/02/freshtags-singpolyma.html">my version of FreshTags</a> to use this instead of the other feed2json script so that I no longer have to worry about the bandwidth restrictions.  Here is the code for the function I am using to convert the JSON data to the Delicious.posts format:
 
-<div style="font-family:monospace;">function feedjson2deljson(json_data) {
+<pre><code>function feedjson2deljson(json_data) {
    var rtrn = [];
    for(var i=0; i&lt;json_data.items.length; i++) {
       obj = {};
@@ -24,4 +24,4 @@ I have already upgraded <a href="http://singpolyma-tech.blogspot.com/2006/02/fre
       rtrn.push(obj);
    }//end for
    return rtrn;
-}//end feedjson2deljson</div>
+}//end feedjson2deljson</code></pre>

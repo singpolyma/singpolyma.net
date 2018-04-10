@@ -5,8 +5,7 @@ tags: ["Tech"]
 wordpress_path: /2006/04/cocomment-jsonp-native
 ---
 <a href="http://cocomment.com/">coComment</a> has added <a href="http://cocomment.com/json">native JSONP support</a>.  They seem to have worked out the bugs from their first implementation and I have reworked the code for my sidebar to use their system.  Out of this has come two generic coCo JSON functions.  One, coco_flat, takes their nested group-comments-by-article format and flattens it to one-element-per-comment with all the article and comment attributes intact:
-<div style="font-family:monospace;">
-function coco_flat(coco) {
+<pre><code>function coco_flat(coco) {
    var comments = [];
    for(var i=0; i&lt;coco.length; i++) {
       for(var i2=0; i2&lt;coco[i].comments.length; i2++) {
@@ -31,23 +30,19 @@ function coco_flat(coco) {
       }//end for cocommentResultSet[i].comments
    }//end for cocommentResultSet
    return comments;
-}//end function coco_flat
-</div>
+}//end function coco_flat</code></pre>
 
 The other, coco_compare, is for use in sorting so flattened results by date:
-<div style="font-family:monospace;">
-function coco_compare(a,b) {
+<pre><code>function coco_compare(a,b) {
    if(a.date&lt;b.date) return -1;
    if(a.date&gt;b.date) return 1;
    return 0;
-}//end function coco_compare
-</div>
+}//end function coco_compare</code></pre>
 
-To use this function to sort a flattened array of coComment data oldest to newest call <span style="font-family:monospace;"><i>array</i>.sort(coco_compare)</span>, and to sort by newest to oldest also call <span style="font-family:monospace;"><i>array</i>.reverse()</span> as well.
+To use this function to sort a flattened array of coComment data oldest to newest call <code><i>array</i>.sort(coco_compare)</code>, and to sort by newest to oldest also call <code><i>array</i>.reverse()</code> as well.
 
 Here is an example piece of code putting together all that is above, an incidentally what I am using in my sidebar:
-<div style="font-family:monospace;">
-function list_cocomment(blockid,username,charlimit,itemlimit,boxid) {
+<pre><code>function list_cocomment(blockid,username,charlimit,itemlimit,boxid) {
    if(!charlimit) limit = 25;
    if(!itemlimit) limit = 10;
    if(!boxid) boxid = 0;
@@ -70,5 +65,4 @@ function list_cocomment(blockid,username,charlimit,itemlimit,boxid) {
       block.innerHTML = txt;
    }//end function-var coco_callback
    writeScript('http://www.cocomment.com/mybox-json?nick=singpolyma&amp;box=1&amp;callback=coco_callback');
-}//end function list_cocomment
-</div>
+}//end function list_cocomment</code></pre>

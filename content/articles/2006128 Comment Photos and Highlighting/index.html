@@ -9,8 +9,7 @@ wordpress_path: /2006/05/comment-photos-and-highlighting
 Awhile back I wrote a post detailing my hack for adding <a href="http://singpolyma-tech.blogspot.com/2006/03/profile-photos-with-comments.html">profile photos to comments</a>.  Unfortunately that post was rather technical in its explanation.  This post attempts to deal with adding the hack to your blog in a more user-friendly fashion and also with using the hack to highlight blog-contributor comments.
 
 <span style="font-weight: bold;">Step 1</span> - The first thing you need to do is find the comment section in your blog template.  Edit your template and scroll down until you find the &lt;BlogItemComments&gt; tag.  The code inside should look something like this:
-<div style="font-family: monospace;">
-&lt;div class="comment-poster" id="c&lt;$BlogCommentNumber$&gt;"&gt;
+<pre><code>&lt;div class="comment-poster" id="c&lt;$BlogCommentNumber$&gt;"&gt;
 &lt;a name="c&lt;$BlogCommentNumber$&gt;"&gt;&lt;/a&gt;
 &lt;$BlogCommentAuthor$&gt; said...
 &lt;/div&gt;
@@ -22,10 +21,9 @@ Awhile back I wrote a post detailing my hack for adding <a href="http://singpoly
 &lt;div class="comment-timestamp"&gt;
 &lt;a href="#c&lt;$BlogCommentNumber$&gt;" title="comment permalink"&gt;4/26/2006 07:49:51 PM&lt;/a&gt;
 &lt;/div&gt;
-</div>
+</code></pre>
 <span style="font-weight: bold;">Step 2 </span>- If you plan to use comment highlighting (so that the comments made by blog authors look different from those of users) this must be wrapped in another tag so that all of the code for each comment is in one tag.  Like so:
-<div style="font-family: monospace;">
-<b>&lt;div <u>class="commentelem"</u>&gt;</b>
+<pre><code><b>&lt;div <u>class="commentelem"</u>&gt;</b>
 
 &lt;div class="comment-poster" id="c&lt;$BlogCommentNumber$&gt;"&gt;
 &lt;a name="c&lt;$BlogCommentNumber$&gt;"&gt;&lt;/a&gt;
@@ -40,8 +38,8 @@ Awhile back I wrote a post detailing my hack for adding <a href="http://singpoly
 &lt;a href="#c&lt;$BlogCommentNumber$&gt;" title="comment permalink"&gt;4/26/2006 07:49:51 PM&lt;/a&gt;
 &lt;/div&gt;
 
-<b>&lt;/div&gt;</b>
-</div>
+<b>&lt;/div&gt;</b></code></pre>
+
 Some blog templates will already have a tag around their comments, as will those using the <a href="http://singpolyma-tech.blogspot.com/2006/04/standard-comment-markup.html">'standard' comment markup</a>.  If you have one of those templates just write down the class of the wrapping tag or add one (the underlined section above).
 
 <span style="font-weight: bold;">Step 3</span> - Next we need the class of the element where we can look for the link to the author.  In the example code above this would be comment-poster.  When in doubt use the class of the overall wrapping tag.  Once you have it, write it down.  Count the number of &lt;a&gt; tags there are before the &lt;$BlogCommentAuthor$&gt; tag and write this number down (in the above example it is 1).
@@ -49,15 +47,14 @@ Some blog templates will already have a tag around their comments, as will those
 <span style="font-weight: bold;">Step 4</span> - The only thing left to do in this part of the code is to insert the element where the profile photo will go.  Add this code right before the &lt;$BlogCommentBody$&gt; tag: &lt;div class="commentphoto"&gt;&lt;/div&gt;
 
 <span style="font-weight: bold;">Step 5</span> - Now go to the &lt;head&gt; section of your blog and add the following code:
-<div style="font-family: monospace;">
-&lt;script type="text/javascript" src="http://jscripts.ning.com/get.php?xn_auth=no&amp;amp;id=830605"&gt;&lt;/script&gt;
+<pre><code>&lt;script type="text/javascript" src="http://jscripts.ning.com/get.php?xn_auth=no&amp;amp;id=830605"&gt;&lt;/script&gt;
 &lt;script type="text/javascript"&gt;
 //&lt;![CDATA[
 function thisblog_showCommentPhotos() {showCommentPhotos('commentphoto','<span style="color:red;">class of author wrapper</span>',<span style="color:red;"># of a tags</span>,'<span style="color:red;">main wrapper class</span>','&lt;$BlogURL$&gt;','<span style="color:red;">highlighted text colour</span>','<span style="color:red;">highlighted text background</span>';}
 addLoadEvent(thisblog_showCommentPhotos);});
 //]]&gt;
-&lt;/script&gt;
-</div>
+&lt;/script&gt;</code></pre>
+
 Where class of author wrapper is the class you wrote down in step 3, the # of a tags is the number you wrote down in step 3, and the main wrapper class is the class you wrote down in step 2.  If you are not going to use comment highlighting the last for parameters can be left off (from main wrapper class to highlighted tex background) otherwise you have to fill in the color you with the text and background of highlighted comments to be in their appropriate spots above.
 
 <span style="font-weight: bold;">Step 6</span> - Save and Republish!
