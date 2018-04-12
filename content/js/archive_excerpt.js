@@ -2,6 +2,7 @@ window.addEventListener("load", function() {
 	Array.prototype.forEach.call(document.querySelectorAll("article.hentry section.entry-content"), function(content) {
 		content.style.display = "block";
 		content.style.overflow = "hidden";
+		content.style.marginTop = "-1em";
 		var fullHeight = content.clientHeight;
 		content.style.maxHeight = "15em";
 		if(content.clientHeight < fullHeight) {
