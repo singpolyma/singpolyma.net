@@ -1,0 +1,60 @@
+doctype xml
+feed xmlns="http://www.w3.org/2005/Atom" xmlns:thr="http://purl.org/syndication/thread/1.0" xmlns:activity="http://activitystrea.ms/spec/1.0/" xmlns:poco="http://portablecontacts.net/spec/1.0" xmlns:media="http://purl.org/syndication/atommedia"
+	id dweb:/ipns/singpolyma.net/index.atom
+	title = @item[:title]
+	link rel="alternate" type="text/html" href="https://singpolyma.net/"
+	link rel="self" type="application/atom+xml" href="https://singpolyma.net#{@item.path}"
+	link rel="hub" href="https://ipfswebsub.singpolyma.net/"
+	updated = Time.now.iso8601
+	rights http://creativecommons.org/licenses/by/4.0/
+	icon https://singpolyma.net/avatar.jpg
+	author
+		activity:object-type http://activitystrea.ms/schema/1.0/person
+		name singpolyma
+		uri https://singpolyma.net/
+		email singpolyma@singpolyma.net
+		link rel="avatar" type="image/jpeg" media:width="334" media:height="334" href="https://singpolyma.net/avatar-big.jpg"
+		poco:preferredUsername singpolyma
+		poco:displayName singpolyma
+
+		vcard xmlns="urn:ietf:params:xml:ns:vcard-4.0"
+			n
+				given Stephen
+				additional Paul
+				family Weber
+			fn: text singpolyma
+			nickname: text singpolyma
+			photo: uri https://singpolyma.net/avatar-big.jpg
+			uid: uri dweb:/ipns/singpolyma.net
+			url: uri https://singpolyma.net/
+			url: uri https://singpolyma.net/public.asc
+			url: uri https://github.com/singpolyma
+			url: uri https://twitter.com/singpolyma
+			impp: uri xmpp:singpolyma@singpolyma.net
+			tel: uri tel:+12266669991
+			tel: uri sms:+12266669991
+			email: text singpolyma@singpolyma.net
+
+	- send(@item[:posts])[0..25].each do |post|
+		entry
+			id = "dweb:#{post.path}"
+			title = post[:title].to_s
+			published = post[:date].iso8601
+			updated = post[:date].iso8601
+			activity:object-type = "http://activitystrea.ms/schema/1.0/#{post_kind(post)}"
+			activity:verb = "http://activitystrea.ms/schema/1.0/#{Array(@item[:repost_of]).empty? ? "post" : "share"}"
+			content type="xhtml" xml:base="https://singpolyma.net#{post.path}"
+				div xmlns="http://www.w3.org/1999/xhtml"
+					== post.compiled_content(rep: :feed)
+			link rel="alternate" type="text/html" href="https://singpolyma.net#{post.path}"
+			- Array(post[:photo]).each do |photo|
+				- if photo =~ /\Ahttps?:/
+					link rel="enclosure" href=photo
+				- else
+					link rel="enclosure" href="https://singpolyma.net#{post.path}#{photo}"
+			- Array(post[:in_reply_to]).each do |reply|
+				thr:in-reply-to ref=reply href=reply /
+			- (post[:tags] || []).each do |tag|
+				category term=tag /
+			- Array(@item[:repost_of]).each do |repost|
+				link rel="via" type="text/html" href=repost

@@ -102,6 +102,11 @@ compile '/**/*.slim' do
 	filter :clean_indents
 end
 
+compile '/**/*.atom' do
+	layout '/atom.*'
+	filter :clean_indents
+end
+
 compile '/**/*.md' do
 	filter :kramdown, auto_ids: false
 	layout '/default.*'
