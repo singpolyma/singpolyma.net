@@ -10,6 +10,9 @@ html
 		link rel="self" type="text/html" href="https://singpolyma.net#{@item.path}"
 		link rel="canonical" type="text/html" href="https://singpolyma.net#{@item.path}"
 		link rel="hub" href="https://websub.ipfs.singpolyma.net/"
+		script type="text/javascript" src=relative_path_to(@items["/js/subtome.js"])
+		- if @item[:posts] == :articles
+			script type="text/javascript" src=relative_path_to(@items["/js/archive_excerpt.js"])
 
 	body
 		== yield
