@@ -20,6 +20,6 @@ class AbsolutizeFilter < Nanoc::Filter
 
 	def absolutize(ref)
 		return ref if ref.to_s =~ /\A\w+:|\A\//
-		"#{@item.path}/#{ref}"
+		"#{@item.path}#{ref}"
 	end
 end
