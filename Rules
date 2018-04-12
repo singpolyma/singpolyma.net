@@ -12,7 +12,7 @@ preprocess do
 		else
 			post.raw_content
 		end
-		post[:tags] = ((post[:tags] ||  []) + AutolinkFilter.new.run(content, extract_hashtags: true)).uniq
+		post[:tags] = ((post[:tags] ||  []) + AutolinkFilter.new.run(content, extract_hashtags: true)).uniq { |tag| tag.downcase }
 	end
 
 	by_year(:all_posts).keys.each do |year|
