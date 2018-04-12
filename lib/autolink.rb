@@ -51,7 +51,7 @@ class AutolinkFilter < Nanoc::Filter
 
 	def autolink_hashtag(tag)
 		tag = tag[1..-1]
-		"#<a rel=\"tag\" href=\"#{@config&.[](:base_url)}/tag/#{u tag}\">#{h tag}</a>"
+		"#<a rel=\"tag\" href=\"#{@config&.[](:base_url)}/tags/#{u Unicode::downcase(tag)}\">#{h tag}</a>"
 	end
 
 	def autolink_atreply(user)

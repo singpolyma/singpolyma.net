@@ -1,15 +1,15 @@
 nav
 	section
 		ul
-			li: a href="/" Home
-			li: a href="/blog/" Blog
+			li: a href=relative_path_to(@items["/index.slim"]) Home
+			li: a href=relative_path_to(@items["/blog.html"]) Blog
 			li: a href="/cv" Resume
 
 		p
 			' Follow:
-			a> data-subtome-resource="https://singpolyma.net/blog/index.atom" href="/blog/index.atom" Blog
+			a> data-subtome-resource="https://singpolyma.net/blog.atom" href=relative_path_to(@items["/blog.atom"]) Blog
 			= " | "
-			a data-subtome-resource="https://singpolyma.net/index.atom" href="/index.atom" Everything
+			a data-subtome-resource="https://singpolyma.net/index.atom" href=relative_path_to(@items["/index.atom"]) Everything
 
 	section
 		h1 Archives by Date
@@ -17,7 +17,7 @@ nav
 		ol
 			- posts = @item[:posts] || :all_posts
 			- by_year(posts).keys.each do |year|
-				li: a href="#{posts == :articles ? "/blog" : ""}/#{year}/" #{year}
+				li: a href=relative_path_to(@items["#{posts == :articles ? "/blog" : ""}/#{year}.html"]) #{year}
 
 	p.copyright: small
 		' This content is under a

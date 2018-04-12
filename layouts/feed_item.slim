@@ -1,11 +1,11 @@
 article.hentry
 	.author.vcard
-		img.photo src="/avatar.jpg" alt="Avatar of"
+		img.photo> src=relative_path_to(@items["/avatar.jpg"]) alt="Avatar of"
 		span.n>
 			span.given-name> Stephen
 			span.additional-name> Paul
 			span.family-name Weber
-		a.fn.nickname.url href="#{@config[:base_url]}/" singpolyma
+		a.fn.nickname.url href=relative_path_to(@items["/index.slim"]) singpolyma
 
 	- if @item[:title]
 		h1.entry-title: a rel="bookmark" href=@item.path = @item[:title]
@@ -17,7 +17,7 @@ article.hentry
 		- if post_kind(@item) == :article
 			- (@item[:tags] || []).each do |tag|
 				| #
-				a> rel="tag" href="#{@tag_prefix}/tags/#{u Unicode::downcase(tag)}" = tag
+				a> rel="tag" href=relative_path_to(@items["#{@tag_prefix}/tags/#{Unicode::downcase(tag)}.html"]) = tag
 
 		- if @item[:title]
 			time.published datetime=@item[:date].iso8601

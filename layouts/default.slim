@@ -4,7 +4,12 @@ html
 		meta charset="utf-8"
 		meta name="viewport" content="width=device-width, initial-scale=1"
 		title = @item[:title]
-		link rel="stylesheet" href="/main.css"
+		link rel="stylesheet" href=relative_path_to(@items["/main.scss"])
+		- if @item[:feed]
+			link rel="alternate" type="application/atom+xml" href=@item[:feed]
+		link rel="self" type="text/html" href="https://singpolyma.net#{@item.path}"
+		link rel="canonical" type="text/html" href="https://singpolyma.net#{@item.path}"
+		link rel="hub" href="https://websub.ipfs.singpolyma.net/"
 
 	body
 		== yield

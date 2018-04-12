@@ -12,7 +12,7 @@ preprocess do
 		else
 			post.raw_content
 		end
-		post[:tags] = ((post[:tags] ||  []) + AutolinkFilter.new.run(content, extract_hashtags: true)).uniq { |tag| tag.downcase }
+		post[:tags] = ((post[:tags] ||  []) + AutolinkFilter.new.run(content, extract_hashtags: true)).uniq { |tag| Unicode::downcase(tag) }
 	end
 
 	by_year(:all_posts).keys.each do |year|
@@ -49,6 +49,7 @@ preprocess do
 				posts: :all_posts,
 				key: :by_tag,
 				value: tag,
+				feed: "https://granary.io/url?input=html&output=atom&url=https%3A%2F%2Fsingpolyma.net%2Ftags%2F#{u tag}"
 			},
 			"/tags/#{tag}.html"
 		)
@@ -62,21 +63,11 @@ preprocess do
 				posts: :articles,
 				key: :by_tag,
 				value: tag,
+				feed: "https://granary.io/url?input=html&output=atom&url=https%3A%2F%2Fsingpolyma.net%2Fblog%2Ftags%2F#{u tag}"
 			},
 			"/blog/tags/#{tag}.html"
 		)
 	end
-
-	@items.create(
-		'',
-		{
-			title: "Blog Articles",
-			posts: :articles,
-			key: :posts,
-			value: 0..10,
-		},
-		"/blog.html"
-	)
 end
 
 compile '/{notes,articles}/**/*.{html,md}' do
@@ -114,7 +105,7 @@ compile '/**/*.md' do
 end
 
 compile '/**/*.html' do
-	layout '/default.*'
+	layout '/default.*' unless @item[:layout] == false
 	filter :clean_indents
 end
 

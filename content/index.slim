@@ -1,8 +1,9 @@
 ---
 title: singpolyma
+feed: index.atom
 ---
 header#profile.vcard
-	img.photo src="/avatar.jpg" alt="Avatar of"
+	img.photo src=relative_path_to(@items["/avatar.jpg"]) alt="Avatar of"
 	.n
 		span.given-name> Stephen
 		span.additional-name> Paul
@@ -22,11 +23,14 @@ header#profile.vcard
 		dt Email:
 		dd: a.email rel="me" href="mailto:singpolyma@singpolyma.net" singpolyma@singpolyma.net
 
+		dt Fediverse:
+		dd: a.url rel="me" href="acct:singpolyma@singpolyma.net" singpolyma@singpolyma.net
+
 		dt SMS:
 		dd: a.tel rel="me" href="sms:+12266669991" +1 226 666 9991
 
 	section#pgp
-		h1: a.url rel="me pgpkey" type="application/pgp-keys" href=@items["/public.asc"].path OpenPGP Key
+		h1: a.url rel="me pgpkey" type="application/pgp-keys" href=relative_path_to(@items["/public.asc"]) OpenPGP Key
 		dl
 			dt Fingerprint:
 			dd.key 59E6 82C3 EAF3 9A21 0CA7  3534 D11C 2911 <strong>CE51 9CDE</strong>
