@@ -6,6 +6,7 @@ html, body {
 
 a {
 	color: #0af;
+	word-wrap: break-word; // Links are often long URLs
 
 	&:visited { color: #9af; }
 }
