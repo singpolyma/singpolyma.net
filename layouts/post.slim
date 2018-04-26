@@ -28,15 +28,15 @@ html
 				== item.compiled_content
 
 			footer
-				a> rel="bookmark" href="./"
+				a rel="bookmark" href="./"
 					time.published datetime=@item[:date].iso8601
 						= @item[:date].jtime
 
 				- Array(@item[:in_reply_to]).each do |reply|
-					a> class="u-in-reply-to" href=reply in reply to
+					a< class="u-in-reply-to" href=reply in reply to
 
 				- Array(@item[:repost_of]).each do |repost|
-					a> class="u-repost-of" href=repost repost of
+					a< class="u-repost-of" href=repost repost of
 
 				- if post_kind(@item) == :article
 					nav

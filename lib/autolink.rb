@@ -13,7 +13,7 @@ class AutolinkFilter < Nanoc::Filter
 
 	AUTOLINK_PATTERNS = {
 		/(?<!\w|\/|\?)#[\.\-\/:_a-zA-Z0-9]*[a-zA-Z][\.\-\/:_a-zA-Z0-9]*[a-zA-Z0-9]/ => :autolink_hashtag,
-		/(?<!\w|\/|\?)@[\.\-\/:__a-zA-Z0-9]+/ => :autolink_atreply,
+		/(?<!\w|\/|\?)@[\.\-\/:_a-zA-Z0-9]*[_a-zA-Z0-9]/ => :autolink_atreply,
 		URL_PATTERN => :autolink_url
 	}.freeze
 
